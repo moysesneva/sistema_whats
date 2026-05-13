@@ -140,7 +140,7 @@ $default_values = array(
     
     'card2_icon' => 'assets/logos/icon2.png',
     'card2_title' => 'Vendas no Piloto Automático',
-    'card2_description' => 'Realize vendas e atendimentos em poucos segundos com a ajuda de nossa IA, que identifica necessidades e oferece soluções personalizadas para cada cliente.',
+    'card2_description' => 'Deixe nossa IA identificar as necessidades do cliente e fechar vendas personalizadas em poucos segundos.',
     
     'card3_icon' => 'assets/logos/icon3.png',
     'card3_title' => 'Disponibilidade 24/7',
