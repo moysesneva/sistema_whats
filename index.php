@@ -144,7 +144,7 @@ $default_values = array(
     
     'card3_icon' => 'assets/logos/icon3.png',
     'card3_title' => 'Disponibilidade 24/7',
-    'card3_description' => 'Seu negócio disponível a qualquer momento, pronto para atender, resolver dúvidas e fechar vendas mesmo quando você não está trabalhando.',
+    'card3_description' => 'Sua empresa sempre aberta e pronta para tirar dúvidas, atender clientes e fechar vendas a qualquer hora do dia ou da noite.',
     
     'feature_image' => 'assets/images/feature_1.png',
     'feature_title' => 'Assistente Inteligente para Vendas e Atendimento',
