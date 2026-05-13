@@ -148,7 +148,7 @@ $default_values = array(
     
     'feature_image' => 'assets/images/feature_1.png',
     'feature_title' => 'Assistente Inteligente para Vendas e Atendimento',
-    'feature_description' => 'Nosso robô atua como um funcionário virtual, capaz de entender comandos de áudio, texto e imagens, oferecendo uma experiência prática e humanizada para atender seus clientes e aumentar suas vendas.',
+    'feature_description' => 'Elimine o trabalho manual e os gargalos de atendimento. Nossa IA multimodal organiza demandas, responde clientes na hora e mantém sua operação comercial rodando com máxima eficiência.',
     'feature_items' => array(
         'Atendimento personalizado com linguagem natural.',
         'Identificação de oportunidades de vendas.',
