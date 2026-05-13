@@ -135,7 +135,7 @@ while($rows_config = mysqli_fetch_array($query_busca_config)) {
 // Valores padrão (originais)
 $default_values = array(
     'card1_icon' => 'assets/logos/icon1.png',
-    'card1_title' => 'Reconhecimento Multimodal',
+    'card1_title' => 'Reconhecimento Avançado',
     'card1_description' => 'O robô é capaz de entender comandos de áudio, texto e imagem, tornando a interação mais natural e eficiente para seus clientes.',
     
     'card2_icon' => 'assets/logos/icon2.png',
