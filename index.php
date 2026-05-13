@@ -139,7 +139,7 @@ $default_values = array(
     'card1_description' => 'Muito além do texto: uma IA capaz de compreender comandos por voz, escrita e imagens com máxima eficiência.',
     
     'card2_icon' => 'assets/logos/icon2.png',
-    'card2_title' => 'Vendas Automáticas',
+    'card2_title' => 'Vendas no Piloto Automático',
     'card2_description' => 'Realize vendas e atendimentos em poucos segundos com a ajuda de nossa IA, que identifica necessidades e oferece soluções personalizadas para cada cliente.',
     
     'card3_icon' => 'assets/logos/icon3.png',
