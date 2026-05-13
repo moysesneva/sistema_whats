@@ -1,0 +1,11 @@
+{
+    "GET": [],
+    "POST": {
+        "acao": "editar",
+        "id_cliente": "476",
+        "usuario_api": "agenda_553184767331",
+        "nome": "Jose",
+        "telefone": "5511975128320",
+        "edit_codigo_pais": ""
+    }
+}
