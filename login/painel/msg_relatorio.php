@@ -250,7 +250,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                         </div>
 
                         <!-- Botão Apagar -->
-                        <button type="button" class="btn btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="setCampaignToDelete(<?php echo $campanha['id']; ?>, '<?php echo htmlspecialchars($campanha['campaign_name'], ENT_QUOTES); ?>')">
+                        <button type="button" class="btn btn-delete" data-toggle="modal" data-target="#deleteModal" onclick="setCampaignToDelete(<?php echo $campanha['id']; ?>, '<?php echo htmlspecialchars($campanha['campaign_name'], ENT_QUOTES); ?>')">
                             <i class="fas fa-trash"></i>
                             Apagar Campanha
                         </button>
@@ -269,7 +269,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                         <i class="fas fa-exclamation-triangle"></i>
                         Confirmar Exclusão
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <div class="warning-icon">
@@ -281,7 +281,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-modern btn-outline-modern" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-modern btn-outline-modern" data-dismiss="modal">
                         <i class="fas fa-times"></i>
                         Cancelar
                     </button>
@@ -295,7 +295,6 @@ while ($row = mysqli_fetch_assoc($result)) {
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let campaignIdToDelete = null;
 
@@ -336,8 +335,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                 
                 if (data.success) {
                     // Fechar modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-                    modal.hide();
+                    $('#deleteModal').modal('hide');
                     
                     // Mostrar notificação de sucesso
                     showNotification('Campanha apagada com sucesso!', 'success');
@@ -371,7 +369,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             notification.innerHTML = `
                 <i class="${iconClass}"></i>
                 ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             `;
             
             document.body.appendChild(notification);

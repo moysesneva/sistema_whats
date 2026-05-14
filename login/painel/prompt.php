@@ -136,7 +136,7 @@ if($modo_atuante == 'Agendamento'){
         <div class="main-container">
             <div class="text-center mb-4">
                 <h1 class="display-4 text-primary mb-2">
-                    <i class="fas fa-robot me-3"></i>
+                    <i class="fas fa-robot mr-3"></i>
                     Agenda Chatbot
                 </h1>
                 <p class="lead text-muted">Configure sua IA para diferentes tipos de negócio</p>
@@ -148,7 +148,7 @@ if($modo_atuante == 'Agendamento'){
                     <div class="section-title text-primary">
                         <i class="fas fa-layer-group"></i>
                         Modelos Pré-Configurados
-                        <small class="text-muted ms-2"></small>
+                        <small class="text-muted ml-2"></small>
                     </div>
                     <div class="model-selector">
                         <div class="row">
@@ -252,7 +252,7 @@ if($modo_atuante == 'Agendamento'){
                     </div>
                     <div class="mb-3">
                         <small class="text-muted">
-                            <i class="fas fa-info-circle me-1"></i>
+                            <i class="fas fa-info-circle mr-1"></i>
                             Este é o coração do seu chatbot. Detalhe as informações da sua empresa, serviços, horários e procedimentos.
                         </small>
                     </div>
@@ -275,7 +275,7 @@ if($modo_atuante == 'Agendamento'){
                     <div class="row">
     <div class="col-md-6">
         <label for="tempo" class="form-label">
-            <i class="fas fa-clock me-1"></i>
+            <i class="fas fa-clock mr-1"></i>
             Tempo de Inatividade (Minutos)
         </label>
        <input type="number" id="tempo" name="tempo" class="form-control" min="1" 
@@ -286,7 +286,7 @@ if($modo_atuante == 'Agendamento'){
 
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-custom btn-save btn-lg">
-                        <i class="fas fa-save me-2"></i>
+                        <i class="fas fa-save mr-2"></i>
                         Salvar Configurações
                     </button>
                 </div>
@@ -298,7 +298,6 @@ if($modo_atuante == 'Agendamento'){
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         let selectedModel = null; // Inicia sem nenhum modelo selecionado
 
@@ -472,9 +471,9 @@ if($modo_atuante == 'Agendamento'){
             successDiv.innerHTML = `
                 <div class="alert alert-success alert-dismissible fade show position-fixed" 
                      style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-                    <i class="fas fa-check-circle me-2"></i>
+                    <i class="fas fa-check-circle mr-2"></i>
                     <strong>Modelo carregado com sucesso!</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
             `;
             document.body.appendChild(successDiv);
@@ -520,7 +519,7 @@ if($modo_atuante == 'Agendamento'){
             
             // Feedback de envio
             const submitBtn = document.querySelector('.btn-save');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Salvando...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Salvando...';
             submitBtn.disabled = true;
         });
     </script>
@@ -545,7 +544,7 @@ if($modo_atuante == 'Atendimento'){
         <div class="main-container">
             <div class="text-center mb-4">
                 <h1 class="display-4 text-primary mb-2">
-                    <i class="fas fa-robot me-3"></i>
+                    <i class="fas fa-robot mr-3"></i>
                     Atendente Chatbot
                 </h1>
                 <p class="lead text-muted">Configure sua IA para vendas e atendimento</p>
@@ -557,7 +556,7 @@ if($modo_atuante == 'Atendimento'){
                     <div class="section-title text-primary">
                         <i class="fas fa-layer-group"></i>
                         Modelos Pré-Configurados
-                        <small class="text-muted ms-2"></small>
+                        <small class="text-muted ml-2"></small>
                     </div>
                     <div class="model-selector">
                         <div class="row">
@@ -661,7 +660,7 @@ if($modo_atuante == 'Atendimento'){
                     </div>
                     <div class="mb-3">
                         <small class="text-muted">
-                            <i class="fas fa-info-circle me-1"></i>
+                            <i class="fas fa-info-circle mr-1"></i>
                             Este é o coração do seu chatbot. Detalhe as informações da sua empresa, serviços, horários e procedimentos.
                         </small>
                     </div>
@@ -684,7 +683,7 @@ if($modo_atuante == 'Atendimento'){
                     <div class="row">
                         <div class="col-md-6">
                             <label for="tempo" class="form-label">
-                                <i class="fas fa-clock me-1"></i>
+                                <i class="fas fa-clock mr-1"></i>
                                 Tempo de Inatividade (Minutos)
                             </label>
                             <input type="number" id="tempo" name="tempo" class="form-control" min="1"
@@ -695,7 +694,7 @@ if($modo_atuante == 'Atendimento'){
 
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-custom btn-save btn-lg">
-                        <i class="fas fa-save me-2"></i>
+                        <i class="fas fa-save mr-2"></i>
                         Salvar Configurações
                     </button>
                 </div>
@@ -707,7 +706,6 @@ if($modo_atuante == 'Atendimento'){
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         let selectedModel = null; // Inicia sem nenhum modelo selecionado
 
@@ -881,9 +879,9 @@ if($modo_atuante == 'Atendimento'){
             successDiv.innerHTML = `
                 <div class="alert alert-success alert-dismissible fade show position-fixed" 
                      style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-                    <i class="fas fa-check-circle me-2"></i>
+                    <i class="fas fa-check-circle mr-2"></i>
                     <strong>Modelo carregado com sucesso!</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
             `;
             document.body.appendChild(successDiv);
@@ -928,7 +926,7 @@ if($modo_atuante == 'Atendimento'){
             
             // Feedback de envio
             const submitBtn = document.querySelector('.btn-save');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Salvando...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Salvando...';
             submitBtn.disabled = true;
         });
     </script>

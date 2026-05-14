@@ -116,7 +116,6 @@ if($autorizado != 2){
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
 // Adiciona efeito de clique suave
 document.querySelectorAll('.nav-card').forEach(card => {
