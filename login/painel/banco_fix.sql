@@ -49,3 +49,11 @@ CREATE OR REPLACE VIEW `view_estatisticas_bloqueios` AS SELECT `lista_negra`.`us
 CREATE OR REPLACE VIEW `view_lista_negra_ativa` AS SELECT `lista_negra`.`id` AS `id`, `lista_negra`.`nome` AS `nome`, `lista_negra`.`telefone` AS `telefone`, `lista_negra`.`motivo_bloqueio` AS `motivo_bloqueio`, `lista_negra`.`data_bloqueio` AS `data_bloqueio`, `lista_negra`.`tentativas_contato` AS `tentativas_contato`, `lista_negra`.`ultima_tentativa` AS `ultima_tentativa`, `lista_negra`.`observacoes` AS `observacoes` FROM `lista_negra` WHERE (`lista_negra`.`status` = 'ativo') ORDER BY `lista_negra`.`data_bloqueio` DESC;
 
 INSERT IGNORE INTO `login` (`id`, `login`, `senha`, `tipo`, `usuario_api`, `nome`, `autorizado`, `code_autorizado`, `porta`, `webhook_completo`, `qrcode`, `tempo_code`, `situacao`, `email`, `servidor_recebe`, `servidor_envia`, `servidor_confirma`, `qr_data`, `caminho_vps`, `funcao`, `tempo_final`, `tempo_verifica`, `solicitar_confirmacao`, `pagamento_cliente`, `id_assinatura`, `vencimento`, `creditos`, `plano`, `modo_atuante`, `modelo_ia`, `google_cal`, `numero_bot`) VALUES (1, 'admin', 'admin123', '1', 'admin', 'Administrador', '2', '', '', '', '', '', 'ativo', 'admin@admin.com', '', '', '', '', '', 'adm', 0, 0, '', '', '', '', 9999, 'plano3', '', 'gpt-4o-mini', '', '');
+
+-- Logo MoysesNet (Modelo 1 Hexágono) — persiste após reinício
+UPDATE `estilo` SET
+  `logo_site`    = 'img/logo-moysesnet.svg',
+  `emblema_site` = 'img/logo-moysesnet-small.svg',
+  `icon_site`    = 'img/logo-moysesnet-icon.svg',
+  `titulo`       = 'MoysesNet'
+WHERE id = (SELECT MIN(id) FROM (SELECT id FROM estilo) t);
