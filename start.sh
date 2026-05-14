@@ -34,12 +34,14 @@ mysql -u root --socket=$MYSQL_SOCKET -e "CREATE DATABASE IF NOT EXISTS $DB_NAME 
 
 TABLE_COUNT=$(mysql -u root --socket=$MYSQL_SOCKET $DB_NAME -e "SHOW TABLES;" 2>/dev/null | wc -l)
 if [ "$TABLE_COUNT" -lt "5" ]; then
-    echo "Importando schema SQL..."
-    mysql -u root --socket=$MYSQL_SOCKET $DB_NAME < /home/runner/workspace/login/painel/banco.sql 2>&1
-    echo "Schema importado!"
-else
-    echo "Banco já configurado ($TABLE_COUNT tabelas)."
+    echo "Importando schema SQL principal..."
+    mysql -u root --socket=$MYSQL_SOCKET $DB_NAME < /home/runner/workspace/login/painel/banco.sql 2>/dev/null || true
+    echo "Schema principal importado!"
 fi
+
+echo "Aplicando tabelas complementares..."
+mysql -u root --socket=$MYSQL_SOCKET $DB_NAME < /home/runner/workspace/login/painel/banco_fix.sql 2>&1
+echo "Banco de dados pronto ($(mysql -u root --socket=$MYSQL_SOCKET $DB_NAME -e 'SHOW TABLES;' 2>/dev/null | wc -l) tabelas)."
 
 echo "=== Criando links simbólicos de assets ==="
 ln -sf /home/runner/workspace/login/files /home/runner/workspace/files 2>/dev/null || true
