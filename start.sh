@@ -48,4 +48,4 @@ ln -sf /home/runner/workspace/login/files /home/runner/workspace/files 2>/dev/nu
 
 echo "=== Iniciando PHP na porta 5000 ==="
 cd /home/runner/workspace
-php -S 0.0.0.0:5000 -t /home/runner/workspace
+php -S 0.0.0.0:5000 -t /home/runner/workspace router.php
