@@ -951,7 +951,7 @@ $menu_items = [
             <?php foreach($menu_items as $item): ?>
             <li><a href="<?php echo $item['href']; ?>" class="page-scroll"><?php echo $item['label']; ?></a></li>
             <?php endforeach; ?>
-            <li><a href="login/painel/login.php" class="nav-cta">Acessar</a></li>
+            <li><a href="/login/painel/login.php" class="nav-cta">Acessar</a></li>
         </ul>
     </div>
 </nav>
@@ -981,10 +981,10 @@ $menu_items = [
             <?php echo !empty($hero_subtitle) ? htmlspecialchars($hero_subtitle) : 'Automatize agendamentos, tire dúvidas e fidelize clientes — tudo pelo WhatsApp, com IA avançada trabalhando 24h por dia.'; ?>
         </p>
         <div class="hero-btns">
-            <a href="login/painel/cadastro_conta.php" class="btn-orange">
+            <a href="/login/painel/cadastro_conta.php" class="btn-orange">
                 Começar Grátis <i class="fas fa-arrow-right"></i>
             </a>
-            <a href="login/painel/login.php" class="btn-ghost">
+            <a href="/login/painel/login.php" class="btn-ghost">
                 Fazer Login <i class="fas fa-chevron-right"></i>
             </a>
         </div>
@@ -1077,7 +1077,7 @@ $menu_items = [
                     <li><i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($item); ?></li>
                     <?php endforeach; ?>
                 </ul>
-                <a href="login/painel/cadastro_conta.php" class="btn-orange">Cadastrar Agora <i class="fas fa-arrow-right"></i></a>
+                <a href="/login/painel/cadastro_conta.php" class="btn-orange">Cadastrar Agora <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
     </div>
@@ -1111,7 +1111,7 @@ $embed_url = "https://www.youtube.com/embed/{$video_id}";
             </iframe>
         </div>
         <div style="text-align:center;margin-top:2rem;" data-aos="fade-up" data-aos-delay="300">
-            <a href="login/painel/cadastro_conta.php" class="btn-orange">Experimente Agora <i class="fas fa-arrow-right"></i></a>
+            <a href="/login/painel/cadastro_conta.php" class="btn-orange">Experimente Agora <i class="fas fa-arrow-right"></i></a>
         </div>
     </div>
 </section>
@@ -1145,7 +1145,7 @@ $embed_url = "https://www.youtube.com/embed/{$video_id}";
                     <li><i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($feat); ?></li>
                     <?php endforeach; ?>
                 </ul>
-                <a href="login/painel/cadastro_conta.php?code_pag=<?php echo urlencode($plano['code_pag']); ?>" class="btn-plan">
+                <a href="/login/painel/cadastro_conta.php?code_pag=<?php echo urlencode($plano['code_pag']); ?>" class="btn-plan">
                     Assinar Agora
                 </a>
             </div>
