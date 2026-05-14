@@ -29,7 +29,7 @@ if (file_exists('settings.txt')) {
     <meta charset="UTF-8">
     <title>Menu Personalizado</title>
     <!-- Inclua o jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../files/bower_components/jquery/js/jquery.min.js"></script>
     <!-- Inclua seu arquivo JavaScript -->
     <script src="pcoded.min.js"></script>
     <style>

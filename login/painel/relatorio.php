@@ -59,8 +59,7 @@ $sql_agendamentos .= " ORDER BY data DESC, horario ASC";
 $query_agendamentos = mysqli_query($conn, $sql_agendamentos);
 ?>
 
-<?php $css_extra = '    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css">'; ?>
+<?php $css_extra = '    <link rel="stylesheet" type="text/css" href="../files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
 <?php include 'header.php'; ?>
 
 
@@ -245,8 +244,8 @@ $query_agendamentos = mysqli_query($conn, $sql_agendamentos);
     </div>
 
     <!-- Scripts originais mantidos -->
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+    <script src="../files/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="../files/bower_components/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
 
 
 <?php include 'footer.php'; ?>
