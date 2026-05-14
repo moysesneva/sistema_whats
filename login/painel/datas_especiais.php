@@ -307,7 +307,7 @@ if (isset($_POST['deletar'])) {
     </div>
 
     <!-- Scripts -->
-    
+    <script src="../files/bower_components/jquery/js/jquery.min.js"></script>
     <script>
         // Função para buscar clientes em tempo real
         function buscarCliente() {

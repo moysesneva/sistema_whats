@@ -59,7 +59,8 @@ $sql_agendamentos .= " ORDER BY data DESC, horario ASC";
 $query_agendamentos = mysqli_query($conn, $sql_agendamentos);
 ?>
 
-<?php $css_extra = '    <link rel="stylesheet" type="text/css" href="../files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+<?php $css_extra = '    <link rel="stylesheet" type="text/css" href="../files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">';
+?>
 <?php include 'header.php'; ?>
 
 

@@ -241,6 +241,8 @@ include 'bloqueio.php';
     }
 </style>
 
+<!-- jQuery local (necessário antes dos scripts inline) -->
+<script src="../files/bower_components/jquery/js/jquery.min.js"></script>
 <!-- Adicionar JS do intl-tel-input -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 <script>
