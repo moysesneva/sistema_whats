@@ -316,6 +316,10 @@ include 'header_auth.php';
                     <p>Não tem conta? <a href="cadastro_conta.php">Criar conta grátis</a></p>
                     <img src="<?php echo $small_logo; ?>" alt="Logo" class="mini-logo">
                 </div>
+
+                <div style="text-align:center;margin-top:18px;">
+                    <a href="login_adm.php" style="font-size:11px;color:rgba(255,255,255,0.2);text-decoration:none;letter-spacing:1px;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,85,0,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.2)'">&#9679; ACESSO ADMINISTRATIVO</a>
+                </div>
             </div>
         </form>
     </div>
