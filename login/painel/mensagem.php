@@ -1709,7 +1709,7 @@
                                                             </a>
                                                             <div class="media-body">
                                                                 <div class="txt-white">Sign in as</div>
-                                                                <div class="f-13 txt-white"><a href="..\..\..\cdn-cgi\l\email-protection.htm" class="__cf_email__" data-cfemail="7213161f1b1c16171f1d32170a131f021e175c111d1f">[email&#160;protected]</a></div>
+                                                                <div class="f-13 txt-white">admin@example.com</div>
                                                                 <div class="input-group msg-ellipsis c-pointer">
                                                                     <span role="tooltip" class="dropdown-toggle addon-btn ellipsis" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
                                                                     <div class="dropdown-menu dropdown-menu-right b-none elipsis-box msg-elipsis-box">
