@@ -88,4 +88,8 @@ if (curl_errno($ch)) {
 
 curl_close($ch);
 
+if (file_exists($caminhoAbsoluto)) {
+    unlink($caminhoAbsoluto);
+}
+
 ?>
