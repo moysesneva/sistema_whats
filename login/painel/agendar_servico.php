@@ -77,22 +77,14 @@ $telefone_cliente = null;
 $idd_agendamento = null;
 $tema = 1; // Tema padrão
 
-// Função para estabelecer uma conexão local (usada em várias partes)
-// Idealmente, a conexão $conn principal já deveria ser usada.
-function conectarDB_local() {
-    include 'conn.php';
-    return $conn;
-}
-
 
 // PASSO 1: VERIFICAR SE UM CLIENTE FOI SELECIONADO NA BUSCA
 if (isset($_POST['cliente_selecionado']) && !empty($_POST['cliente_selecionado'])) {
     $cliente_selecionado_id = intval($_POST['cliente_selecionado']);
     
     // Conecta e busca os dados completos do cliente selecionado
-    $conn_cliente = conectarDB_local();
     $sql_cliente = "SELECT * FROM clientes WHERE id = ?";
-    if ($stmt = mysqli_prepare($conn_cliente, $sql_cliente)) {
+    if ($stmt = mysqli_prepare($conn, $sql_cliente)) {
         mysqli_stmt_bind_param($stmt, "i", $cliente_selecionado_id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -241,9 +233,8 @@ if($query_busca_config && mysqli_num_rows($query_busca_config) > 0) {
                                                             <option value=''>Selecione um profissional</option>
                                                             <?php
                                                             if ($usuario_api) {
-                                                                $conn_prof = conectarDB_local();
-                                                                $sql_prof = "SELECT id, profissional_nome, profissional_cargo FROM profissional WHERE usuario_api = '" . mysqli_real_escape_string($conn_prof, $usuario_api) . "'";
-                                                                $result_prof = mysqli_query($conn_prof, $sql_prof);
+                                                                $sql_prof = "SELECT id, profissional_nome, profissional_cargo FROM profissional WHERE usuario_api = '" . mysqli_real_escape_string($conn, $usuario_api) . "'";
+                                                                $result_prof = mysqli_query($conn, $sql_prof);
                                                                 if ($result_prof) {
                                                                     while ($row_prof = mysqli_fetch_assoc($result_prof)) {
                                                                         echo '<option value="'. htmlspecialchars($row_prof['id']).'">'.htmlspecialchars($row_prof['profissional_nome']) .' - '. htmlspecialchars($row_prof['profissional_cargo']) .'</option>';
