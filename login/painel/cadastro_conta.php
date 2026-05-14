@@ -1,24 +1,13 @@
 <?php
 include 'conn.php';
 include 'estilo.php';
-?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <title><?php echo $titulo; ?></title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="icon" href="<?php echo $favicon; ?>" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../files/bower_components/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+$css_extra = '
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: \'Montserrat\', sans-serif;
             background: #000d1a;
             min-height: 100vh;
             display: flex;
@@ -30,7 +19,7 @@ include 'estilo.php';
         }
 
         body::before {
-            content: '';
+            content: \'\';
             position: fixed;
             inset: 0;
             background: linear-gradient(135deg, #001f3f 0%, #000d1a 50%, #001229 100%);
@@ -52,7 +41,6 @@ include 'estilo.php';
             top: 50%;
         }
 
-        /* Loader */
         .theme-loader {
             position: fixed; inset: 0; background: #000d1a; z-index: 9999;
             display: flex; align-items: center; justify-content: center;
@@ -84,7 +72,7 @@ include 'estilo.php';
             box-shadow: 0 25px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
         }
         .auth-card::before {
-            content: '';
+            content: \'\';
             display: block; width: 60px; height: 3px;
             background: #FF5500; border-radius: 2px;
             margin: 0 auto 28px;
@@ -107,7 +95,7 @@ include 'estilo.php';
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 10px;
             color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
+            font-family: \'Montserrat\', sans-serif;
             font-size: 14px; padding: 0 16px;
             transition: all 0.3s ease; outline: none;
         }
@@ -121,7 +109,6 @@ include 'estilo.php';
         .row-half { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         @media (max-width: 400px) { .row-half { grid-template-columns: 1fr; } }
 
-        /* Intl Tel Input */
         .iti { width: 100%; }
         .iti__selected-flag { background: rgba(255,255,255,0.05) !important; border-right: 1px solid rgba(255,255,255,0.1) !important; }
         .iti__flag-container:hover .iti__selected-flag { background: rgba(255,85,0,0.1) !important; }
@@ -137,7 +124,7 @@ include 'estilo.php';
             display: block; width: 100%; height: 52px;
             background: linear-gradient(135deg, #FF5500, #e64a00);
             border: none; border-radius: 10px;
-            color: #ffffff; font-family: 'Montserrat', sans-serif;
+            color: #ffffff; font-family: \'Montserrat\', sans-serif;
             font-size: 15px; font-weight: 700; letter-spacing: 1px;
             text-transform: uppercase; cursor: pointer;
             transition: all 0.3s ease;
@@ -155,7 +142,7 @@ include 'estilo.php';
             margin: 24px 0 20px;
         }
         .divider::before, .divider::after {
-            content: ''; flex: 1; height: 1px;
+            content: \'\'; flex: 1; height: 1px;
             background: rgba(255,255,255,0.08);
         }
         .divider span { font-size: 11px; color: rgba(255,255,255,0.25); font-weight: 500; }
@@ -171,18 +158,10 @@ include 'estilo.php';
         @media (max-width: 480px) {
             .auth-card { padding: 28px 20px; }
         }
-    </style>
-</head>
+    </style>';
 
-<body class="fix-menu">
-    <div class="theme-loader">
-        <div class="ring"></div>
-    </div>
-
-    <div class="bg-hex bg-hex-1"></div>
-    <div class="bg-hex bg-hex-2"></div>
-    <div class="bg-hex bg-hex-3"></div>
-    <div class="bg-line"></div>
+include 'header_auth.php';
+?>
 
     <div class="login-wrapper" data-aos="fade-up" data-aos-duration="800">
         <div class="login-logo">
@@ -229,12 +208,8 @@ include 'estilo.php';
         </form>
     </div>
 
-    <script type="text/javascript" src="../files/bower_components/jquery/js/jquery.min.js"></script>
-    <script type="text/javascript" src="../files/bower_components/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="../files/assets/js/common-pages.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-
+<?php
+$js_extra = '
     <script>
         AOS.init({ once: true, duration: 700 });
 
@@ -263,13 +238,12 @@ include 'estilo.php';
             }
             e.preventDefault();
             var countryData = iti.getSelectedCountryData();
-            var fullPhone = countryData.dialCode + input.value.replace(/\D/g, '');
+            var fullPhone = countryData.dialCode + input.value.replace(/\D/g, \'\');
             document.getElementById("telefone").value = fullPhone;
             document.getElementById("codigo_pais").remove();
             this.submit();
         });
-    </script>
+    </script>';
 
-    <?php include 'erro.php'; ?>
-</body>
-</html>
+include 'footer_auth.php';
+?>

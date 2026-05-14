@@ -17,25 +17,14 @@ $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 if($total_busca_usuario == '0'){
     VaiPara('cadastro_adm.php');
 } else {
-?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <title><?=$titulo;?></title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="icon" href="<?=$icon;?>" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../files/bower_components/bootstrap/css/bootstrap.min.css">
+
+$css_extra = '
     <link rel="stylesheet" type="text/css" href="../files/assets/icon/themify-icons/themify-icons.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: \'Montserrat\', sans-serif;
             background: #000d1a;
             min-height: 100vh;
             display: flex;
@@ -45,9 +34,8 @@ if($total_busca_usuario == '0'){
             position: relative;
         }
 
-        /* Fundo com padrão diagonal */
         body::before {
-            content: '';
+            content: \'\';
             position: fixed;
             inset: 0;
             background:
@@ -55,7 +43,6 @@ if($total_busca_usuario == '0'){
             z-index: 0;
         }
 
-        /* Hexágonos decorativos de fundo */
         .bg-hex {
             position: fixed;
             z-index: 0;
@@ -89,7 +76,6 @@ if($total_busca_usuario == '0'){
             top: 50%;
         }
 
-        /* Loader */
         .theme-loader {
             position: fixed;
             inset: 0;
@@ -111,7 +97,6 @@ if($total_busca_usuario == '0'){
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Container de login */
         .login-wrapper {
             position: relative;
             z-index: 10;
@@ -120,7 +105,6 @@ if($total_busca_usuario == '0'){
             padding: 20px;
         }
 
-        /* Logo */
         .login-logo {
             text-align: center;
             margin-bottom: 32px;
@@ -131,7 +115,6 @@ if($total_busca_usuario == '0'){
             filter: drop-shadow(0 0 20px rgba(255,85,0,0.4));
         }
 
-        /* Card do formulário */
         .auth-card {
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.08);
@@ -151,11 +134,8 @@ if($total_busca_usuario == '0'){
             margin-bottom: 32px;
             letter-spacing: 0.5px;
         }
-        .auth-card h3 span {
-            color: #FF5500;
-        }
+        .auth-card h3 span { color: #FF5500; }
 
-        /* Labels */
         .form-label {
             display: block;
             font-size: 12px;
@@ -166,7 +146,6 @@ if($total_busca_usuario == '0'){
             margin-bottom: 8px;
         }
 
-        /* Inputs */
         .form-group { margin-bottom: 22px; }
 
         .form-control {
@@ -176,7 +155,7 @@ if($total_busca_usuario == '0'){
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 10px;
             color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
+            font-family: \'Montserrat\', sans-serif;
             font-size: 14px;
             padding: 0 16px;
             transition: all 0.3s ease;
@@ -189,7 +168,6 @@ if($total_busca_usuario == '0'){
             box-shadow: 0 0 0 3px rgba(255,85,0,0.12);
         }
 
-        /* Intl Tel Input override */
         .iti { width: 100%; }
         .iti__selected-flag {
             background: rgba(255,255,255,0.05) !important;
@@ -209,7 +187,6 @@ if($total_busca_usuario == '0'){
         .iti__country.iti__highlight { background: rgba(255,85,0,0.15); }
         .iti__country-name, .iti__dial-code { color: rgba(255,255,255,0.8); }
 
-        /* Esqueceu senha */
         .forgot-link {
             display: block;
             text-align: right;
@@ -223,7 +200,6 @@ if($total_busca_usuario == '0'){
         }
         .forgot-link:hover { color: #ff7733; text-decoration: none; }
 
-        /* Botão principal */
         .btn-enam {
             display: block;
             width: 100%;
@@ -232,7 +208,7 @@ if($total_busca_usuario == '0'){
             border: none;
             border-radius: 10px;
             color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
+            font-family: \'Montserrat\', sans-serif;
             font-size: 15px;
             font-weight: 700;
             letter-spacing: 1px;
@@ -248,7 +224,6 @@ if($total_busca_usuario == '0'){
         }
         .btn-enam:active { transform: translateY(0); }
 
-        /* Divisor */
         .divider {
             display: flex;
             align-items: center;
@@ -256,7 +231,7 @@ if($total_busca_usuario == '0'){
             margin: 24px 0 20px;
         }
         .divider::before, .divider::after {
-            content: '';
+            content: \'\';
             flex: 1;
             height: 1px;
             background: rgba(255,255,255,0.08);
@@ -268,7 +243,6 @@ if($total_busca_usuario == '0'){
             white-space: nowrap;
         }
 
-        /* Criar conta */
         .signup-row {
             display: flex;
             align-items: center;
@@ -292,9 +266,8 @@ if($total_busca_usuario == '0'){
             opacity: 0.5;
         }
 
-        /* Linha laranja decorativa no topo do card */
         .auth-card::before {
-            content: '';
+            content: \'\';
             display: block;
             width: 60px;
             height: 3px;
@@ -307,33 +280,16 @@ if($total_busca_usuario == '0'){
             .auth-card { padding: 28px 22px; }
             .login-logo img { height: 40px; }
         }
-    </style>
-</head>
+    </style>';
 
-<body class="fix-menu">
-    <!-- Pre-loader -->
-    <div class="theme-loader">
-        <div class="ball-scale">
-            <div class='contain'>
-                <div class="ring"></div>
-            </div>
-        </div>
-    </div>
+include 'header_auth.php';
+?>
 
-    <!-- Elementos decorativos de fundo -->
-    <div class="bg-hex bg-hex-1"></div>
-    <div class="bg-hex bg-hex-2"></div>
-    <div class="bg-hex bg-hex-3"></div>
-    <div class="bg-line"></div>
-
-    <!-- Container principal -->
     <div class="login-wrapper" data-aos="fade-up" data-aos-duration="800">
-        <!-- Logo -->
         <div class="login-logo">
             <img src="<?php echo $logo; ?>" alt="<?=$titulo;?>">
         </div>
 
-        <!-- Formulário -->
         <form action="validar.php" method="post" id="login-form">
             <input type="hidden" name="titulo" value="LOGIN">
             <div class="auth-card">
@@ -364,13 +320,8 @@ if($total_busca_usuario == '0'){
         </form>
     </div>
 
-    <!-- Scripts -->
-    <script type="text/javascript" src="../files/bower_components/jquery/js/jquery.min.js"></script>
-    <script type="text/javascript" src="../files/bower_components/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="../files/assets/js/common-pages.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-
+<?php
+$js_extra = '
     <script>
         $(document).ready(function() {
             AOS.init({ once: true, duration: 700 });
@@ -387,15 +338,14 @@ if($total_busca_usuario == '0'){
                 e.preventDefault();
                 var countryData = iti.getSelectedCountryData();
                 var dialCode = countryData.dialCode;
-                var phoneNumber = input.value.replace(/\D/g, '');
+                var phoneNumber = input.value.replace(/\D/g, \'\');
                 var fullPhoneNumber = dialCode + phoneNumber;
-                $('<input>').attr({ type: 'hidden', name: 'telefone', value: fullPhoneNumber }).appendTo($(this));
+                $(\'<input>\').attr({ type: \'hidden\', name: \'telefone\', value: fullPhoneNumber }).appendTo($(this));
                 this.submit();
             });
         });
-    </script>
+    </script>';
 
-    <?php include 'erro.php'; ?>
-</body>
-</html>
+include 'footer_auth.php';
+?>
 <?php } ?>
