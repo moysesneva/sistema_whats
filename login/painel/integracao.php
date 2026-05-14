@@ -143,15 +143,6 @@ if (isset($_POST['email_gmail']) || isset($_POST['apagar_integracao'])) {
 
 
 
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
 
 
 

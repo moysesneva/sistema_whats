@@ -57,15 +57,6 @@ if($autorizado != 2){
 <?php include 'header.php'; ?>
 
 
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
    
    <!-- Formulário para solicitar confirmação de agendamento -->
 

@@ -65,14 +65,6 @@ if($autorizado != 2){
 
 
 
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
     <div class="page-container">
         <!-- Page Header -->
         <div class="page-header">

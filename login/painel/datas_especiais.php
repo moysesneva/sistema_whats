@@ -67,15 +67,6 @@ if (isset($_POST['deletar'])) {
 
 
 
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
    
    <!-- Formulário para solicitar confirmação de agendamento -->
 

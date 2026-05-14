@@ -79,15 +79,6 @@ if($autorizado != 2){
 
  <link rel="stylesheet" href="../files/assets/vendor/font-awesome-6/css/all.min.css">
 
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
-    <!-- DADOS PARA INSERIR AQUI -->
    
    
    
