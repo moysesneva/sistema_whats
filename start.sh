@@ -32,15 +32,15 @@ done
 echo "=== Configurando banco de dados ==="
 mysql -u root --socket=$MYSQL_SOCKET -e "CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 2>&1
 
-TABLE_COUNT=$(mysql -u root --socket=$MYSQL_SOCKET $DB_NAME -e "SHOW TABLES;" 2>/dev/null | wc -l)
-if [ "$TABLE_COUNT" -lt "5" ]; then
+LOGIN_EXISTS=$(mysql -u root --socket=$MYSQL_SOCKET $DB_NAME -e "SHOW TABLES LIKE 'login';" 2>/dev/null | wc -l)
+if [ "$LOGIN_EXISTS" -lt "2" ]; then
     echo "Importando schema SQL principal..."
-    mysql -u root --socket=$MYSQL_SOCKET $DB_NAME < /home/runner/workspace/login/painel/banco.sql 2>/dev/null || true
+    mysql --force -u root --socket=$MYSQL_SOCKET $DB_NAME < /home/runner/workspace/login/painel/banco.sql 2>&1 | grep -v "^$" || true
     echo "Schema principal importado!"
 fi
 
 echo "Aplicando tabelas complementares..."
-mysql -u root --socket=$MYSQL_SOCKET $DB_NAME < /home/runner/workspace/login/painel/banco_fix.sql 2>&1
+mysql --force -u root --socket=$MYSQL_SOCKET $DB_NAME < /home/runner/workspace/login/painel/banco_fix.sql 2>&1 | grep -v "^$" || true
 echo "Banco de dados pronto ($(mysql -u root --socket=$MYSQL_SOCKET $DB_NAME -e 'SHOW TABLES;' 2>/dev/null | wc -l) tabelas)."
 
 echo "=== Criando links simbólicos de assets ==="

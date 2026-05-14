@@ -29,7 +29,7 @@ fi
 if mysqladmin ping --socket=/home/runner/mysql.sock --silent 2>/dev/null; then
     if [ -f "login/painel/banco_fix.sql" ]; then
         echo "Aplicando banco_fix.sql..."
-        mysql --socket=/home/runner/mysql.sock -u root agendamento < login/painel/banco_fix.sql || true
+        mysql --force --socket=/home/runner/mysql.sock -u root agendamento < login/painel/banco_fix.sql 2>&1 | grep -v "^$" || true
     fi
 else
     echo "MySQL indisponível — migrações ignoradas."
