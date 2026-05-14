@@ -1,3 +1,123 @@
+-- ============================================================
+-- BLOCO 0: Corrigir PRIMARY KEY + AUTO_INCREMENT em tabelas
+-- criadas pelo banco.sql original sem essas definições.
+-- Seguro re-executar: ADD PRIMARY KEY falha silenciosamente
+-- se a chave já existir; MODIFY funciona em ambos os casos.
+-- ============================================================
+
+ALTER TABLE `agendamento`          ADD PRIMARY KEY (`id`);
+ALTER TABLE `agendamento`          MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `agenda_padrao`        ADD PRIMARY KEY (`id`);
+ALTER TABLE `agenda_padrao`        MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `chave`                ADD PRIMARY KEY (`id`);
+ALTER TABLE `chave`                MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `chave_ia_geral`       ADD PRIMARY KEY (`id`);
+ALTER TABLE `chave_ia_geral`       MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `clientes`             ADD PRIMARY KEY (`id`);
+ALTER TABLE `clientes`             MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `config`               ADD PRIMARY KEY (`id`);
+ALTER TABLE `config`               MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `datas_excluidas`      ADD PRIMARY KEY (`id`);
+ALTER TABLE `datas_excluidas`      MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `email_config`         ADD PRIMARY KEY (`id`);
+ALTER TABLE `email_config`         MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `envio`                ADD PRIMARY KEY (`id`);
+ALTER TABLE `envio`                MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `envio`                MODIFY COLUMN `tipo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '';
+
+ALTER TABLE `especialidades`       ADD PRIMARY KEY (`id`);
+ALTER TABLE `especialidades`       MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `estilo`               ADD PRIMARY KEY (`id`);
+ALTER TABLE `estilo`               MODIFY COLUMN `id` int(25)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `funcao`               ADD PRIMARY KEY (`id`);
+ALTER TABLE `funcao`               MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `gerenciador`          ADD PRIMARY KEY (`id`);
+ALTER TABLE `gerenciador`          MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `horarios_profissional` ADD PRIMARY KEY (`id`);
+ALTER TABLE `horarios_profissional` MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `horarios_servico`     ADD PRIMARY KEY (`id`);
+ALTER TABLE `horarios_servico`     MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `ia_historico`         ADD PRIMARY KEY (`id`);
+ALTER TABLE `ia_historico`         MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `intervalos_profissional` ADD PRIMARY KEY (`id`);
+ALTER TABLE `intervalos_profissional` MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `leads`                ADD PRIMARY KEY (`id`);
+ALTER TABLE `leads`                MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `lista_negra`          ADD PRIMARY KEY (`id`);
+ALTER TABLE `lista_negra`          MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `login`                ADD PRIMARY KEY (`id`);
+ALTER TABLE `login`                MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `menu`                 ADD PRIMARY KEY (`id`);
+ALTER TABLE `menu`                 MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `modulos_baixados`     ADD PRIMARY KEY (`id`);
+ALTER TABLE `modulos_baixados`     MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `modulos_lista`        ADD PRIMARY KEY (`id`);
+ALTER TABLE `modulos_lista`        MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `modulo_atual`         ADD PRIMARY KEY (`id`);
+ALTER TABLE `modulo_atual`         MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `pagamentos`           ADD PRIMARY KEY (`id`);
+ALTER TABLE `pagamentos`           MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `pagamentos_status`    ADD PRIMARY KEY (`id`);
+ALTER TABLE `pagamentos_status`    MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `planos_clientes`      ADD PRIMARY KEY (`id`);
+ALTER TABLE `planos_clientes`      MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `planos_features`      ADD PRIMARY KEY (`id`);
+ALTER TABLE `planos_features`      MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `planos_online`        ADD PRIMARY KEY (`id`);
+ALTER TABLE `planos_online`        MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `profissional`         ADD PRIMARY KEY (`id`);
+ALTER TABLE `profissional`         MODIFY COLUMN `id` int(255) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `profissional_servicos` ADD PRIMARY KEY (`id`);
+ALTER TABLE `profissional_servicos` MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `servicos`             ADD PRIMARY KEY (`id`);
+ALTER TABLE `servicos`             MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `lista_negra_log`      ADD PRIMARY KEY (`id`);
+ALTER TABLE `lista_negra_log`      MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `logs_etiquetas`       ADD PRIMARY KEY (`id`);
+ALTER TABLE `logs_etiquetas`       MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `mensagens_massa`      ADD PRIMARY KEY (`id`);
+ALTER TABLE `mensagens_massa`      MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `mensagens_massa_envios` ADD PRIMARY KEY (`id`);
+ALTER TABLE `mensagens_massa_envios` MODIFY COLUMN `id` int(11)  NOT NULL AUTO_INCREMENT;
+
+-- ============================================================
+-- FIM DO BLOCO 0
+-- ============================================================
+
 CREATE TABLE IF NOT EXISTS `lista_negra_log` ( `id` int(11) NOT NULL AUTO_INCREMENT, `lista_negra_id` int(255) NOT NULL, `acao` varchar(50) COLLATE utf8_unicode_ci NOT NULL, `dados_anteriores` json DEFAULT NULL, `dados_novos` json DEFAULT NULL, `usuario_api` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL, `data_log` datetime DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `login` ( `id` int(255) NOT NULL AUTO_INCREMENT, `login` varchar(255) DEFAULT NULL, `senha` varchar(255) DEFAULT NULL, `tipo` varchar(255) DEFAULT NULL, `usuario_api` varchar(255) DEFAULT NULL, `nome` varchar(255) DEFAULT NULL, `autorizado` varchar(255) DEFAULT NULL, `code_autorizado` varchar(255) DEFAULT NULL, `perfil_img` varchar(500) DEFAULT NULL, `porta` varchar(255) NOT NULL DEFAULT '', `webhook_completo` varchar(255) NOT NULL DEFAULT '', `qrcode` varchar(500) NOT NULL DEFAULT '', `tempo_code` varchar(255) NOT NULL DEFAULT '', `situacao` varchar(255) NOT NULL DEFAULT '', `email` varchar(255) NOT NULL DEFAULT '', `servidor_recebe` varchar(255) NOT NULL DEFAULT '', `servidor_envia` varchar(255) NOT NULL DEFAULT '', `servidor_confirma` varchar(255) NOT NULL DEFAULT '', `qr_quantidade` varchar(255) DEFAULT NULL, `qr_data` varchar(255) NOT NULL DEFAULT '', `caminho_vps` varchar(500) NOT NULL DEFAULT '', `funcao` varchar(255) NOT NULL DEFAULT '', `IA_boas_vindas` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, `IA_prompt` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, `IA_despedida` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, `tempo_final` int(255) NOT NULL DEFAULT 0, `agenda_confirma` longtext, `agenda_cancela` longtext, `agenda_verfica` longtext, `tempo_verifica` int(255) NOT NULL DEFAULT 0, `solicitar_confirmacao` varchar(255) NOT NULL DEFAULT '', `pagamento_cliente` varchar(255) NOT NULL DEFAULT '', `id_assinatura` varchar(255) NOT NULL DEFAULT '', `vencimento` varchar(255) NOT NULL DEFAULT '', `creditos` int(255) NOT NULL DEFAULT 0, `plano` varchar(255) NOT NULL DEFAULT '', `modo_atuante` varchar(255) NOT NULL DEFAULT '', `modelo_ia` varchar(255) NOT NULL DEFAULT '', `google_cal` varchar(500) NOT NULL DEFAULT '', `logo` varchar(255) DEFAULT NULL, `nome_empresa` varchar(255) DEFAULT NULL, `tema` varchar(255) DEFAULT NULL, `numero_bot` varchar(255) NOT NULL DEFAULT '', `confirma_prof` varchar(500) DEFAULT NULL, `cancela_prof` varchar(500) DEFAULT NULL, PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
