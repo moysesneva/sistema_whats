@@ -1,0 +1,359 @@
+/* ===================================================
+   MOYSESNET — Tema Enam Dark Navy + Orange
+   Injetado via estilo.php em todas as páginas do painel
+   =================================================== */
+
+:root {
+    --enam-navy:    #001f3f;
+    --enam-navy-d:  #000d1a;
+    --enam-navy-m:  #001529;
+    --enam-orange:  #FF5500;
+    --enam-orange-h:#ff7733;
+    --enam-border:  rgba(255,255,255,0.07);
+    --enam-text:    rgba(255,255,255,0.85);
+    --enam-muted:   rgba(255,255,255,0.4);
+    --enam-card-bg: rgba(255,255,255,0.04);
+    --enam-transition: all 0.25s ease;
+}
+
+/* ─── BODY / PAGE ─────────────────────────────── */
+body {
+    background: var(--enam-navy-d) !important;
+    color: var(--enam-text) !important;
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+/* Loader */
+.theme-loader {
+    background: var(--enam-navy-d) !important;
+}
+.theme-loader .ball-scale .contain .ring {
+    border-color: var(--enam-orange) !important;
+    border-top-color: transparent !important;
+}
+
+/* ─── NAVBAR SUPERIOR ─────────────────────────── */
+.navbar.header-navbar.pcoded-header,
+nav.navbar.header-navbar {
+    background: var(--enam-navy) !important;
+    border-bottom: 1px solid var(--enam-border) !important;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.4) !important;
+}
+
+.navbar-logo {
+    background: var(--enam-navy-d) !important;
+    border-right: 1px solid var(--enam-border) !important;
+}
+.navbar-logo a img {
+    filter: brightness(1.05) drop-shadow(0 0 8px rgba(255,85,0,0.25));
+}
+
+.nav-left li a,
+.nav-right li a,
+.nav-right li span,
+.navbar-wrapper .navbar-container .nav-left li,
+.navbar-wrapper .navbar-container .nav-right li {
+    color: var(--enam-text) !important;
+}
+.nav-left li a:hover,
+.nav-right li a:hover { color: var(--enam-orange) !important; }
+
+/* User profile dropdown */
+.user-profile .dropdown-toggle span {
+    color: var(--enam-text) !important;
+}
+.show-notification.profile-notification {
+    background: var(--enam-navy) !important;
+    border: 1px solid var(--enam-border) !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
+    border-radius: 10px !important;
+}
+.show-notification.profile-notification li a {
+    color: var(--enam-text) !important;
+}
+.show-notification.profile-notification li a:hover {
+    background: rgba(255,85,0,0.1) !important;
+    color: var(--enam-orange) !important;
+}
+
+/* Ícones da navbar */
+.feather { color: var(--enam-text) !important; }
+.feather:hover { color: var(--enam-orange) !important; }
+
+/* ─── SIDEBAR / NAVBAR LATERAL ────────────────── */
+.pcoded-navbar {
+    background: var(--enam-navy) !important;
+    border-right: 1px solid var(--enam-border) !important;
+    box-shadow: 2px 0 20px rgba(0,0,0,0.3) !important;
+}
+
+.pcoded-inner-navbar {
+    background: transparent !important;
+}
+
+.pcoded-navigatio-lavel {
+    color: var(--enam-muted) !important;
+    font-size: 10px !important;
+    letter-spacing: 1.5px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    padding: 16px 20px 8px !important;
+    border-top: 1px solid var(--enam-border) !important;
+}
+
+/* Itens do menu */
+.pcoded-item li a {
+    color: rgba(255,255,255,0.65) !important;
+    transition: var(--enam-transition) !important;
+    border-left: 3px solid transparent !important;
+}
+.pcoded-item li a:hover {
+    color: #ffffff !important;
+    background: rgba(255,85,0,0.08) !important;
+    border-left-color: var(--enam-orange) !important;
+}
+.pcoded-item li.active > a,
+.pcoded-item li.pcoded-hasmenu.active > a {
+    color: #ffffff !important;
+    background: rgba(255,85,0,0.12) !important;
+    border-left-color: var(--enam-orange) !important;
+}
+.pcoded-item li.active > a .pcoded-mtext,
+.pcoded-item li.pcoded-hasmenu.active > a .pcoded-mtext {
+    color: var(--enam-orange) !important;
+    font-weight: 600 !important;
+}
+
+/* Ícones do menu */
+.pcoded-micon i {
+    color: var(--enam-muted) !important;
+    transition: var(--enam-transition);
+}
+.pcoded-item li.active .pcoded-micon i,
+.pcoded-item li a:hover .pcoded-micon i {
+    color: var(--enam-orange) !important;
+}
+
+/* ─── CARDS ───────────────────────────────────── */
+.card, .auth-box {
+    background: rgba(0,31,63,0.6) !important;
+    border: 1px solid var(--enam-border) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3) !important;
+    color: var(--enam-text) !important;
+}
+.card-header {
+    background: rgba(255,255,255,0.03) !important;
+    border-bottom: 1px solid var(--enam-border) !important;
+    color: #ffffff !important;
+    border-radius: 14px 14px 0 0 !important;
+}
+.card-header h5, .card-header h4, .card-header h3 {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+.card-header-right li i {
+    color: var(--enam-muted) !important;
+}
+.card-header-right li i:hover { color: var(--enam-orange) !important; }
+
+.card-block, .card-body { padding: 24px !important; }
+
+/* ─── FORMULÁRIOS ─────────────────────────────── */
+.form-control {
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    font-family: 'Montserrat', sans-serif !important;
+}
+.form-control:focus {
+    background: rgba(255,85,0,0.06) !important;
+    border-color: var(--enam-orange) !important;
+    box-shadow: 0 0 0 3px rgba(255,85,0,0.12) !important;
+    color: #ffffff !important;
+}
+.form-control::placeholder { color: rgba(255,255,255,0.3) !important; }
+label, .form-label { color: var(--enam-muted) !important; }
+
+select.form-control option {
+    background: var(--enam-navy) !important;
+    color: #ffffff !important;
+}
+
+/* ─── BOTÕES ──────────────────────────────────── */
+.btn-primary, .btn-primary:focus {
+    background: linear-gradient(135deg, #FF5500, #e64a00) !important;
+    border-color: #FF5500 !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 4px 15px rgba(255,85,0,0.3) !important;
+    transition: var(--enam-transition) !important;
+}
+.btn-primary:hover {
+    background: linear-gradient(135deg, #ff6620, #FF5500) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 8px 20px rgba(255,85,0,0.45) !important;
+}
+.btn-success {
+    background: #00875a !important;
+    border-color: #00875a !important;
+    border-radius: 8px !important;
+}
+.btn-success:hover { background: #00a36b !important; transform: translateY(-1px) !important; }
+.btn-danger {
+    background: #c0392b !important;
+    border-color: #c0392b !important;
+    border-radius: 8px !important;
+}
+.btn-danger:hover { background: #e74c3c !important; transform: translateY(-1px) !important; }
+.btn-warning {
+    background: #e67e22 !important;
+    border-color: #e67e22 !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+}
+
+/* ─── TABELAS ─────────────────────────────────── */
+.table { color: var(--enam-text) !important; }
+.table thead th {
+    background: rgba(255,85,0,0.08) !important;
+    color: var(--enam-orange) !important;
+    border-bottom: 1px solid rgba(255,85,0,0.2) !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+}
+.table tbody tr { border-bottom: 1px solid var(--enam-border) !important; }
+.table tbody tr:hover { background: rgba(255,85,0,0.05) !important; }
+.table tbody td { color: var(--enam-text) !important; vertical-align: middle !important; }
+.table-bordered, .table-bordered td, .table-bordered th {
+    border-color: var(--enam-border) !important;
+}
+
+/* ─── BADGES / LABELS ─────────────────────────── */
+.label-primary, .badge-primary {
+    background: var(--enam-orange) !important;
+    color: #fff !important;
+}
+.label-success, .badge-success { background: #00875a !important; }
+.label-danger, .badge-danger { background: #c0392b !important; }
+
+/* ─── ALERTS ──────────────────────────────────── */
+.alert-info {
+    background: rgba(0,87,168,0.15) !important;
+    border: 1px solid rgba(0,87,168,0.3) !important;
+    color: #7ecfff !important;
+    border-radius: 10px !important;
+}
+.alert-success {
+    background: rgba(0,135,90,0.15) !important;
+    border: 1px solid rgba(0,135,90,0.3) !important;
+    color: #5ddfb0 !important;
+    border-radius: 10px !important;
+}
+.alert-warning {
+    background: rgba(230,126,34,0.15) !important;
+    border: 1px solid rgba(230,126,34,0.3) !important;
+    color: #f5b041 !important;
+    border-radius: 10px !important;
+}
+.alert-danger {
+    background: rgba(192,57,43,0.15) !important;
+    border: 1px solid rgba(192,57,43,0.3) !important;
+    color: #f1948a !important;
+    border-radius: 10px !important;
+}
+
+/* ─── BREADCRUMB / PAGE TITLE ─────────────────── */
+.page-header {
+    background: transparent !important;
+    border-bottom: 1px solid var(--enam-border) !important;
+    padding-bottom: 16px !important;
+    margin-bottom: 24px !important;
+}
+.page-header .page-block .page-header-title h5 {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+.breadcrumb { background: transparent !important; }
+.breadcrumb li { color: var(--enam-muted) !important; }
+.breadcrumb li.active, .breadcrumb-item.active { color: var(--enam-orange) !important; }
+.breadcrumb-item + .breadcrumb-item::before { color: var(--enam-border) !important; }
+
+/* ─── MODAL ───────────────────────────────────── */
+.modal-content {
+    background: #001729 !important;
+    border: 1px solid var(--enam-border) !important;
+    color: var(--enam-text) !important;
+    border-radius: 14px !important;
+}
+.modal-header {
+    border-bottom: 1px solid var(--enam-border) !important;
+    background: rgba(255,85,0,0.05) !important;
+    border-radius: 14px 14px 0 0 !important;
+}
+.modal-header .modal-title { color: #ffffff !important; font-weight: 700 !important; }
+.modal-footer { border-top: 1px solid var(--enam-border) !important; }
+.close { color: var(--enam-muted) !important; opacity: 1 !important; }
+.close:hover { color: var(--enam-orange) !important; }
+
+/* ─── SCROLLBAR ───────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--enam-navy-d); }
+::-webkit-scrollbar-thumb { background: rgba(255,85,0,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--enam-orange); }
+
+/* ─── STATUS INDICATOR ────────────────────────── */
+.status-indicator {
+    width: 10px; height: 10px;
+    border-radius: 50%; display: inline-block;
+    margin-right: 8px;
+}
+.bg-success { background: #00875a !important; box-shadow: 0 0 8px rgba(0,135,90,0.5); }
+.bg-danger  { background: #c0392b !important; }
+
+/* ─── PCODED CONTENT ──────────────────────────── */
+.pcoded-content { background: var(--enam-navy-d) !important; }
+.pcoded-main-container { background: var(--enam-navy-d) !important; }
+.pcoded-wrapper { background: var(--enam-navy-d) !important; }
+.main-body { background: var(--enam-navy-d) !important; }
+.page-wrapper { background: var(--enam-navy-d) !important; }
+
+/* Linha separadora da barra lateral */
+.pcoded-inner-navbar .pcoded-item > li > a {
+    padding: 12px 20px !important;
+    border-radius: 0 !important;
+}
+
+/* ─── DROPDOWN GERAL ──────────────────────────── */
+.dropdown-menu {
+    background: var(--enam-navy) !important;
+    border: 1px solid var(--enam-border) !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important;
+    border-radius: 10px !important;
+}
+.dropdown-item { color: var(--enam-text) !important; }
+.dropdown-item:hover {
+    background: rgba(255,85,0,0.1) !important;
+    color: var(--enam-orange) !important;
+}
+
+/* ─── HR ──────────────────────────────────────── */
+hr { border-color: var(--enam-border) !important; }
+
+/* ─── TEXTO ───────────────────────────────────── */
+h1,h2,h3,h4,h5,h6 { color: #ffffff !important; }
+p { color: var(--enam-text) !important; }
+.text-muted { color: var(--enam-muted) !important; }
+a { color: var(--enam-orange) !important; }
+a:hover { color: var(--enam-orange-h) !important; text-decoration: none !important; }
+
+/* ─── LOGO NA NAVBAR ──────────────────────────── */
+.navbar-logo a img {
+    height: 32px !important;
+    width: auto !important;
+}
