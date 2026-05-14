@@ -1073,8 +1073,7 @@ $query_horarios_existentes = mysqli_query($conn, $sql_horarios_existentes);
     <!-- jQuery -->
     <script type="text/javascript" src="../files/bower_components/jquery/js/jquery.min.js"></script>
     <script type="text/javascript" src="../files/bower_components/jquery-ui/js/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../files/bower_components/popper.js/js/popper.min.js"></script>
-    <script type="text/javascript" src="../files/bower_components/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/bootstrap/js/bootstrap.bundle.min.js"></script>
     
     <!-- Slimscroll -->
     <script type="text/javascript" src="../files/bower_components/jquery-slimscroll/js/jquery.slimscroll.js"></script>

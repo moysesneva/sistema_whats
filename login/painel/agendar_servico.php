@@ -577,8 +577,7 @@ if($query_busca_config && mysqli_num_rows($query_busca_config) > 0) {
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="..\files\bower_components\jquery-ui\js\jquery-ui.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\popper.js\js\popper.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\bootstrap\js\bootstrap.min.js"></script>
+    <script type="text/javascript" src="..\files\bower_components\bootstrap\js\bootstrap.bundle.min.js"></script>
     <script src="..\files\assets\js\pcoded.min.js"></script> 
     <script src="..\files\assets\js\vartical-layout.min.js"></script>
     <script type="text/javascript" src="..\files\assets\js\script.min.js"></script>
@@ -811,8 +810,7 @@ while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
     <!-- Required Jquery -->
     <script data-cfasync="false" src="..\..\..\cdn-cgi\scripts\5c5dd728\cloudflare-static\email-decode.min.js"></script><script type="text/javascript" src="..\files\bower_components\jquery\js\jquery.min.js"></script>
     <script type="text/javascript" src="..\files\bower_components\jquery-ui\js\jquery-ui.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\popper.js\js\popper.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\bootstrap\js\bootstrap.min.js"></script>
+    <script type="text/javascript" src="..\files\bower_components\bootstrap\js\bootstrap.bundle.min.js"></script>
     <!-- jquery slimscroll js -->
     <script type="text/javascript" src="..\files\bower_components\jquery-slimscroll\js\jquery.slimscroll.js"></script>
     <!-- modernizr js -->
