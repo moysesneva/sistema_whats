@@ -31,9 +31,12 @@ $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
 while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
     $nome  = Priletra($rows_usuarios['nome']);
+    $nome_usuario_logado = $nome;
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
     $tipo  = $rows_usuarios['tipo'];
+    $tipo_usuario = $tipo;
+    $usuario_api = $rows_usuarios['usuario_api'];
     $login  = $rows_usuarios['login'];
 
 }
@@ -63,43 +66,6 @@ if($autorizado != 2){
 
 
 <?php
-// =========================================================================
-// INÍCIO: BLOCO DE CONFIGURAÇÃO E AUTENTICAÇÃO (de agendar_servico.php)
-// =========================================================================
-
-$login = $_SESSION['login'];
-
-// Includes essenciais para o funcionamento da página e conexão
-include 'conn.php'; // Conexão principal com o banco de dados
-include 'config_dados.php';
-include 'estilo.php';
-include 'css_de_icones.php';
-
-// Busca os dados do usuário logado (administrador/operador)
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
-
-if ($total_busca_usuario == 1) {
-    $rows_usuarios = mysqli_fetch_array($query_busca_usuario);
-    $nome_usuario_logado  = Priletra($rows_usuarios['nome']);
-    $img_perfil  = $rows_usuarios['perfil_img'];
-    $autorizado  = $rows_usuarios['autorizado'];
-    $tipo_usuario  = $rows_usuarios['tipo'];
-    $usuario_api  = $rows_usuarios['usuario_api'];
-} else {
-    // Se o usuário não for encontrado, desloga e redireciona
-    VaiPara('login.php');
-}
-
-// Verificação de autorização do usuário
-if($autorizado != 2){
-    VaiPara('desbloquar.php');
-}
-
-// Inclui o menu do sistema
-include 'menu.php';
-
 // =========================================================================
 // INÍCIO: LÓGICA DE CONTROLE - BUSCAR OU AGENDAR
 // =========================================================================
