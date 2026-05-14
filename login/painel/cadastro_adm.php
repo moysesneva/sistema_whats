@@ -18,16 +18,16 @@ include 'estilo.php';
     <!-- Ícone Favicon -->
     <link rel="icon" href="<?php echo $favicon; ?>" type="image/x-icon">
     <!-- Fonte Google -->
-    <link href="..\files\assets\vendor\fonts\open-sans\open-sans.css" rel="stylesheet">
+    <link href="../files/assets/vendor/fonts/open-sans/open-sans.css" rel="stylesheet">
     <!-- Framework Bootstrap -->
-    <link rel="stylesheet" type="text/css" href="..\files\bower_components\bootstrap\css\bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../files/bower_components/bootstrap/css/bootstrap.min.css">
     <!-- Ícones -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\themify-icons\themify-icons.css">
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\icofont\css\icofont.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/icon/themify-icons/themify-icons.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/icon/icofont/css/icofont.css">
     <!-- Estilo CSS -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\css\style.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/css/style.css">
     <!-- Intl Tel Input CSS -->
-    <link rel="stylesheet" href="..\files\assets\vendor\intl-tel-input\css\intlTelInput.css">
+    <link rel="stylesheet" href="../files/assets/vendor/intl-tel-input/css/intlTelInput.css">
     <style>
         .auth-box {
             border-radius: 10px;
@@ -177,19 +177,19 @@ include 'estilo.php';
     </section>
 
     <!-- Scripts necessários -->
-    <script type="text/javascript" src="..\files\bower_components\jquery\js\jquery.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\jquery-ui\js\jquery-ui.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\bootstrap\js\bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\jquery-slimscroll\js\jquery.slimscroll.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\modernizr\js\modernizr.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\modernizr\js\css-scrollbars.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\i18next\js\i18next.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\i18next-xhr-backend\js\i18nextXHRBackend.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\i18next-browser-languagedetector\js\i18nextBrowserLanguageDetector.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\jquery-i18next\js\jquery-i18next.min.js"></script>
-    <script type="text/javascript" src="..\files\assets\js\common-pages.js"></script>
+    <script type="text/javascript" src="../files/bower_components/jquery/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/jquery-ui/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/jquery-slimscroll/js/jquery.slimscroll.js"></script>
+    <script type="text/javascript" src="../files/bower_components/modernizr/js/modernizr.js"></script>
+    <script type="text/javascript" src="../files/bower_components/modernizr/js/css-scrollbars.js"></script>
+    <script type="text/javascript" src="../files/bower_components/i18next/js/i18next.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/i18next-xhr-backend/js/i18nextXHRBackend.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/i18next-browser-languagedetector/js/i18nextBrowserLanguageDetector.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/jquery-i18next/js/jquery-i18next.min.js"></script>
+    <script type="text/javascript" src="../files/assets/js/common-pages.js"></script>
     <!-- Intl Tel Input JS -->
-    <script src="..\files\assets\vendor\intl-tel-input\js\intlTelInput.min.js"></script>
+    <script src="../files/assets/vendor/intl-tel-input/js/intlTelInput.min.js"></script>
 
     <!-- Script para formatação do telefone e validações -->
     <script>

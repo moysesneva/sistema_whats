@@ -12,22 +12,22 @@
     <meta name="author" content="#">
     <!-- Favicon icon -->
 
-    <link rel="icon" href="..\files\assets\images\favicon.ico" type="image/x-icon">
-    <!-- Google font--><link href="..\files\assets\vendor\fonts\open-sans\open-sans.css" rel="stylesheet">
+    <link rel="icon" href="../files/assets/images/favicon.ico" type="image/x-icon">
+    <!-- Google font--><link href="../files/assets/vendor/fonts/open-sans/open-sans.css" rel="stylesheet">
     <!-- Required Fremwork -->
-    <link rel="stylesheet" type="text/css" href="..\files\bower_components\bootstrap\css\bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../files/bower_components/bootstrap/css/bootstrap.min.css">
     <!-- themify-icons line icon -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\themify-icons\themify-icons.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/icon/themify-icons/themify-icons.css">
     <!-- ico font -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\icofont\css\icofont.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/icon/icofont/css/icofont.css">
     <!-- feather Awesome -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\feather\css\feather.css">
-    <link rel="stylesheet" type="text/css" href="..\files\assets\pages\message\message.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/icon/feather/css/feather.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/pages/message/message.css">
     <!-- Style.css -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\css\style.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/css/style.css">
 
 
-    <link rel="stylesheet" type="text/css" href="..\files\assets\css\jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/css/jquery.mCustomScrollbar.css">
 </head>
 
 <body>
@@ -81,7 +81,7 @@
                         <i class="feather icon-menu"></i>
                     </a>
                     <a href="index-1.htm">
-                        <img class="img-fluid" src="..\files\assets\images\logo.png" alt="Theme-Logo">
+                        <img class="img-fluid" src="../files/assets/images/logo.png" alt="Theme-Logo">
                     </a>
                     <a class="mobile-options">
                         <i class="feather icon-more-horizontal"></i>
@@ -119,7 +119,7 @@
                                     </li>
                                     <li>
                                         <div class="media">
-                                            <img class="d-flex align-self-center img-radius" src="..\files\assets\images\avatar-4.jpg" alt="Generic placeholder image">
+                                            <img class="d-flex align-self-center img-radius" src="../files/assets/images/avatar-4.jpg" alt="Generic placeholder image">
                                             <div class="media-body">
                                                 <h5 class="notification-user">John Doe</h5>
                                                 <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer elit.</p>
@@ -129,7 +129,7 @@
                                     </li>
                                     <li>
                                         <div class="media">
-                                            <img class="d-flex align-self-center img-radius" src="..\files\assets\images\avatar-3.jpg" alt="Generic placeholder image">
+                                            <img class="d-flex align-self-center img-radius" src="../files/assets/images/avatar-3.jpg" alt="Generic placeholder image">
                                             <div class="media-body">
                                                 <h5 class="notification-user">Joseph William</h5>
                                                 <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer elit.</p>
@@ -139,7 +139,7 @@
                                     </li>
                                     <li>
                                         <div class="media">
-                                            <img class="d-flex align-self-center img-radius" src="..\files\assets\images\avatar-4.jpg" alt="Generic placeholder image">
+                                            <img class="d-flex align-self-center img-radius" src="../files/assets/images/avatar-4.jpg" alt="Generic placeholder image">
                                             <div class="media-body">
                                                 <h5 class="notification-user">Sara Soudein</h5>
                                                 <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer elit.</p>
@@ -161,7 +161,7 @@
                         <li class="user-profile header-notification">
                             <div class="dropdown-primary dropdown">
                                 <div class="dropdown-toggle" data-toggle="dropdown">
-                                    <img src="..\files\assets\images\avatar-4.jpg" class="img-radius" alt="User-Profile-Image">
+                                    <img src="../files/assets/images/avatar-4.jpg" class="img-radius" alt="User-Profile-Image">
                                     <span>John Doe</span>
                                     <i class="feather icon-chevron-down"></i>
                                 </div>
@@ -218,7 +218,7 @@
                         <div class="main-friend-list">
                             <div class="media userlist-box" data-id="1" data-status="online" data-username="Josephin Doe" data-toggle="tooltip" data-placement="left" title="Josephin Doe">
                                 <a class="media-left" href="#!">
-                                    <img class="media-object img-radius img-radius" src="..\files\assets\images\avatar-3.jpg" alt="Generic placeholder image ">
+                                    <img class="media-object img-radius img-radius" src="../files/assets/images/avatar-3.jpg" alt="Generic placeholder image ">
                                     <div class="live-status bg-success"></div>
                                 </a>
                                 <div class="media-body">
@@ -227,7 +227,7 @@
                             </div>
                             <div class="media userlist-box" data-id="2" data-status="online" data-username="Lary Doe" data-toggle="tooltip" data-placement="left" title="Lary Doe">
                                 <a class="media-left" href="#!">
-                                    <img class="media-object img-radius" src="..\files\assets\images\avatar-2.jpg" alt="Generic placeholder image">
+                                    <img class="media-object img-radius" src="../files/assets/images/avatar-2.jpg" alt="Generic placeholder image">
                                     <div class="live-status bg-success"></div>
                                 </a>
                                 <div class="media-body">
@@ -236,7 +236,7 @@
                             </div>
                             <div class="media userlist-box" data-id="3" data-status="online" data-username="Alice" data-toggle="tooltip" data-placement="left" title="Alice">
                                 <a class="media-left" href="#!">
-                                    <img class="media-object img-radius" src="..\files\assets\images\avatar-4.jpg" alt="Generic placeholder image">
+                                    <img class="media-object img-radius" src="../files/assets/images/avatar-4.jpg" alt="Generic placeholder image">
                                     <div class="live-status bg-success"></div>
                                 </a>
                                 <div class="media-body">
@@ -245,7 +245,7 @@
                             </div>
                             <div class="media userlist-box" data-id="4" data-status="online" data-username="Alia" data-toggle="tooltip" data-placement="left" title="Alia">
                                 <a class="media-left" href="#!">
-                                    <img class="media-object img-radius" src="..\files\assets\images\avatar-3.jpg" alt="Generic placeholder image">
+                                    <img class="media-object img-radius" src="../files/assets/images/avatar-3.jpg" alt="Generic placeholder image">
                                     <div class="live-status bg-success"></div>
                                 </a>
                                 <div class="media-body">
@@ -254,7 +254,7 @@
                             </div>
                             <div class="media userlist-box" data-id="5" data-status="online" data-username="Suzen" data-toggle="tooltip" data-placement="left" title="Suzen">
                                 <a class="media-left" href="#!">
-                                    <img class="media-object img-radius" src="..\files\assets\images\avatar-2.jpg" alt="Generic placeholder image">
+                                    <img class="media-object img-radius" src="../files/assets/images/avatar-2.jpg" alt="Generic placeholder image">
                                     <div class="live-status bg-success"></div>
                                 </a>
                                 <div class="media-body">
@@ -275,7 +275,7 @@
             </div>
             <div class="media chat-messages">
                 <a class="media-left photo-table" href="#!">
-                    <img class="media-object img-radius img-radius m-t-5" src="..\files\assets\images\avatar-3.jpg" alt="Generic placeholder image">
+                    <img class="media-object img-radius img-radius m-t-5" src="../files/assets/images/avatar-3.jpg" alt="Generic placeholder image">
                 </a>
                 <div class="media-body chat-menu-content">
                     <div class="">
@@ -293,7 +293,7 @@
                 </div>
                 <div class="media-right photo-table">
                     <a href="#!">
-                        <img class="media-object img-radius img-radius m-t-5" src="..\files\assets\images\avatar-4.jpg" alt="Generic placeholder image">
+                        <img class="media-object img-radius img-radius m-t-5" src="../files/assets/images/avatar-4.jpg" alt="Generic placeholder image">
                     </a>
                 </div>
             </div>
@@ -1168,7 +1168,7 @@
                                 </ul>
                             </li>
                             <li class="">
-                                <a href="..\files\extra-pages\landingpage\index.htm" target="_blank">
+                                <a href="../files/extra-pages/landingpage/index.htm" target="_blank">
                                     <span class="pcoded-micon"><i class="feather icon-navigation-2"></i></span>
                                     <span class="pcoded-mtext">Landing Page</span>
                                 </a>
@@ -1361,27 +1361,27 @@
                                         </a>
                                         <ul class="pcoded-submenu">
                                             <li class="">
-                                                <a href="..\files\extra-pages\email-templates\email-welcome.htm">
+                                                <a href="../files/extra-pages/email-templates/email-welcome.htm">
                                                     <span class="pcoded-mtext">Welcome Email</span>
                                                 </a>
                                             </li>
                                             <li class="">
-                                                <a href="..\files\extra-pages\email-templates\email-password.htm">
+                                                <a href="../files/extra-pages/email-templates/email-password.htm">
                                                     <span class="pcoded-mtext">Reset Password</span>
                                                 </a>
                                             </li>
                                             <li class="">
-                                                <a href="..\files\extra-pages\email-templates\email-newsletter.htm">
+                                                <a href="../files/extra-pages/email-templates/email-newsletter.htm">
                                                     <span class="pcoded-mtext">Newsletter Email</span>
                                                 </a>
                                             </li>
                                             <li class="">
-                                                <a href="..\files\extra-pages\email-templates\email-launch.htm">
+                                                <a href="../files/extra-pages/email-templates/email-launch.htm">
                                                     <span class="pcoded-mtext">App Launch</span>
                                                 </a>
                                             </li>
                                             <li class="">
-                                                <a href="..\files\extra-pages\email-templates\email-activation.htm">
+                                                <a href="../files/extra-pages/email-templates/email-activation.htm">
                                                     <span class="pcoded-mtext">Activation Code</span>
                                                 </a>
                                             </li>
@@ -1705,7 +1705,7 @@
                                                     <div class="card-header bg-primary">
                                                         <div class="media">
                                                             <a class="media-left" href="#">
-                                                                <img class="media-object img-radius msg-img-h" src="..\files\assets\images\avatar-1.jpg" alt="">
+                                                                <img class="media-object img-radius msg-img-h" src="../files/assets/images/avatar-1.jpg" alt="">
                                                             </a>
                                                             <div class="media-body">
                                                                 <div class="txt-white">Sign in as</div>
@@ -1731,7 +1731,7 @@
                                                                     <div class="media">
                                                                         <div class="media-left friend-box">
                                                                             <a href="#">
-                                                                                <img class="media-object img-radius" src="..\files\assets\images\avatar-1.jpg" alt="">
+                                                                                <img class="media-object img-radius" src="../files/assets/images/avatar-1.jpg" alt="">
                                                                             </a>
                                                                         </div>
                                                                         <div class="media-body">
@@ -1747,14 +1747,14 @@
                                                                         </div>
                                                                         <div class="media-right friend-box">
                                                                             <a href="#">
-                                                                                <img class="media-object img-radius" src="..\files\assets\images\avatar-2.jpg" alt="">
+                                                                                <img class="media-object img-radius" src="../files/assets/images/avatar-2.jpg" alt="">
                                                                             </a>
                                                                         </div>
                                                                     </div>
                                                                     <div class="media">
                                                                         <div class="media-left friend-box">
                                                                             <a href="#">
-                                                                                <img class="media-object img-radius" src="..\files\assets\images\avatar-1.jpg" alt="">
+                                                                                <img class="media-object img-radius" src="../files/assets/images/avatar-1.jpg" alt="">
                                                                             </a>
                                                                         </div>
                                                                         <div class="media-body">
@@ -1779,7 +1779,7 @@
                                                                     <div class="media">
                                                                         <div class="media-left media-middle photo-table">
                                                                             <a href="#">
-                                                                                <img class="media-object img-radius" src="..\files\assets\images\avatar-1.jpg" alt="Generic placeholder image">
+                                                                                <img class="media-object img-radius" src="../files/assets/images/avatar-1.jpg" alt="Generic placeholder image">
                                                                             </a>
                                                                         </div>
                                                                         <div class="media-body">
@@ -1790,7 +1790,7 @@
                                                                     <div class="media">
                                                                         <div class="media-left media-middle photo-table">
                                                                             <a href="#">
-                                                                                <img class="media-object img-radius" src="..\files\assets\images\avatar-2.jpg" alt="Generic placeholder image">
+                                                                                <img class="media-object img-radius" src="../files/assets/images/avatar-2.jpg" alt="Generic placeholder image">
                                                                             </a>
                                                                         </div>
                                                                         <div class="media-body">
@@ -1801,7 +1801,7 @@
                                                                     <div class="media">
                                                                         <div class="media-left media-middle photo-table">
                                                                             <a href="#">
-                                                                                <img class="media-object img-radius" src="..\files\assets\images\avatar-3.jpg" alt="Generic placeholder image">
+                                                                                <img class="media-object img-radius" src="../files/assets/images/avatar-3.jpg" alt="Generic placeholder image">
                                                                             </a>
                                                                         </div>
                                                                         <div class="media-body">
@@ -1812,7 +1812,7 @@
                                                                     <div class="media">
                                                                         <div class="media-left media-middle photo-table">
                                                                             <a href="#">
-                                                                                <img class="media-object img-radius" src="..\files\assets\images\avatar-2.jpg" alt="Generic placeholder image">
+                                                                                <img class="media-object img-radius" src="../files/assets/images/avatar-2.jpg" alt="Generic placeholder image">
                                                                             </a>
                                                                         </div>
                                                                         <div class="media-body">
@@ -1823,7 +1823,7 @@
                                                                     <div class="media">
                                                                         <div class="media-left media-middle photo-table">
                                                                             <a href="#">
-                                                                                <img class="media-object img-radius" src="..\files\assets\images\avatar-1.jpg" alt="Generic placeholder image">
+                                                                                <img class="media-object img-radius" src="../files/assets/images/avatar-1.jpg" alt="Generic placeholder image">
                                                                             </a>
                                                                         </div>
                                                                         <div class="media-body">
@@ -1834,7 +1834,7 @@
                                                                     <div class="media">
                                                                         <div class="media-left media-middle photo-table">
                                                                             <a href="#">
-                                                                                <img class="media-object img-radius" src="..\files\assets\images\avatar-2.jpg" alt="Generic placeholder image">
+                                                                                <img class="media-object img-radius" src="../files/assets/images/avatar-2.jpg" alt="Generic placeholder image">
                                                                             </a>
                                                                         </div>
                                                                         <div class="media-body">
@@ -1845,7 +1845,7 @@
                                                                     <div class="media">
                                                                         <div class="media-left media-middle photo-table">
                                                                             <a href="#">
-                                                                                <img class="media-object img-radius" src="..\files\assets\images\avatar-3.jpg" alt="Generic placeholder image">
+                                                                                <img class="media-object img-radius" src="../files/assets/images/avatar-3.jpg" alt="Generic placeholder image">
                                                                             </a>
                                                                         </div>
                                                                         <div class="media-body">
@@ -1922,32 +1922,32 @@
 <![endif]-->
     <!-- Warning Section Ends -->
     <!-- Required Jquery -->
-    <script type="text/javascript" src="..\files\bower_components\jquery\js\jquery.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\jquery-ui\js\jquery-ui.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\bootstrap\js\bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/jquery/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/jquery-ui/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- jquery slimscroll js -->
-    <script type="text/javascript" src="..\files\bower_components\jquery-slimscroll\js\jquery.slimscroll.js"></script>
+    <script type="text/javascript" src="../files/bower_components/jquery-slimscroll/js/jquery.slimscroll.js"></script>
     <!-- modernizr js -->
-    <script type="text/javascript" src="..\files\bower_components\modernizr\js\modernizr.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\modernizr\js\css-scrollbars.js"></script>
+    <script type="text/javascript" src="../files/bower_components/modernizr/js/modernizr.js"></script>
+    <script type="text/javascript" src="../files/bower_components/modernizr/js/css-scrollbars.js"></script>
 
     <!-- i18next.min.js -->
-    <script type="text/javascript" src="..\files\bower_components\i18next\js\i18next.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\i18next-xhr-backend\js\i18nextXHRBackend.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\i18next-browser-languagedetector\js\i18nextBrowserLanguageDetector.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\jquery-i18next\js\jquery-i18next.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/i18next/js/i18next.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/i18next-xhr-backend/js/i18nextXHRBackend.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/i18next-browser-languagedetector/js/i18nextBrowserLanguageDetector.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/jquery-i18next/js/jquery-i18next.min.js"></script>
     <!-- Custom js -->
-    <script type="text/javascript" src="..\files\assets\pages\message\message.js"></script>
+    <script type="text/javascript" src="../files/assets/pages/message/message.js"></script>
     <!-- i18next.min.js -->
-    <script type="text/javascript" src="..\files\bower_components\i18next\js\i18next.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\i18next-xhr-backend\js\i18nextXHRBackend.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\i18next-browser-languagedetector\js\i18nextBrowserLanguageDetector.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\jquery-i18next\js\jquery-i18next.min.js"></script>
-    <script src="..\files\assets\js\pcoded.min.js"></script>
-    <script src="..\files\assets\js\vartical-layout.min.js"></script>
-    <script src="..\files\assets\js\jquery.mCustomScrollbar.concat.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/i18next/js/i18next.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/i18next-xhr-backend/js/i18nextXHRBackend.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/i18next-browser-languagedetector/js/i18nextBrowserLanguageDetector.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/jquery-i18next/js/jquery-i18next.min.js"></script>
+    <script src="../files/assets/js/pcoded.min.js"></script>
+    <script src="../files/assets/js/vartical-layout.min.js"></script>
+    <script src="../files/assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <!-- Custom js -->
-<script type="text/javascript" src="..\files\assets\js\script.js"></script>
+<script type="text/javascript" src="../files/assets/js/script.js"></script>
 
 
 </body>
