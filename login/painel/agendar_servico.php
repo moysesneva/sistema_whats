@@ -25,8 +25,10 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
+$stmt_busca_usuario = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
+mysqli_stmt_bind_param($stmt_busca_usuario, "s", $login);
+mysqli_stmt_execute($stmt_busca_usuario);
+$query_busca_usuario = mysqli_stmt_get_result($stmt_busca_usuario);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
 while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
@@ -40,6 +42,7 @@ while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
     $login  = $rows_usuarios['login'];
 
 }
+mysqli_stmt_close($stmt_busca_usuario);
 #####DEFINIMOS QUE  O TIPO DO MENU
 ## 1 É O ADM
 ## 2 É  O USUARIO
@@ -105,13 +108,15 @@ if (isset($_POST['cliente_selecionado']) && !empty($_POST['cliente_selecionado']
 // Busca a configuração de tema global, pois a tabela 'config' não é por usuário
 
 // A variável $conn já deve existir da conexão principal no topo do arquivo
-$sql_busca_config = "SELECT tema FROM config LIMIT 1"; 
-$query_busca_config = mysqli_query($conn, $sql_busca_config);
+$stmt_busca_config = mysqli_prepare($conn, "SELECT tema FROM config LIMIT 1");
+mysqli_stmt_execute($stmt_busca_config);
+$query_busca_config = mysqli_stmt_get_result($stmt_busca_config);
 
 if($query_busca_config && mysqli_num_rows($query_busca_config) > 0) {
     $rows_config = mysqli_fetch_assoc($query_busca_config);
     $tema = (int)$rows_config['tema'];
 }
+mysqli_stmt_close($stmt_busca_config);
 }
 ?>
     <style>
