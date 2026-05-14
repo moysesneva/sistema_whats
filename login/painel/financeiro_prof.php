@@ -1321,8 +1321,8 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
 </style>
 
 <!-- Scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="../files/assets/vendor/chart.js/chart.min.js"></script>
+<script src="../files/assets/vendor/jspdf/jspdf.umd.min.js"></script>
 
 <script>
 // Variáveis globais para os dados

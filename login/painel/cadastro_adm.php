@@ -189,7 +189,7 @@ include 'estilo.php';
     <script type="text/javascript" src="..\files\bower_components\jquery-i18next\js\jquery-i18next.min.js"></script>
     <script type="text/javascript" src="..\files\assets\js\common-pages.js"></script>
     <!-- Intl Tel Input JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script src="..\files\assets\vendor\intl-tel-input\js\intlTelInput.min.js"></script>
 
     <!-- Script para formatação do telefone e validações -->
     <script>
@@ -200,7 +200,7 @@ include 'estilo.php';
                 initialCountry: "br",
                 preferredCountries: ["br", "pt", "us", "gb", "es"],
                 separateDialCode: true,
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                utilsScript: "../files/assets/vendor/intl-tel-input/js/utils.js",
             });
             
             // Atualiza o campo oculto com o código do país quando muda o país

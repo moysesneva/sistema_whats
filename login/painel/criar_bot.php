@@ -244,7 +244,7 @@ include 'bloqueio.php';
 <!-- jQuery local (necessário antes dos scripts inline) -->
 <script src="../files/bower_components/jquery/js/jquery.min.js"></script>
 <!-- Adicionar JS do intl-tel-input -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<script src="../files/assets/vendor/intl-tel-input/js/intlTelInput.min.js"></script>
 <script>
     $(document).ready(function() {
         var input = document.querySelector("#telefone_cliente");
@@ -253,7 +253,7 @@ include 'bloqueio.php';
             preferredCountries: ["br", "pt", "us", "gb", "es"],
             separateDialCode: true,
             dropdownContainer: document.body,
-            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            utilsScript: "../files/assets/vendor/intl-tel-input/js/utils.js",
         });
 
         // Remover o evento de input que estava formatando o telefone

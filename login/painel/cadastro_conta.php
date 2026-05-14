@@ -218,7 +218,7 @@ $js_extra = '
             initialCountry: "br",
             preferredCountries: ["br", "pt", "us", "gb", "es"],
             separateDialCode: true,
-            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            utilsScript: "../files/assets/vendor/intl-tel-input/js/utils.js",
         });
 
         input.addEventListener("countrychange", function() {

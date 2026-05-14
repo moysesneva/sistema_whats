@@ -29,14 +29,7 @@
     <script type="text/javascript" src="..\files\assets\pages\dashboard\custom-dashboard.js"></script>
     <script type="text/javascript" src="..\files\assets\js\script.min.js"></script>
     <?php if (isset($js_extra)) echo $js_extra; ?>
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '<?=$google;?>');
-    </script>
+
 </body>
 </html>
 <?php

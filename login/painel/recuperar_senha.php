@@ -416,9 +416,9 @@ switch ($tema) {
     <script type="text/javascript" src="../files/bower_components/jquery-i18next/js/jquery-i18next.min.js"></script>
     <script type="text/javascript" src="../files/assets/js/common-pages.js"></script>
     <!-- Intl Tel Input JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script src="../files/assets/vendor/intl-tel-input/js/intlTelInput.min.js"></script>
     <!-- AOS JS - Animações ao rolar -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="../files/assets/vendor/aos/aos.js"></script>
 
     <!-- Script para inicializar o seletor de país e animações -->
     <script>
@@ -437,7 +437,7 @@ switch ($tema) {
                 initialCountry: "br",
                 preferredCountries: ["br", "pt", "us", "gb", "es"],
                 separateDialCode: true,
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                utilsScript: "../files/assets/vendor/intl-tel-input/js/utils.js",
             });
             
             // Atualiza o campo oculto com o código do país quando muda o país

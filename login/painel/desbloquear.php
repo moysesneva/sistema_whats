@@ -136,14 +136,6 @@ include 'estilo.php';
     <script type="text/javascript" src="../files/bower_components/jquery-i18next/js/jquery-i18next.min.js"></script>
     <script type="text/javascript" src="../files/assets/js/common-pages.js"></script>
 
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'UA-23581568-13');
-    </script>
 
     <!-- Script para formatar o telefone no estilo brasileiro -->
    
