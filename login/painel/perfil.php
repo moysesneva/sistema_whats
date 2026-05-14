@@ -69,7 +69,7 @@ VaiPara('senha.php');
 ?>
 
 
-<?php $css_extra = '    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<?php $css_extra = '    <link rel="stylesheet" href="../files/assets/vendor/font-awesome-6/css/all.min.css">
     <style>
         /* Estilos para o ribbon "Mais Popular" */
         .ribbon-wrapper {

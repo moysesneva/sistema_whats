@@ -19,7 +19,7 @@ include 'estilo.php';
     <!-- Ícone Favicon -->
     <link rel="icon" href="<?php echo $favicon; ?>" type="image/x-icon">
     <!-- Fonte Google -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800" rel="stylesheet">
+    <link href="../files/assets/vendor/fonts/open-sans/open-sans.css" rel="stylesheet">
     <!-- Framework Bootstrap -->
     <link rel="stylesheet" type="text/css" href="../files/bower_components/bootstrap/css/bootstrap.min.css">
     <!-- Ícones -->

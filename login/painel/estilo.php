@@ -31,7 +31,7 @@ while ($rows_usuarios = mysqli_fetch_array($query)) {
 
 ?>
 <!-- Tema Enam Dark Navy + Orange — MoysesNet -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="../files/assets/vendor/fonts/montserrat/montserrat.css" rel="stylesheet">
 <link rel="stylesheet" href="enam-panel.css">
 <style>
     body { background: #000d1a !important; }

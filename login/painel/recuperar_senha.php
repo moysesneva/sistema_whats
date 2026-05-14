@@ -92,7 +92,7 @@ switch ($tema) {
     <!-- Ícone Favicon -->
     <link rel="icon" href="<?php echo $favicon; ?>" type="image/x-icon">
     <!-- Fonte Google -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../files/assets/vendor/fonts/montserrat/montserrat.css" rel="stylesheet">
     <!-- Framework Bootstrap -->
     <link rel="stylesheet" type="text/css" href="../files/bower_components/bootstrap/css/bootstrap.min.css">
     <!-- Ícones -->
@@ -101,9 +101,9 @@ switch ($tema) {
     <!-- Estilo CSS -->
     <link rel="stylesheet" type="text/css" href="../files/assets/css/style.css">
     <!-- Intl Tel Input CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+    <link rel="stylesheet" href="../files/assets/vendor/intl-tel-input/css/intlTelInput.css">
     <!-- AOS CSS - Animações ao rolar -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link href="../files/assets/vendor/aos/aos.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: <?php echo $primary_color; ?>;

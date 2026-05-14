@@ -60,7 +60,7 @@ include 'bloqueio.php';
 
 ?>
 
-<?php $css_extra = '    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">'; ?>
+<?php $css_extra = '    <link rel="stylesheet" href="..\files\assets\vendor\intl-tel-input\css\intlTelInput.css">'; ?>
 <?php include 'header.php'; ?>
 
 

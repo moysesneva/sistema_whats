@@ -75,7 +75,7 @@ if($autorizado != 2){
     <!-- DADOS PARA INSERIR AQUI -->
    
    
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+   <link rel="stylesheet" href="../files/assets/vendor/font-awesome-6/css/all.min.css">
 
    
    

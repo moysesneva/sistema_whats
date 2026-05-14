@@ -13,7 +13,7 @@
     <meta name="keywords" content="Admin , Responsive, Landing, Bootstrap, App, Template, Mobile, iOS, Android, apple, creative app">
     <meta name="author" content="#">
     <link rel="icon" href="<?=$icon;?>" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+    <link href="..\files\assets\vendor\fonts\open-sans\open-sans.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="..\files\bower_components\bootstrap\css\bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="..\files\assets\icon\feather\css\feather.css">
     <link rel="stylesheet" type="text/css" href="..\files\assets\css\style.css">
