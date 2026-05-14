@@ -27,11 +27,6 @@ function salvar_audio_temporario($audioBase64) {
     return $nomeArquivo;
 }
 
-// Supondo que $audio_recebido venha de algum lugar do seu código
-// Para fins de exemplo, vamos simular $audio_recebido.
-// **IMPORTANTE**: Para um áudio real, você precisará de um Base64 de um arquivo de áudio MP3, WAV, etc.
-// Este é apenas um placeholder.
-
 
 // Salva o arquivo de áudio temporariamente
 $caminho_audio_local = salvar_audio_temporario($audio_recebido);

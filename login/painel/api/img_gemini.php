@@ -29,9 +29,6 @@ function salvar_imagem_na_pasta($imagemBase64) {
     return 'img/' . $nomeArquivo;
 }
 
-// Supondo que $imagemBase64 e $webhook venham de algum lugar do seu código
-// Para fins de exemplo, vamos simular $imagemBase64 e $webhook
-// Você precisará substituir isso pela forma como você realmente obtém esses 
 // Salva a imagem na pasta local e obtém o caminho relativo
 $caminhoRelativo = salvar_imagem_na_pasta($imagemBase64);
 

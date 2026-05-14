@@ -29,10 +29,6 @@ if (isset($_POST['codigo']) && $_POST['codigo'] === 'enquete') {
     $telefone    = isset($_POST['telefone']) ? $_POST['telefone'] : null;
     $opcoes      = isset($_POST['opcoes'])   ? $_POST['opcoes']   : null;
     
-    // A função verificaSimNao() não será chamada aqui,
-    // pois o objetivo é apenas mostrar a captura das variáveis.
-    // Para uso real, bastaria aplicar:
-    // $texto_normalizado = verificaSimNao($opcoes);
 }
 
 // =====================================================================================
@@ -41,8 +37,6 @@ if (isset($_POST['codigo']) && $_POST['codigo'] === 'enquete') {
 if (isset($_POST['codigo']) && $_POST['codigo'] === 'qrcode') {
     $qrcode      = isset($_POST['qrcode'])   ? $_POST['qrcode']   : null;
     $usuario_api = isset($_POST['usuario'])  ? $_POST['usuario']  : null;
-    // Caso fosse necessário, poderia chamar uma função hora():
-    // $hora = hora();
 }
 
 // =====================================================================================
@@ -52,9 +46,7 @@ if (isset($_POST['codigo']) && $_POST['codigo'] === 'audio') {
     $telefone       = isset($_POST['telefone']) ? $_POST['telefone'] : null;
     $usuario_api    = isset($_POST['usuario'])  ? $_POST['usuario']  : null;
     $audio_recebido = isset($_POST['audio'])    ? $_POST['audio']    : null;
-    
-    // Aqui bastaria passar $audio_recebido para a rotina de gravação
-    // e eventual chamada à API de transcrição.
+
 }
 
 // =====================================================================================
@@ -64,8 +56,7 @@ if (isset($_POST['codigo']) && $_POST['codigo'] === 'img') {
     $telefone     = isset($_POST['telefone'])  ? $_POST['telefone']  : null;
     $usuario_api  = isset($_POST['usuario'])   ? $_POST['usuario']   : null;
     $imagemBase64 = isset($_POST['anexo'])     ? $_POST['anexo']     : null;
-    
-    // A partir de $imagemBase64, basta chamar função que salva ou envia para descrição.
+
 }
 
 // =====================================================================================
@@ -75,8 +66,7 @@ if (isset($_POST['codigo']) && $_POST['codigo'] === 'msg') {
     $telefone    = isset($_POST['telefone']) ? $_POST['telefone'] : null;
     $msg_texto   = isset($_POST['msg'])      ? $_POST['msg']      : null;
     $usuario_api = isset($_POST['usuario'])  ? $_POST['usuario']  : null;
-    
-    // Com $msg_texto e $telefone, bastaria seguir para lógica de processamento.
+
 }
 
 // =====================================================================================
@@ -89,43 +79,9 @@ if ($data !== null) {
     // Extração de campos de um JSON arbitrário
     $usuario_json = isset($data['usuario'])  ? $data['usuario']  : null;
     $message_json = isset($data['message'])  ? $data['message']  : null;
-    
-    // Outros campos podem ser capturados conforme a necessidade:
-    // $outro_campo = isset($data['campo']) ? $data['campo'] : null;
+
 }
 
-?>
-
-
-
-
-<?php
-/**
- * processa_requisicoes.php
- *
- * Contém os métodos que processam cada tipo de requisição recebida via POST,
- * usando as variáveis já capturadas (por exemplo: $codigo, $telefone, $usuario_api, etc.).
- * Ao final, há um dispatch que chama cada método com base em $codigo.
- *
- * Presume-se que, antes de incluir este arquivo, já existam:
- *  - $conn         : conexão mysqli ao banco de dados
- *  - $servidor     : endereço/IP do servidor de envio de mensagens
- *  - $porta        : porta do servidor de envio
- *  - $token        : token de autenticação para API de envio
- *  - $chave        : chave de API para chamadas externas (Whisper, ChatGPT, etc.)
- *  - As variáveis gerais capturadas:
- *      $codigo, $telefone, $usuario_api, $msg_texto, $opcoes,
- *      $qrcode, $audio_recebido, $imagemBase64
- *  - Funções auxiliares:
- *      enviarMensagem($servidor, $porta, $usuario_api, $token, $telefone, $mensagem, $id_msg)
- *      hora()               — retorna hora atual (string “HH:MM:SS”)
- *      verificaSimNao($txt) — normaliza “sim” / “não”
- *      salvar_dados_resquest() — (opcional) salva dados brutos em log
- *      primeiro_contato.php  — fluxo inicial para novos clientes IA
- *      segundo_contato_ia.php — fluxo contínuo de IA para clientes existentes
- */
-
-date_default_timezone_set('America/Sao_Paulo');
 
 /**
  * 1) PROCESSA ENQUETE
@@ -331,10 +287,6 @@ function processarAudio()
 
     // 3. Se tiver retornado algo, carregar fluxo IA
     if (!empty($resposta)) {
-        // Transcrição está em $resposta (JSON). Em geral:
-        // $json = json_decode($resposta, true);
-        // $textoTranscricao = $json['text'] ?? '';
-        // Mas a rotina de segundo contato de IA poderá ler direto do JSON.
         include 'segundo_contato_ia.php';
     } else {
         error_log("Resposta Whisper vazia ou inválida.");
@@ -528,7 +480,6 @@ function processarMsgTexto()
  */
 function processarJSONPuro()
 {
-    // Supondo que $data já tenha sido definido lá no início do arquivo:
     global $data, $conn;
 
     // 1. Extrair campos
@@ -537,10 +488,6 @@ function processarJSONPuro()
 
     // 2. Exemplo de uso: simplesmente logar ou tratar
     if ($usuario_api !== null && $mensagem !== null) {
-        // Exemplo de inserção em tabela de log (comentado aqui)
-        // $textoSQL = "INSERT INTO log_json (usuario_api, texto_json) VALUES ('{$usuario_api}', '{$mensagem}')";
-        // mysqli_query($conn, $textoSQL);
-        // ... ou chamar outra rotina de processamento
     }
 }
 
@@ -571,7 +518,6 @@ if (isset($codigo)) {
             break;
 
         default:
-            // Se for outro código ou não reconhecido, poderia chamar processarJSONPuro()
             processarJSONPuro();
             break;
     }
