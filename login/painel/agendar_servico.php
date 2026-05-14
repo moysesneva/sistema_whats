@@ -233,12 +233,17 @@ if($query_busca_config && mysqli_num_rows($query_busca_config) > 0) {
                                                             <option value=''>Selecione um profissional</option>
                                                             <?php
                                                             if ($usuario_api) {
-                                                                $sql_prof = "SELECT id, profissional_nome, profissional_cargo FROM profissional WHERE usuario_api = '" . mysqli_real_escape_string($conn, $usuario_api) . "'";
-                                                                $result_prof = mysqli_query($conn, $sql_prof);
-                                                                if ($result_prof) {
-                                                                    while ($row_prof = mysqli_fetch_assoc($result_prof)) {
-                                                                        echo '<option value="'. htmlspecialchars($row_prof['id']).'">'.htmlspecialchars($row_prof['profissional_nome']) .' - '. htmlspecialchars($row_prof['profissional_cargo']) .'</option>';
+                                                                $stmt_prof = mysqli_prepare($conn, "SELECT id, profissional_nome, profissional_cargo FROM profissional WHERE usuario_api = ?");
+                                                                if ($stmt_prof) {
+                                                                    mysqli_stmt_bind_param($stmt_prof, "s", $usuario_api);
+                                                                    mysqli_stmt_execute($stmt_prof);
+                                                                    $result_prof = mysqli_stmt_get_result($stmt_prof);
+                                                                    if ($result_prof) {
+                                                                        while ($row_prof = mysqli_fetch_assoc($result_prof)) {
+                                                                            echo '<option value="'. htmlspecialchars($row_prof['id']).'">'.htmlspecialchars($row_prof['profissional_nome']) .' - '. htmlspecialchars($row_prof['profissional_cargo']) .'</option>';
+                                                                        }
                                                                     }
+                                                                    mysqli_stmt_close($stmt_prof);
                                                                 }
                                                             }
                                                             ?>
