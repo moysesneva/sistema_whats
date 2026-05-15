@@ -60,7 +60,7 @@ include 'bloqueio.php';
 
 ?>
 
-<?php $css_extra = '    <link rel="stylesheet" href="..\files\assets\vendor\intl-tel-input\css\intlTelInput.css">'; ?>
+<?php $css_extra = '    <link rel="stylesheet" href="../files/assets/vendor/intl-tel-input/css/intlTelInput.css">'; ?>
 <?php include 'header.php'; ?>
 
 

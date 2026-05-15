@@ -121,8 +121,8 @@ if($situacao != 'ativado'){
 }}
 ?>
 
-<?php $css_extra = '    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\font-awesome\css\font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="..\files\assets\vendor\toastr\toastr.min.css">
+<?php $css_extra = '    <link rel="stylesheet" type="text/css" href="../files/assets/icon/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/vendor/toastr/toastr.min.css">
     <style>
         #qrCodeContainer img {
             max-width: 100%;
