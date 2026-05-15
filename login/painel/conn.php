@@ -41,11 +41,15 @@ if (file_exists($socket)) {
     $conn = mysqli_connect('localhost', 'root', '', 'agendamento', 3306, $socket);
     if (!$conn) {
         error_log('Falha na conexão local MySQL: ' . mysqli_connect_error());
-        die('Serviço temporariamente indisponível. Tente novamente em instantes.');
+        http_response_code(503);
+        require __DIR__ . '/db_error.php';
+        exit;
     }
 } else {
     error_log('Nenhuma conexão disponível: banco externo falhou e socket local não encontrado.');
-    die('Serviço temporariamente indisponível. Tente novamente em instantes.');
+    http_response_code(503);
+    require __DIR__ . '/db_error.php';
+    exit;
 }
 
 mysqli_set_charset($conn, 'utf8mb4');
