@@ -12,8 +12,6 @@ if(!isset($_SESSION['login'])) {
 } 
 
 // Configurações de erro (descomente em produção)
-// error_reporting(0);
-// ini_set("display_errors", 0);
 
 $login = $_SESSION['login'];
 
@@ -65,7 +63,6 @@ $stmt_horarios->execute();
 $query_horarios_existentes = $stmt_horarios->get_result();
 $stmt_horarios->close();
 ?>
-
 
 <?php $css_extra = '    <style>
         /* ===================================
@@ -245,8 +242,6 @@ $stmt_horarios->close();
         }
     </style>'; ?>
 <?php include 'header.php'; ?>
-
-
 
                                     <!-- ===================================
                                          CONTAINER DE HORÁRIOS

@@ -1,10 +1,6 @@
 <?php
 // buscar_dias_e_horarios_para_servico.php
 
-ini_set('display_errors', 0);
-ini_set('display_startup_errors', 0);
-error_reporting(0);
-
 header('Content-Type: application/json; charset=utf-8');
 
 $basePath = 'login/painel/'; // Ajuste este caminho se o seu conn.php estiver em outro lugar relativo a este arquivo

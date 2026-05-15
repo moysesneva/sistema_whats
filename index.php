@@ -1,6 +1,4 @@
 <?php
-error_reporting(0);
-ini_set("display_errors", 0 );
 include 'login/painel/conn.php';
 include 'login/painel/estilo.php';
 include 'login/painel/css_de_icones.php';

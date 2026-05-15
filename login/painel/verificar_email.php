@@ -5,8 +5,6 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
-#error_reporting(0);
-#ini_set("display_errors", 0 );
 #$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
 
@@ -20,14 +18,11 @@ include 'estilo.php';
 
 include 'css_de_icones.php';
 
-
-
 if (isset($_GET['pagina_nome'])) {
 $pagina_nome_recebe = $_GET['pagina_nome'];
 }else{
 $pagina_nome_recebe = 0;    
 }
-
 
 $stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
 $stmt_busca_usuario->bind_param("s", $login);
@@ -54,6 +49,5 @@ $stmt_ve->close();
 if($query){
     VaiPara('perfil.php?pagina_nome=24');
 }
-
 
 ?>

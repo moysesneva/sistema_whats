@@ -1,14 +1,10 @@
 <?php
-error_reporting(0);
-ini_set("display_errors", 0 );
 require_once('../conn.php');
 include('../funcao.php');
 #$data_hora_atual = getCurrentDatetimeInMySQLFormat();
 
-
 #$usuario = 'bot_01';
 #################################################################
-
 
 $sql = "SELECT * FROM config";
 $query = mysqli_query($conn,$sql);

@@ -5,11 +5,8 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
-#error_reporting(0);
-#ini_set("display_errors", 0 );
 #$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
-
 
 include 'conn.php';
 
@@ -17,14 +14,11 @@ include 'estilo.php';
 
 include 'css_de_icones.php';
 
-
-
 if (isset($_GET['pagina_nome'])) {
 $pagina_nome_recebe = $_GET['pagina_nome'];
 }else{
 $pagina_nome_recebe = 0;    
 }
-
 
 $stmt_user = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
 mysqli_stmt_bind_param($stmt_user, "s", $login);
@@ -44,7 +38,6 @@ while($rows_usuarios = $query_busca_usuario->fetch_array()) {
 ## 2 É  O USUARIO
 include 'menu.php';
 
-
 if($total_busca_usuario != 1){
     VaiPara('login.php');
 }
@@ -52,12 +45,9 @@ if($autorizado != 2){
  VaiPara('desbloquar.php');
 }
 
-
 include 'bloqueio.php';
 
-
 ?>
-
 
 <?php
 // Arquivo atualizar_creditos.php
@@ -98,7 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" type="text/css" href="../files/assets/vendor/toastr/toastr.min.css">'; ?>
 <?php include 'header.php'; ?>
 
-
                        <div class="card">
                     <?php
                     $desativado_class = '1';
@@ -119,7 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <!-- Card do Atualizador de Classes em outra linha -->
             
-                 
                     <div class="card-header">
                         <h5>Atualizador de Classes</h5>
                     </div>
@@ -151,7 +139,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                              <!-- Botão para abrir o modal -->
 
                                                <div class="col-md-4 text-right">
-
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -214,8 +201,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-
-                                                
                                             </div>
                                         </div>
                                     </div>

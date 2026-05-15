@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 0);
-ini_set('display_startup_errors', 0);
-error_reporting(0);
 
 // Definir o local para português do Brasil para formatação de data
 $locale_set = setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.iso-8859-1', 'portuguese');
@@ -33,7 +30,6 @@ include $basePath . 'conn.php';
 // include $basePath . 'css_de_icones.php';
 // include $basePath . 'config_dados.php';
 // include $basePath . 'funcoes.php';
-
 
 // VERIFICAR CONEXÃO COM O BANCO
 if (!isset($conn)) {
@@ -80,7 +76,6 @@ if (empty($dias_de_trabalho_str)) {
 // Para depuração: ver quais dias foram carregados
 // echo '<option value="">Dias de trabalho carregados: ' . implode(', ', $dias_de_trabalho_str) . '</option>';
 
-
 // 2. Buscar datas excluídas para o profissional
 $datas_excluidas = [];
 $sql_excluidas = "SELECT data_excluida FROM datas_excluidas WHERE id_profissional = '$profissional_id'";
@@ -106,7 +101,6 @@ try {
     echo '<option value="">Erro ao criar objetos de data/período: ' . htmlspecialchars($e->getMessage()) . '</option>';
     exit;
 }
-
 
 foreach ($periodo as $data) {
     $data_formatada_Ymd = $data->format('Y-m-d');

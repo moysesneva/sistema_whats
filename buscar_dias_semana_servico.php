@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 0);
-ini_set('display_startup_errors', 0);
-error_reporting(0);
 
 header('Content-Type: text/html; charset=utf-8');
 
@@ -76,7 +73,6 @@ if (isset($_POST['profissional_id']) && !empty($_POST['profissional_id'])) {
                  // Para depurar, você pode imprimir os dias encontrados do DB:
                  $options_html = '<option value="">DEBUG: Dias do DB (lowercase, trimmed): ' . implode(', ', array_keys($dias_encontrados_db)) . '</option>';
             }
-
 
         } else {
             $options_html = '<option value="">Nenhum dia de atendimento configurado para este profissional.</option>';

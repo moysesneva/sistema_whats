@@ -7,10 +7,6 @@
 session_start();
 header('Content-Type: application/json; charset=utf-8');
 
-// Descomente em produção para suprimir erros que quebram o JSON
-// error_reporting(0);
-// ini_set('display_errors', 0);
-
 include 'conn.php';
 include 'funcoes.php'; // Incluindo para garantir consistência, caso use funções dele
 

@@ -1,6 +1,4 @@
 <?php
-error_reporting(0);
-ini_set("display_errors", 0 );
 include 'login/painel/conn.php';
 // Definir fuso horário do Brasil
 date_default_timezone_set('America/Sao_Paulo');

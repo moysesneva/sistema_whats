@@ -5,30 +5,20 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
-#error_reporting(1);
-ini_set("display_errors", 0);
 #$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
 
-
 include 'conn.php';
-
-
-
-
 
 include 'estilo.php';
 
 include 'css_de_icones.php';
-
-
 
 if (isset($_GET['pagina_nome'])) {
 $pagina_nome_recebe = $_GET['pagina_nome'];
 }else{
 $pagina_nome_recebe = 0;    
 }
-
 
 $stmt_user = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
 mysqli_stmt_bind_param($stmt_user, "s", $login);
@@ -44,14 +34,10 @@ while($rows_usuarios = $query_busca_usuario->fetch_array()) {
 
 }
 
-
-
-
 #####DEFINIMOS QUE  O TIPO DO MENU
 ## 1 É O ADM
 ## 2 É  O USUARIO
 include 'menu.php';
-
 
 if($total_busca_usuario != 1){
     VaiPara('login.php');
@@ -59,7 +45,6 @@ if($total_busca_usuario != 1){
 if($autorizado != 2){
  VaiPara('desbloquar.php');
 }
-
 
 $stmt_prof = mysqli_prepare($conn, "SELECT * FROM profissional WHERE telefone = ?");
 mysqli_stmt_bind_param($stmt_prof, "s", $login);
@@ -71,14 +56,9 @@ while($rows_usuarios = mysqli_fetch_array($sql_busca_profs)) {
     $id_profissional  = $rows_usuarios['id'];
         $login  = $rows_usuarios['login'];
 
-
 }
 
-
-
 ?>
-
-
 
 <?php
 
@@ -88,7 +68,6 @@ mysqli_stmt_execute($stmt_ag);
 $query = mysqli_stmt_get_result($stmt_ag);
 $total_financeiro = mysqli_num_rows($query);
 
-
 if($total_financeiro == 0){
     
    VaiPara('sem_financas.php');
@@ -97,45 +76,7 @@ if($total_financeiro == 0){
 ?>
 <?php include 'header.php'; ?>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <?php
-
-    
-    
-
-
 
 // Verificação de segurança
 if (!isset($conn) || !$conn) {
@@ -232,8 +173,6 @@ mysqli_stmt_bind_param($stmt_financeiro, $where_types, ...$where_params);
 mysqli_stmt_execute($stmt_financeiro);
 $query_financeiro = mysqli_stmt_get_result($stmt_financeiro);
 $total_encontrados = $query_financeiro ? mysqli_num_rows($query_financeiro) : 0;
-
-
 
 if($total_encontrados == 0){
     
@@ -546,7 +485,6 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
 
 <!-- Cards de Análise de Serviços -->
 
-
 <!-- Filtros Avançados -->
 <div class="row">
     <div class="col-md-12">
@@ -642,8 +580,6 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
         </div>
     </div>
 </div>
-
-
 
 <!-- Cards de KPIs -->
 <div class="row">
@@ -874,8 +810,6 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
 
 <?php if($total_encontrados > 0): ?>
 <?php if($total_encontrados > 0): ?>
-
-
 
 <!-- Análise Detalhada de Serviços -->
 <?php #if(count($servicos_vendidos) > 0): ?>

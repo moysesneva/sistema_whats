@@ -5,30 +5,20 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
-#error_reporting(0);
-#ini_set("display_errors", 0 );
 #$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
 
-
 include 'conn.php';
-
-
-
-
 
 include 'estilo.php';
 
 include 'css_de_icones.php';
-
-
 
 if (isset($_GET['pagina_nome'])) {
 $pagina_nome_recebe = $_GET['pagina_nome'];
 }else{
 $pagina_nome_recebe = 0;    
 }
-
 
 $stmt_user = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
 mysqli_stmt_bind_param($stmt_user, "s", $login);
@@ -48,7 +38,6 @@ while($rows_usuarios = $query_busca_usuario->fetch_array()) {
 ## 2 É  O USUARIO
 include 'menu.php';
 
-
 if($total_busca_usuario != 1){
     VaiPara('login.php');
 }
@@ -56,12 +45,7 @@ if($autorizado != 2){
  VaiPara('desbloquar.php');
 }
 
-
-
-
 ?>
-
-
 
 <?php
 
@@ -71,7 +55,6 @@ mysqli_stmt_execute($stmt_mod);
 $query = mysqli_stmt_get_result($stmt_mod);
 $total_financeiro = mysqli_num_rows($query);
 
-
 if($total_financeiro == 0){
     
    VaiPara('sem_financas.php');
@@ -79,12 +62,6 @@ if($total_financeiro == 0){
 }
 ?>
 <?php include 'header.php'; ?>
-
-
-
-
-
-
 
 <?php
 // Verificação de segurança
@@ -182,12 +159,10 @@ mysqli_stmt_execute($stmt_financeiro);
 $query_financeiro = mysqli_stmt_get_result($stmt_financeiro);
 $total_encontrados = $query_financeiro ? mysqli_num_rows($query_financeiro) : 0;
 
-
 if($total_encontrados == 0){
     
 VaiPara('sem_financas_mes.php');    
 }
-
 
 // Query para evolução mensal (últimos 12 meses)
 $stmt_evolucao = mysqli_prepare($conn, "SELECT 
@@ -643,8 +618,6 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
         </div>
     </div>
 </div>
-
-
 
 <!-- Cards de KPIs -->
 <div class="row">

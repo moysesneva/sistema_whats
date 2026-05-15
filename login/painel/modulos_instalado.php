@@ -5,30 +5,20 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
-#error_reporting(0);
-#ini_set("display_errors", 0 );
 #$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
 
-
 include 'conn.php';
-
-
-
-
 
 include 'estilo.php';
 
 include 'css_de_icones.php';
-
-
 
 if (isset($_GET['pagina_nome'])) {
 $pagina_nome_recebe = $_GET['pagina_nome'];
 }else{
 $pagina_nome_recebe = 0;    
 }
-
 
 $stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
 $stmt_busca_usuario->bind_param("s", $login);
@@ -48,7 +38,6 @@ while($rows_usuarios = $query_busca_usuario->fetch_array()) {
 ## 2 É  O USUARIO
 include 'menu.php';
 
-
 if($total_busca_usuario != 1){
     VaiPara('login.php');
 }
@@ -56,40 +45,9 @@ if($autorizado != 2){
  VaiPara('desbloquar.php');
 }
 
-
-
-
 ?>
 <?php include 'header.php'; ?>
 
-
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <!-- DASHBOARD DE MÓDULOS -->
 <div class="row">
     <!-- ÚLTIMO MÓDULO BAIXADO -->
@@ -101,7 +59,6 @@ if($autorizado != 2){
                         <h4 class="text-white">Último Módulo Baixado</h4>
                         <?php
       
-                        
 $sql_busca_modulos = "SELECT * FROM modulo_atual";
 $query = mysqli_query($conn, $sql_busca_modulos);
 // $total = mysqli_num_rows($query);
@@ -112,8 +69,6 @@ while ($rows_usuarios = mysqli_fetch_array($query)) {
     $date_down = $rows_usuarios['date_down'];
 }
 
-                        
-                        
                         // Dados fictícios para o último módulo baixado
                         $ultimo_modulo = [
                             'nome' => $nome_modulo,
@@ -127,7 +82,6 @@ while ($rows_usuarios = mysqli_fetch_array($query)) {
                         <p class="mb-0">Versão: <?php echo $ultimo_modulo['versao']; ?></p>
                         <p class="mb-0">Baixado em: <?php echo $data_formatada; ?></p>
                      
-
                     </div>
                     <div class="col-4 text-right">
                         <i class="feather icon-download-cloud" style="font-size: 70px;"></i>
@@ -155,11 +109,9 @@ while ($rows_usuarios = mysqli_fetch_array($query)) {
                 <div class="card-block">
                     <div class="row align-items-center">
                        
-                       
                     </div>
                     <div class="row align-items-center mt-3">
                       
-
                     </div>
                 </div>
             </div>

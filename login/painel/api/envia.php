@@ -1,26 +1,15 @@
 <?php
-error_reporting(0);
-ini_set("display_errors", 0 );
 include '../conn.php';
 include '../funcoes.php';
 include 'api_funcao.php';
 include '../config_dados.php';
-
-
-
 
 $usuario_api = $_POST['usuario'];   
 $telefone = $_POST['telefone'];
  
 ?>
 
-
-
-
-
-
 <?php
-
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  $usuario_api = $_POST['usuario'];   
@@ -101,11 +90,6 @@ $tempo_verificar = $lista_login['tempo_verifica'];
 }
 $stmt_login2->close();
  
- 
- 
- 
- 
-
 #$usuario_api = 'agenda_3184767335'; // Usuário específico para filtrar
 $data_atual = date('Y-m-d'); // Data atual
 #$data_atual = '2024-11-18';
@@ -201,17 +185,6 @@ $stmt_upd_ag->close();
    # echo "Nenhum agendamento encontrado para as condições fornecidas.";
 }
 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  $usuario_api = $_POST['usuario'] ?? '';
 
@@ -253,17 +226,5 @@ $response = [
     
 }}
  
-
  ?>
- 
-
-
-
-
-
-
-
-
-
-
  

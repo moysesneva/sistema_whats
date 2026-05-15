@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 0);
-ini_set('display_startup_errors', 0);
-error_reporting(0);
 
 header('Content-Type: application/json; charset=utf-8'); // Resposta será JSON
 
@@ -69,7 +66,6 @@ try {
     $dt_almoco_inicio = $horario_prof['almoco_inicio'] ? new DateTime($data_selecionada_str . ' ' . $horario_prof['almoco_inicio']) : null;
     $dt_almoco_fim = $horario_prof['almoco_fim'] ? new DateTime($data_selecionada_str . ' ' . $horario_prof['almoco_fim']) : null;
 
-
     // --- 2. Obter intervalos adicionais do profissional ---
     $intervalos_adicionais = [];
     $sql_intervalos = "SELECT intervalo_inicio, intervalo_fim
@@ -84,7 +80,6 @@ try {
             ];
         }
     }
-
 
     // --- 3. Obter agendamentos existentes ---
     $agendamentos_existentes = [];
@@ -119,7 +114,6 @@ try {
             }
         }
     }
-
 
     // --- 4. Gerar e Verificar Slots ---
     $intervalo_slot_min = 15; // Define o intervalo para gerar os slots (ex: a cada 15 minutos)

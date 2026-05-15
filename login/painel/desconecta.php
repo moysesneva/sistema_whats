@@ -5,30 +5,20 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
-#error_reporting(0);
-#ini_set("display_errors", 0 );
 #$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
 
-
 include 'conn.php';
-
-
-
-
 
 include 'estilo.php';
 
 include 'css_de_icones.php';
-
-
 
 if (isset($_GET['pagina_nome'])) {
 $pagina_nome_recebe = $_GET['pagina_nome'];
 }else{
 $pagina_nome_recebe = 0;    
 }
-
 
 $stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
 $stmt_busca_usuario->bind_param("s", $login);
@@ -44,13 +34,11 @@ while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $usuario_api  = $rows_usuarios['usuario_api'];
     $situacao  = $rows_usuarios['situacao'];
     
-
 }
 #####DEFINIMOS QUE  O TIPO DO MENU
 ## 1 É O ADM
 ## 2 É  O USUARIO
 include 'menu.php';
-
 
 if($total_busca_usuario != 1){
     VaiPara('login.php');
@@ -59,12 +47,8 @@ if($autorizado != 2){
  VaiPara('desbloquar.php');
 }
 
-
-
-
 ?>
 <?php include 'header.php'; ?>
-
 
 <?php
 
@@ -114,7 +98,6 @@ if($situacao == 'ativado'){
 }
 ?>
 
-
 <?php
 if($situacao == 'desativado'){
     ?>
@@ -157,13 +140,11 @@ if($situacao == 'desativado'){
     </div>
 </div>
 
-
 <?php    
 }
 ?>
 
 <!-- Inclua o jQuery e Bootstrap para o modal funcionar corretamente -->
-
 
 <!-- Custom CSS para melhorar a proporção e centralizar os elementos -->
 <style>

@@ -5,30 +5,20 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
-#error_reporting(0);
-#ini_set("display_errors", 0 );
 #$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
 
-
 include 'conn.php';
-
-
-
-
 
 include 'estilo.php';
 
 include 'css_de_icones.php';
-
-
 
 if (isset($_GET['pagina_nome'])) {
 $pagina_nome_recebe = $_GET['pagina_nome'];
 }else{
 $pagina_nome_recebe = 0;    
 }
-
 
 $stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
 $stmt_busca_usuario->bind_param("s", $login);
@@ -48,7 +38,6 @@ while($rows_usuarios = $query_busca_usuario->fetch_array()) {
 ## 2 É  O USUARIO
 include 'menu.php';
 
-
 if($total_busca_usuario != 1){
     VaiPara('login.php');
 }
@@ -56,14 +45,11 @@ if($autorizado != 2){
  VaiPara('desbloquar.php');
 }
 
-
 include 'bloqueio.php';
-
 
 ?>
 <?php include 'header.php'; ?>
 
- 
     <div class="container">
         <h2>Atualizar Configurações do Site</h2>
 
@@ -76,10 +62,8 @@ include 'bloqueio.php';
     </form>
     <hr>
 
-
 <!-- Formulário para a Barra de Ícones -->
    
-
     <!-- Formulário para a Barra de Cima -->
     <form action="upload.php" method="POST">
         <div class="form-group">
@@ -101,7 +85,6 @@ include 'bloqueio.php';
     <hr>
 
     <!-- Formulário para a Cor do Menu -->
-
 
     <!-- Formulário para a Seleção do Menu -->
     <form action="upload.php" method="POST">
@@ -126,7 +109,6 @@ include 'bloqueio.php';
 
     <!-- Formulário para o Tema -->
   
-
         <form action="upload.php" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="logo_site">Logo do Site:</label>
@@ -145,7 +127,6 @@ include 'bloqueio.php';
         </form>
         <hr>
 
-      
         <hr>
 
         <form action="upload.php" method="POST" enctype="multipart/form-data">
@@ -155,7 +136,6 @@ include 'bloqueio.php';
             </div>
             <button type="submit" class="btn btn-primary">Enviar Ícone</button>
         </form>
-
 
        <br>
          <!-- Formulário para a Seleção do Menu -->
@@ -171,7 +151,6 @@ include 'bloqueio.php';
                 <option value="5">Roxo e Rosa</option>
                 <option value="6">Cinza e Amarelo</option>
              
-     
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Atualizar</button>
@@ -182,8 +161,6 @@ include 'bloqueio.php';
 include 'parte1.php'
 
 ?>
-
-
 
 <?php
 include 'planos_dados.php'

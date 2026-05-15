@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 0);
-ini_set('display_startup_errors', 0);
-error_reporting(0);
 
 header('Content-Type: text/html; charset=utf-8');
 // setlocale(LC_MONETARY, 'pt_BR', 'pt_BR.utf-8'); // Não estritamente necessário aqui se só formatar no final

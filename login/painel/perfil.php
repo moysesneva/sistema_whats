@@ -5,8 +5,6 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
     VaiPara('login.php');
 } 
-#error_reporting(0);
-#ini_set("display_errors", 0);
 $login = $_SESSION['login'];
 
 include 'conn.php';
@@ -60,8 +58,6 @@ if($autorizado != 2){
     VaiPara('desbloquar.php');
 }
 
-
-
 if($tipo == '5'){
     
 VaiPara('senha.php');
@@ -69,7 +65,6 @@ VaiPara('senha.php');
 }
 
 ?>
-
 
 <?php $css_extra = '    <link rel="stylesheet" href="../files/assets/vendor/font-awesome-6/css/all.min.css">
     <style>
@@ -181,8 +176,6 @@ VaiPara('senha.php');
     </style>'; ?>
 <?php include 'header.php'; ?>
 
-
-
                                 <?php
                                 if(empty($email)) {
                                 ?>
@@ -280,16 +273,8 @@ VaiPara('senha.php');
     </div>
 </div>
 
-                                            
                                             <?php if ($situacao != 'ativado'): ?>
                                             <!-- Seção de Ativação do Bot -->
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
                                            
                                               <!-- SEÇÃO DE PLANOS CORRIGIDA - MELHOR CONTRASTE E BOTÕES -->
                                     <div class="card">
@@ -397,26 +382,6 @@ VaiPara('senha.php');
                                             </div>
                                         </div>
                                     </div>
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
-                                           
                                            
                                             <?php else: ?>
                                             <div class="alert alert-success text-center">

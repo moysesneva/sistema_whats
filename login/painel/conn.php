@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/error_config.php';
+
 $ext_host = getenv('DB_HOST');
 $use_external = !empty($ext_host) && $ext_host !== 'localhost' && $ext_host !== '127.0.0.1';
 

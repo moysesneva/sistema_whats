@@ -5,30 +5,20 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
-#error_reporting(0);
-#ini_set("display_errors", 0 );
 #$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
 
-
 include 'conn.php';
-
-
-
-
 
 include 'estilo.php';
 
 include 'css_de_icones.php';
-
-
 
 if (isset($_GET['pagina_nome'])) {
 $pagina_nome_recebe = $_GET['pagina_nome'];
 }else{
 $pagina_nome_recebe = 0;    
 }
-
 
 $stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
 $stmt_busca_usuario->bind_param("s", $login);
@@ -48,16 +38,12 @@ while($rows_usuarios = $query_busca_usuario->fetch_array()) {
 ## 2 É  O USUARIO
 include 'menu.php';
 
-
 if($total_busca_usuario != 1){
     VaiPara('login.php');
 }
 if($autorizado != 2){
  VaiPara('desbloquar.php');
 }
-
-
-
 
 include 'bloqueio.php';
 
@@ -78,10 +64,8 @@ while($rows_config = mysqli_fetch_array($query_busca_config)) {
     $services_description = isset($rows_config['services_description']) ? $rows_config['services_description'] : 'Nosso sistema utiliza inteligência artificial para compreender áudio, texto e imagens, oferecendo agendamentos e cancelamentos de forma prática e automatizada.';
 }
 
-
 ?>
 <?php include 'header.php'; ?>
-
 
           <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -111,7 +95,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $imagemPath = null;
     }
 
-
     if ($imagemPath == Null){
         $imagemPath = $imagem_dados;
     }
@@ -130,56 +113,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-   
-       
 <?php
 include 'parte1.php'
 
 ?>
-
-
 
 <?php
 include 'planos_dados.php'
 
 ?>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  
      </div>
         </div>     
-
 
 <!-- Custom CSS -->
 <style>

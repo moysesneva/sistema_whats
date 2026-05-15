@@ -5,30 +5,20 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
-#error_reporting(0);
-#ini_set("display_errors", 0 );
 #$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
 
-
 include 'conn.php';
-
-
-
-
 
 include 'estilo.php';
 
 include 'css_de_icones.php';
-
-
 
 if (isset($_GET['pagina_nome'])) {
 $pagina_nome_recebe = $_GET['pagina_nome'];
 }else{
 $pagina_nome_recebe = 0;    
 }
-
 
 $stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
 $stmt_busca_usuario->bind_param("s", $login);
@@ -48,7 +38,6 @@ while($rows_usuarios = $query_busca_usuario->fetch_array()) {
 ## 2 É  O USUARIO
 include 'menu.php';
 
-
 if($total_busca_usuario != 1){
     VaiPara('login.php');
 }
@@ -56,19 +45,11 @@ if($autorizado != 2){
  VaiPara('desbloquar.php');
 }
 
-
-
 include 'bloqueio.php';
 ?>
 <?php include 'header.php'; ?>
 
-
-
-
-
-
 <?php
-
 
 $sql_config = "SELECT * FROM config";
 $query_config = mysqli_query($conn, $sql_config);
@@ -173,7 +154,6 @@ if (substr($webhook, -1) != '/') {
 ?>
 <?php
 
-
 function corrigirUrl($url) {
     // Remove barras duplas, exceto após http(s):
     return preg_replace("#([^:])/{2,}#", "$1/", $url);
@@ -182,12 +162,7 @@ function corrigirUrl($url) {
 $webhook1 = $webhook.'/login/painel/api/recebe.php'; 
 $webhook1 = corrigirUrl($webhook1);
 
-
 ?>
-  
-  
-  
-  
   
       <style>
    .api-button {
@@ -293,10 +268,8 @@ function substituirBarrasDuplas($texto) {
     return str_replace('//', '/', $texto);
 }   
    
-   
 $webhook_node = "https://agenda.tasmota.com.br/agenda/login/painel/api/teste/api.php";
 $webhook_mensagens = substituirBarrasDuplas($webhook.'/login/painel/api/recebe.php');
-
 
 $webhook_validate = substituirBarrasDuplas($webhook.'/login/painel/api/cron.php');
 $token_node = $chave;
@@ -308,7 +281,6 @@ $porta_python = "$porta";
 $site_python = "https://web.whatsapp.com";
 $api_python = "https://editacodigo.com.br/api2/";
 ?>
-
 
 <div class="container">
     <h2 style="margin-bottom: 20px; color: #333;">Escolha a API que vai usar:</h2>
@@ -417,7 +389,6 @@ API="${apiPython}" \\
                 console.error('Erro ao copiar:', err);
             });
     });
-
 
         // Função para processar clique nos botões
         async function processarEscolhaAPI(tipoAPI) {
@@ -562,35 +533,6 @@ API="${apiPython}" \\
         });
     </script> 
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
 <script>
 document.getElementById('copyButton').addEventListener('click', function() {
     var commandText = document.getElementById('comando').innerText;
@@ -607,11 +549,6 @@ document.getElementById('copyButton').addEventListener('click', function() {
 
     </div>
 
-
-
-
-
-    
 <?php
 if($tipo == 4){
 ?>
@@ -701,21 +638,9 @@ if($tipo == 4){
     }
 </style>
 
-
-
     <?php
 }
     ?>
-
-
-
-
-
-
-
-
-
-
 
 <?php
 if (empty($chave) || empty($webhook) || isset($_GET['modo']) && $_GET['modo'] == 'edicao'){
@@ -793,8 +718,6 @@ if (empty($chave) || empty($webhook) || isset($_GET['modo']) && $_GET['modo'] ==
 <?php
 }
 ?>
-
-
 
 <div class="card" style="border:none;box-shadow:0 2px 10px rgba(0,0,0,0.08);border-radius:10px;margin-top:30px;">
     <div class="card-header" style="background:linear-gradient(135deg,#001f3f,#003366);color:#fff;border-radius:10px 10px 0 0;padding:14px 20px;font-weight:600;">

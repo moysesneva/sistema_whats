@@ -1,7 +1,5 @@
 <?php
 #include 'conn.php';
-#ini_set('display_errors', 1);
-#error_reporting(E_ALL);
 
 // Buscar dados atuais do banco de dados para preencher o formulário
 $query = "SELECT * FROM config";

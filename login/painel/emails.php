@@ -5,30 +5,20 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
-#error_reporting(0);
-#ini_set("display_errors", 0 );
 #$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
 
-
 include 'conn.php';
-
-
-
-
 
 include 'estilo.php';
 
 include 'css_de_icones.php';
-
-
 
 if (isset($_GET['pagina_nome'])) {
 $pagina_nome_recebe = $_GET['pagina_nome'];
 }else{
 $pagina_nome_recebe = 0;    
 }
-
 
 $stmt_user = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
 mysqli_stmt_bind_param($stmt_user, "s", $login);
@@ -48,7 +38,6 @@ while($rows_usuarios = $query_busca_usuario->fetch_array()) {
 ## 2 É  O USUARIO
 include 'menu.php';
 
-
 if($total_busca_usuario != 1){
     VaiPara('login.php');
 }
@@ -59,7 +48,6 @@ if($autorizado != 2){
 if($tipo != 1){
     VaiPara('login.php');
 }
-
 
 ?>
 
@@ -159,7 +147,6 @@ $config = mysqli_fetch_assoc($result_config);
 ?>
 <?php include 'header.php'; ?>
 
-
                                     <div class="page-header">
                                         <div class="row align-items-end">
                                             <div class="col-lg-8">
@@ -242,7 +229,6 @@ $config = mysqli_fetch_assoc($result_config);
         </div>
     </div>
 </div>
-
 
                                                             <div class="form-group">
                                                                 <button type="submit" name="salvar" class="btn btn-primary btn-round waves-effect waves-light">

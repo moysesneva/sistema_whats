@@ -5,30 +5,22 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
-#error_reporting(0);
-#ini_set("display_errors", 0 );
 #$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
 
-
 include 'conn.php';
 
-
 include 'config_dados.php';
-
 
 include 'estilo.php';
 
 include 'css_de_icones.php';
-
-
 
 if (isset($_GET['pagina_nome'])) {
 $pagina_nome_recebe = $_GET['pagina_nome'];
 }else{
 $pagina_nome_recebe = 0;    
 }
-
 
 $stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
 $stmt_busca_usuario->bind_param("s", $login);
@@ -48,7 +40,6 @@ while($rows_usuarios = $query_busca_usuario->fetch_array()) {
 ## 2 É  O USUARIO
 include 'menu.php';
 
-
 if($total_busca_usuario != 1){
     VaiPara('login.php');
 }
@@ -56,17 +47,12 @@ if($autorizado != 2){
  VaiPara('desbloquar.php');
 }
 
-
 include 'bloqueio.php';
-
 
 ?>
 
 <?php $css_extra = '    <link rel="stylesheet" href="../files/assets/vendor/intl-tel-input/css/intlTelInput.css">'; ?>
 <?php include 'header.php'; ?>
-
-
-
 
 <div class="container">
     <div class="card shadow-lg">
@@ -134,10 +120,6 @@ include 'bloqueio.php';
   </small>
 </div>
 
-
-
-
-
 <div class="form-group mb-4">
   <label for="plano" class="font-weight-bold">
     <i class="feather icon-layers mr-1"></i>Plano:
@@ -159,15 +141,6 @@ include 'bloqueio.php';
     <i class="feather icon-alert-triangle mr-1"></i>Escolha um dos três planos disponíveis.
   </small>
 </div>
-
-
-
-
-
-
-
-
-
 
                 <div class="form-group mb-4">
                     <label for="senha_padrao" class="font-weight-bold"><i class="feather icon-lock mr-1"></i>Senha Padrão:</label>

@@ -1,9 +1,6 @@
 <?php
 session_start(); // Necessary for success/error flash messages
 
-#ini_set('display_errors', 1); // For development
-#error_reporting(E_ALL);     // For development
-
 // Define the client ID for redirection, getting from POST and ensuring it's not null.
 // Used in several places to redirect back to the scheduling page.
 // It comes from the 'idd' hidden field in agendar.php form
