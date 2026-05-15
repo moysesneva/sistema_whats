@@ -1,8 +1,7 @@
 <?php
-// HABILITAR EXIBIÇÃO DE ERROS (APENAS PARA DESENVOLVIMENTO)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(0);
 
 // Definir o local para português do Brasil para formatação de data
 $locale_set = setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.iso-8859-1', 'portuguese');

@@ -1,8 +1,7 @@
 <?php
-// HABILITAR EXIBIÇÃO DE ERROS (APENAS PARA DESENVOLVIMENTO)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(0);
 
 header('Content-Type: text/html; charset=utf-8'); // Garante a codificação correta
 

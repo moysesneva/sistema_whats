@@ -1,7 +1,6 @@
 <?php
-// Exibe erros em dev
-ini_set('display_errors',1);
-error_reporting(E_ALL);
+ini_set('display_errors', 0);
+error_reporting(0);
 
 // ===== TRATAMENTO DE FORMULÁRIOS =====
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

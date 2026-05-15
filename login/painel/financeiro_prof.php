@@ -6,7 +6,7 @@ if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
 #error_reporting(1);
-ini_set("display_errors",1 );
+ini_set("display_errors", 0);
 #$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
 
