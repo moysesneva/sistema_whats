@@ -49,13 +49,23 @@ O `conn.php` lê as credenciais de variáveis de ambiente:
 
 ## Hooks de Git (CRLF / line endings)
 
-O projeto usa `.gitattributes` para forçar LF no repositório. Para evitar que arquivos com CRLF (Windows) entrem no commit, instale o hook de pre-commit uma vez por clone:
+O projeto usa `.gitattributes` para forçar LF no repositório. O hook `scripts/pre-commit` converte automaticamente qualquer CRLF → LF nos arquivos staged antes de cada commit.
+
+**No Replit:** nenhuma configuração manual é necessária. O `start.sh` executa `git config core.hooksPath scripts` automaticamente ao iniciar o projeto — o hook fica ativo imediatamente.
+
+**Fora do Replit (clone externo):** execute `composer install` normalmente após clonar. O `post-install-cmd` do `composer.json` configura o hook automaticamente:
+
+```bash
+composer install
+```
+
+O Composer executa `bash scripts/install-hooks.sh` ao final da instalação, configurando `core.hooksPath=scripts` no repositório local — Git passa a usar os hooks diretamente de `scripts/`, sem copiar arquivos.
+
+**Fallback manual** (sem Composer):
 
 ```bash
 bash scripts/install-hooks.sh
 ```
-
-O hook (`scripts/pre-commit`) inspeciona os arquivos staged e converte automaticamente qualquer CRLF → LF antes do commit. Novos clones ou colaboradores devem rodar o mesmo comando após clonar.
 
 > **Atenção (staging parcial):** se você usou `git add -p` para fazer staging de hunks específicos (não o arquivo inteiro), o hook re-adiciona o arquivo completo ao stage após a correção, o que pode incluir hunks que você não pretendia commitar. Revise o stage com `git diff --cached` depois de um commit que acione essa correção.
 

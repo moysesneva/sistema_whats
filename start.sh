@@ -49,6 +49,9 @@ if [ -n "$DB_HOST" ] && [ "$DB_HOST" != "localhost" ] && [ "$DB_HOST" != "127.0.
     echo "=== Banco externo configurado: ${DB_HOST} — conn.php tentará conectar ao iniciar ==="
 fi
 
+echo "=== Configurando hooks de Git ==="
+git config core.hooksPath scripts 2>/dev/null && echo "core.hooksPath=scripts configurado." || echo "Aviso: não foi possível configurar core.hooksPath (fora de um repositório git?)."
+
 echo "=== Criando links simbólicos de assets ==="
 ln -sf /home/runner/workspace/login/files /home/runner/workspace/files 2>/dev/null || true
 

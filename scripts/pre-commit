@@ -1,7 +1,8 @@
 #!/bin/bash
 # Pre-commit hook: converte CRLF → LF em arquivos de texto staged antes do commit.
 # Arquivos binários são ignorados automaticamente (verificação via 'file --mime-encoding').
-# Instalação: execute scripts/install-hooks.sh uma vez por clone.
+# Ativado automaticamente via core.hooksPath=scripts (configurado pelo start.sh no Replit
+# e pelo post-install-cmd do composer.json em clones externos).
 
 set -e
 

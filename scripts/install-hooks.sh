@@ -1,28 +1,18 @@
 #!/bin/bash
-# Instala os hooks de Git do projeto no clone local.
-# Execute uma vez após clonar o repositório:
+# Configura os hooks de Git do projeto apontando core.hooksPath para scripts/.
+# Normalmente não é necessário rodar manualmente — o start.sh executa isso
+# automaticamente. Use este script apenas em clones externos (fora do Replit):
 #   bash scripts/install-hooks.sh
 
 set -e
 
-HOOKS_DIR="$(git rev-parse --git-dir)/hooks"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-install_hook() {
-    local name="$1"
-    local src="$SCRIPT_DIR/$name"
-    local dst="$HOOKS_DIR/$name"
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "Erro: este diretório não é um repositório Git." >&2
+    exit 1
+fi
 
-    if [ ! -f "$src" ]; then
-        echo "Aviso: $src não encontrado, ignorado."
-        return
-    fi
-
-    cp "$src" "$dst"
-    chmod +x "$dst"
-    echo "Hook instalado: $dst"
-}
-
-install_hook "pre-commit"
-
-echo "Hooks instalados com sucesso."
+git config core.hooksPath "$SCRIPT_DIR"
+echo "Hooks configurados: core.hooksPath=$SCRIPT_DIR"
+echo "O hook scripts/pre-commit será executado automaticamente antes de cada commit."
