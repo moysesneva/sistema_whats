@@ -4,7 +4,6 @@ include 'conn.php';
 include 'funcoes.php';
 salvar_dados_resquest();
 
-// 🔄 Suporte a JSON ou text/plain como entrada
 if (
     isset($_SERVER['CONTENT_TYPE']) &&
     (stripos($_SERVER['CONTENT_TYPE'], 'application/json') !== false ||
@@ -13,17 +12,15 @@ if (
     $inputJSON = file_get_contents("php://input");
     $jsonData = json_decode($inputJSON, true);
     if (is_array($jsonData)) {
-        $_POST = array_merge($_POST, $jsonData); // mescla com $_POST caso algo já exista
+        $_POST = array_merge($_POST, $jsonData);
     }
 }
 
-// 🔒 Verifica sessão
 if (!isset($_SESSION['login'])) {
     header('Location: login.php');
     exit;
 }
 
-// 🔡 Geração de código aleatório
 function gerarCodigoAleatorio($tamanho = 4) {
     $caracteres = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     $codigo = '';
@@ -34,25 +31,21 @@ function gerarCodigoAleatorio($tamanho = 4) {
     return $codigo;
 }
 
-// ✅ Verificar se a requisição é POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('HTTP/1.1 400 Bad Request');
     echo json_encode(['status' => 'error', 'message' => 'Método de requisição inválido']);
     exit;
 }
 
-// 📥 Obter a ação e o usuário
 $acao = isset($_POST['acao']) ? $_POST['acao'] : '';
-$usuario_api = isset($_POST['usuario_api']) ? $_POST['usuario_api'] : '';
+$usuario_api = isset($_POST['usuario_api']) ? trim($_POST['usuario_api']) : '';
 
-// 🔎 Verifica se usuário foi informado
 if (empty($usuario_api)) {
     header('HTTP/1.1 400 Bad Request');
     echo json_encode(['status' => 'error', 'message' => 'Usuário API não fornecido']);
     exit;
 }
 
-// 🚦 Executar ação
 switch ($acao) {
     case 'adicionar':
         adicionarCliente();
@@ -69,12 +62,11 @@ switch ($acao) {
         exit;
 }
 
-// ✅ Adicionar cliente
 function adicionarCliente() {
     global $conn, $usuario_api;
 
-    $nome = isset($_POST['nome']) ? mysqli_real_escape_string($conn, $_POST['nome']) : '';
-    $telefone = isset($_POST['telefone']) ? mysqli_real_escape_string($conn, $_POST['telefone']) : '';
+    $nome = isset($_POST['nome']) ? trim($_POST['nome']) : '';
+    $telefone = isset($_POST['telefone']) ? trim($_POST['telefone']) : '';
 
     if (empty($nome) || empty($telefone)) {
         header('HTTP/1.1 400 Bad Request');
@@ -85,10 +77,11 @@ function adicionarCliente() {
     $id_agendamento = gerarCodigoAleatorio();
     $telefone = preg_replace('/\D/', '', $telefone);
 
-    $sql = "INSERT INTO clientes (nome, telefone, usuario_api, id_agendamento) 
-            VALUES ('$nome', '$telefone', '$usuario_api', '$id_agendamento')";
+    $stmt = mysqli_prepare($conn,
+        "INSERT INTO clientes (nome, telefone, usuario_api, id_agendamento) VALUES (?, ?, ?, ?)");
+    mysqli_stmt_bind_param($stmt, "ssss", $nome, $telefone, $usuario_api, $id_agendamento);
 
-    if (mysqli_query($conn, $sql)) {
+    if (mysqli_stmt_execute($stmt)) {
         echo json_encode(['status' => 'success', 'message' => 'Cliente adicionado com sucesso']);
     } else {
         header('HTTP/1.1 500 Internal Server Error');
@@ -96,13 +89,12 @@ function adicionarCliente() {
     }
 }
 
-// ✏️ Editar cliente
 function editarCliente() {
     global $conn, $usuario_api;
 
     $id_cliente = isset($_POST['id_cliente']) ? intval($_POST['id_cliente']) : 0;
-    $nome = isset($_POST['nome']) ? mysqli_real_escape_string($conn, $_POST['nome']) : '';
-    $telefone = isset($_POST['telefone']) ? mysqli_real_escape_string($conn, $_POST['telefone']) : '';
+    $nome = isset($_POST['nome']) ? trim($_POST['nome']) : '';
+    $telefone = isset($_POST['telefone']) ? trim($_POST['telefone']) : '';
 
     if ($id_cliente <= 0 || empty($nome) || empty($telefone)) {
         header('HTTP/1.1 400 Bad Request');
@@ -110,8 +102,10 @@ function editarCliente() {
         exit;
     }
 
-    $sql_check = "SELECT id FROM clientes WHERE id = $id_cliente AND usuario_api = '$usuario_api'";
-    $result_check = mysqli_query($conn, $sql_check);
+    $stmt_check = mysqli_prepare($conn, "SELECT id FROM clientes WHERE id = ? AND usuario_api = ?");
+    mysqli_stmt_bind_param($stmt_check, "is", $id_cliente, $usuario_api);
+    mysqli_stmt_execute($stmt_check);
+    $result_check = mysqli_stmt_get_result($stmt_check);
 
     if (mysqli_num_rows($result_check) == 0) {
         header('HTTP/1.1 403 Forbidden');
@@ -121,10 +115,11 @@ function editarCliente() {
 
     $telefone = preg_replace('/\D/', '', $telefone);
 
-    $sql = "UPDATE clientes SET nome = '$nome', telefone = '$telefone' 
-            WHERE id = $id_cliente AND usuario_api = '$usuario_api'";
+    $stmt = mysqli_prepare($conn,
+        "UPDATE clientes SET nome = ?, telefone = ? WHERE id = ? AND usuario_api = ?");
+    mysqli_stmt_bind_param($stmt, "ssis", $nome, $telefone, $id_cliente, $usuario_api);
 
-    if (mysqli_query($conn, $sql)) {
+    if (mysqli_stmt_execute($stmt)) {
         echo json_encode(['status' => 'success', 'message' => 'Cliente atualizado com sucesso']);
     } else {
         header('HTTP/1.1 500 Internal Server Error');
@@ -132,7 +127,6 @@ function editarCliente() {
     }
 }
 
-// 🗑️ Excluir cliente
 function excluirCliente() {
     global $conn, $usuario_api;
 
@@ -144,8 +138,10 @@ function excluirCliente() {
         exit;
     }
 
-    $sql_check = "SELECT id FROM clientes WHERE id = $id_cliente AND usuario_api = '$usuario_api'";
-    $result_check = mysqli_query($conn, $sql_check);
+    $stmt_check = mysqli_prepare($conn, "SELECT id FROM clientes WHERE id = ? AND usuario_api = ?");
+    mysqli_stmt_bind_param($stmt_check, "is", $id_cliente, $usuario_api);
+    mysqli_stmt_execute($stmt_check);
+    $result_check = mysqli_stmt_get_result($stmt_check);
 
     if (mysqli_num_rows($result_check) == 0) {
         header('HTTP/1.1 403 Forbidden');
@@ -153,9 +149,10 @@ function excluirCliente() {
         exit;
     }
 
-    $sql = "DELETE FROM clientes WHERE id = $id_cliente AND usuario_api = '$usuario_api'";
+    $stmt = mysqli_prepare($conn, "DELETE FROM clientes WHERE id = ? AND usuario_api = ?");
+    mysqli_stmt_bind_param($stmt, "is", $id_cliente, $usuario_api);
 
-    if (mysqli_query($conn, $sql)) {
+    if (mysqli_stmt_execute($stmt)) {
         echo json_encode(['status' => 'success', 'message' => 'Cliente excluído com sucesso']);
     } else {
         header('HTTP/1.1 500 Internal Server Error');

@@ -5,16 +5,10 @@ include 'funcoes.php';
 if(!isset($_SESSION['login'])) {
 VaiPara('login.php');
 } 
-#error_reporting(0);
-#ini_set("display_errors", 0 );
-#$_SESSION['tipo_menu'] = 1;
 $login = $_SESSION['login'];
 
 
 include 'conn.php';
-
-
-
 
 
 include 'estilo.php';
@@ -30,8 +24,10 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
+$stmt_user = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
+mysqli_stmt_bind_param($stmt_user, "s", $login);
+mysqli_stmt_execute($stmt_user);
+$query_busca_usuario = mysqli_stmt_get_result($stmt_user);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
 while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
@@ -41,9 +37,6 @@ while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
     $tipo  = $rows_usuarios['tipo'];
 
 }
-#####DEFINIMOS QUE  O TIPO DO MENU
-## 1 É O ADM
-## 2 É  O USUARIO
 include 'menu.php';
 
 
@@ -61,47 +54,31 @@ if($autorizado != 2){
 <?php include 'header.php'; ?>
 
 
-
-
-
-
-
-
 <?php
 
-// Processa inserção de novo módulo de crédito
 if (isset($_POST['adicionar_credito']) && !empty($_POST['nome_modulo']) && !empty($_POST['valor_credito'])) {
-    $nome_modulo = mysqli_real_escape_string($conn, $_POST['nome_modulo']);
+    $nome_modulo = trim($_POST['nome_modulo']);
     $valor_credito = (int) $_POST['valor_credito'];
     $data_atual = date('Y-m-d H:i:s');
-    
-    // Verifica se o módulo já existe (apenas por nome, independente da versão)
-    $sql_verifica = "
-        SELECT id 
-        FROM modulos_lista 
-        WHERE nome_modulo = '{$nome_modulo}'
-        LIMIT 1
-    ";
-    $res_verifica = mysqli_query($conn, $sql_verifica);
-    
+
+    $stmt_verifica = mysqli_prepare($conn,
+        "SELECT id FROM modulos_lista WHERE nome_modulo = ? LIMIT 1");
+    mysqli_stmt_bind_param($stmt_verifica, "s", $nome_modulo);
+    mysqli_stmt_execute($stmt_verifica);
+    $res_verifica = mysqli_stmt_get_result($stmt_verifica);
+
     if ($res_verifica && mysqli_num_rows($res_verifica) > 0) {
         echo '<div class="alert alert-warning">
                 <i class="feather icon-alert-triangle"></i> 
                 Este nome de módulo já existe! Por favor, escolha um nome diferente.
               </div>';
     } else {
-        // Insere o novo módulo de crédito
-        $sql_insere = "
-            INSERT INTO modulos_lista (nome_modulo, versao, date_install, creditos)
-            VALUES (
-                '{$nome_modulo}',
-                'creditos',
-                '{$data_atual}',
-                {$valor_credito}
-            )
-        ";
-        
-        if (mysqli_query($conn, $sql_insere)) {
+        $stmt_insere = mysqli_prepare($conn,
+            "INSERT INTO modulos_lista (nome_modulo, versao, date_install, creditos)
+             VALUES (?, 'creditos', ?, ?)");
+        mysqli_stmt_bind_param($stmt_insere, "ssi", $nome_modulo, $data_atual, $valor_credito);
+
+        if (mysqli_stmt_execute($stmt_insere)) {
             echo '<div class="alert alert-success">
                     <i class="feather icon-check-circle"></i> 
                     Módulo de crédito adicionado com sucesso!
@@ -115,17 +92,14 @@ if (isset($_POST['adicionar_credito']) && !empty($_POST['nome_modulo']) && !empt
     }
 }
 
-// Processa exclusão de módulo de crédito
 if (isset($_POST['excluir_credito']) && !empty($_POST['id_modulo'])) {
     $id_modulo = (int) $_POST['id_modulo'];
-    
-    $sql_excluir = "
-        DELETE FROM modulos_lista 
-        WHERE id = {$id_modulo} AND versao = 'creditos'
-        LIMIT 1
-    ";
-    
-    if (mysqli_query($conn, $sql_excluir)) {
+
+    $stmt_excluir = mysqli_prepare($conn,
+        "DELETE FROM modulos_lista WHERE id = ? AND versao = 'creditos' LIMIT 1");
+    mysqli_stmt_bind_param($stmt_excluir, "i", $id_modulo);
+
+    if (mysqli_stmt_execute($stmt_excluir)) {
         echo '<div class="alert alert-success">
                 <i class="feather icon-check-circle"></i> 
                 Módulo de crédito excluído com sucesso!
@@ -138,35 +112,28 @@ if (isset($_POST['excluir_credito']) && !empty($_POST['id_modulo'])) {
     }
 }
 
-// Processa edição de módulo de crédito
 if (isset($_POST['editar_credito']) && !empty($_POST['id_modulo_edit']) && !empty($_POST['nome_modulo_edit']) && !empty($_POST['valor_credito_edit'])) {
     $id_modulo = (int) $_POST['id_modulo_edit'];
-    $nome_modulo = mysqli_real_escape_string($conn, $_POST['nome_modulo_edit']);
+    $nome_modulo = trim($_POST['nome_modulo_edit']);
     $valor_credito = (int) $_POST['valor_credito_edit'];
-    
-    // Verifica se o novo nome já existe em outro módulo
-    $sql_verifica_edicao = "
-        SELECT id 
-        FROM modulos_lista 
-        WHERE nome_modulo = '{$nome_modulo}' AND id != {$id_modulo}
-        LIMIT 1
-    ";
-    $res_verifica_edicao = mysqli_query($conn, $sql_verifica_edicao);
-    
+
+    $stmt_verifica_edicao = mysqli_prepare($conn,
+        "SELECT id FROM modulos_lista WHERE nome_modulo = ? AND id != ? LIMIT 1");
+    mysqli_stmt_bind_param($stmt_verifica_edicao, "si", $nome_modulo, $id_modulo);
+    mysqli_stmt_execute($stmt_verifica_edicao);
+    $res_verifica_edicao = mysqli_stmt_get_result($stmt_verifica_edicao);
+
     if ($res_verifica_edicao && mysqli_num_rows($res_verifica_edicao) > 0) {
         echo '<div class="alert alert-warning">
                 <i class="feather icon-alert-triangle"></i> 
                 Este nome de módulo já existe! Por favor, escolha um nome diferente.
               </div>';
     } else {
-        $sql_editar = "
-            UPDATE modulos_lista 
-            SET nome_modulo = '{$nome_modulo}', creditos = {$valor_credito}
-            WHERE id = {$id_modulo} AND versao = 'creditos'
-            LIMIT 1
-        ";
-        
-        if (mysqli_query($conn, $sql_editar)) {
+        $stmt_editar = mysqli_prepare($conn,
+            "UPDATE modulos_lista SET nome_modulo = ?, creditos = ? WHERE id = ? AND versao = 'creditos' LIMIT 1");
+        mysqli_stmt_bind_param($stmt_editar, "sii", $nome_modulo, $valor_credito, $id_modulo);
+
+        if (mysqli_stmt_execute($stmt_editar)) {
             echo '<div class="alert alert-success">
                     <i class="feather icon-check-circle"></i> 
                     Módulo de crédito editado com sucesso!
@@ -180,7 +147,6 @@ if (isset($_POST['editar_credito']) && !empty($_POST['id_modulo_edit']) && !empt
     }
 }
 
-// Inclui a conexão
 include 'conn.php';
 ?>
 
@@ -259,7 +225,6 @@ include 'conn.php';
                 </thead>
                 <tbody>
                     <?php
-                    // Busca apenas módulos de crédito
                     $sql_creditos = "
                         SELECT id, nome_modulo, creditos, date_install
                         FROM modulos_lista
@@ -350,16 +315,11 @@ include 'conn.php';
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Função para inicializar os eventos
     function initializeEvents() {
-        console.log('Inicializando eventos dos módulos de crédito');
-        
-        // Inicializa os tooltips se disponível
         if (typeof $('[data-toggle="tooltip"]').tooltip === 'function') {
             $('[data-toggle="tooltip"]').tooltip();
         }
         
-        // Evento para abrir o modal de edição
         document.querySelectorAll('.btn-editar-modulo').forEach(function(button) {
             button.addEventListener('click', function() {
                 var moduloId = this.getAttribute('data-id');
@@ -374,7 +334,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Validação do formulário de edição
         document.getElementById('formEditarModulo').addEventListener('submit', function(e) {
             var nome = document.getElementById('nome_modulo_edit').value.trim();
             var creditos = document.getElementById('valor_credito_edit').value;
@@ -399,32 +358,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Função universal para abrir modais
     function openModal(modalId) {
         var modal = document.getElementById(modalId);
         
-        // Tenta usar Bootstrap 5 se disponível
         if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
             var modalInstance = new bootstrap.Modal(modal);
             modalInstance.show();
         }
-        // Tenta usar jQuery + Bootstrap 4 se disponível
         else if (typeof jQuery !== 'undefined' && typeof jQuery.fn.modal !== 'undefined') {
             jQuery('#' + modalId).modal('show');
         }
-        // Fallback para mostrar o modal sem animação
         else {
             modal.style.display = 'block';
             modal.classList.add('show');
             document.body.classList.add('modal-open');
             
-            // Cria um backdrop manualmente
             var backdrop = document.createElement('div');
             backdrop.className = 'modal-backdrop fade show';
             backdrop.id = 'backdrop-' + modalId;
             document.body.appendChild(backdrop);
             
-            // Adiciona listeners para fechar o modal
             var closeButtons = modal.querySelectorAll('[data-dismiss="modal"]');
             closeButtons.forEach(function(button) {
                 button.addEventListener('click', function() {
@@ -432,14 +385,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
             
-            // Fechar modal clicando no backdrop
             backdrop.addEventListener('click', function() {
                 closeModal(modalId);
             });
         }
     }
     
-    // Função para fechar modal manualmente
     function closeModal(modalId) {
         var modal = document.getElementById(modalId);
         var backdrop = document.getElementById('backdrop-' + modalId);
@@ -453,10 +404,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Inicializa os eventos
     initializeEvents();
     
-    // Validação adicional do formulário de adição
     var formAdicionar = document.querySelector('form[method="post"]');
     if (formAdicionar) {
         formAdicionar.addEventListener('submit', function(e) {
@@ -483,7 +432,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Limpar campo de nome ao focar
     var inputNome = document.querySelector('input[name="nome_modulo"]');
     if (inputNome) {
         inputNome.addEventListener('focus', function() {

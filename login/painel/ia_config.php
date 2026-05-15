@@ -30,8 +30,10 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
+$stmt_user = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
+mysqli_stmt_bind_param($stmt_user, "s", $login);
+mysqli_stmt_execute($stmt_user);
+$query_busca_usuario = mysqli_stmt_get_result($stmt_user);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
 while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
@@ -80,46 +82,33 @@ if($autorizado != 2){
 
 // 1) Processa o POST de salvar chave OpenAI
 if (isset($_POST['salvar_openai']) && !empty($_POST['valor_chave_openai']) && !empty($_POST['plano_openai'])) {
-    $chave_openai = mysqli_real_escape_string($conn, $_POST['valor_chave_openai']);
-    $plano_selecionado = mysqli_real_escape_string($conn, $_POST['plano_openai']);
-    
-    // Verifica se já existe uma chave diferente (Gemini) no mesmo plano
-    $sql_verifica_conflito = "
-        SELECT nome 
-        FROM chave_ia_geral 
-        WHERE plano = '{$plano_selecionado}' AND nome != 'openai'
-        LIMIT 1
-    ";
-    $res_conflito = mysqli_query($conn, $sql_verifica_conflito);
-    
+    $chave_openai = trim($_POST['valor_chave_openai']);
+    $plano_selecionado = trim($_POST['plano_openai']);
+
+    $stmt_conflito = mysqli_prepare($conn,
+        "SELECT nome FROM chave_ia_geral WHERE plano = ? AND nome != 'openai' LIMIT 1");
+    mysqli_stmt_bind_param($stmt_conflito, "s", $plano_selecionado);
+    mysqli_stmt_execute($stmt_conflito);
+    $res_conflito = mysqli_stmt_get_result($stmt_conflito);
+
     if ($res_conflito && mysqli_num_rows($res_conflito) > 0) {
         $empresa_conflito = mysqli_fetch_assoc($res_conflito)['nome'];
-        echo '<div class="alert alert-danger">Erro: Já existe uma chave da ' . ucfirst($empresa_conflito) . ' no ' . $plano_selecionado . '. Não é possível ter chaves de empresas diferentes no mesmo plano!</div>';
+        echo '<div class="alert alert-danger">Erro: Já existe uma chave da ' . ucfirst($empresa_conflito) . ' no ' . htmlspecialchars($plano_selecionado) . '. Não é possível ter chaves de empresas diferentes no mesmo plano!</div>';
     } else {
-        // Verifica se a chave já existe no mesmo plano
-        $sql_verifica_openai = "
-            SELECT id 
-            FROM chave_ia_geral 
-            WHERE chave = '{$chave_openai}' AND nome = 'openai' AND plano = '{$plano_selecionado}'
-            LIMIT 1
-        ";
-        $res_verifica_openai = mysqli_query($conn, $sql_verifica_openai);
-        
+        $stmt_verifica = mysqli_prepare($conn,
+            "SELECT id FROM chave_ia_geral WHERE chave = ? AND nome = 'openai' AND plano = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt_verifica, "ss", $chave_openai, $plano_selecionado);
+        mysqli_stmt_execute($stmt_verifica);
+        $res_verifica_openai = mysqli_stmt_get_result($stmt_verifica);
+
         if ($res_verifica_openai && mysqli_num_rows($res_verifica_openai) > 0) {
-            echo '<div class="alert alert-warning">Esta chave da OpenAI já está cadastrada no ' . $plano_selecionado . '!</div>';
+            echo '<div class="alert alert-warning">Esta chave da OpenAI já está cadastrada no ' . htmlspecialchars($plano_selecionado) . '!</div>';
         } else {
-            // Insere a nova chave
-            $sql_insere_openai = "
-                INSERT INTO chave_ia_geral (chave, nome, plano, date)
-                VALUES (
-                    '{$chave_openai}',
-                    'openai',
-                    '{$plano_selecionado}',
-                    NOW()
-                )
-            ";
-            if (mysqli_query($conn, $sql_insere_openai)) {
-                echo '<div class="alert alert-success">Chave da OpenAI salva com sucesso no ' . $plano_selecionado . '!</div>';
+            $stmt_insere = mysqli_prepare($conn,
+                "INSERT INTO chave_ia_geral (chave, nome, plano, date) VALUES (?, 'openai', ?, NOW())");
+            mysqli_stmt_bind_param($stmt_insere, "ss", $chave_openai, $plano_selecionado);
+            if (mysqli_stmt_execute($stmt_insere)) {
+                echo '<div class="alert alert-success">Chave da OpenAI salva com sucesso no ' . htmlspecialchars($plano_selecionado) . '!</div>';
             } else {
                 echo '<div class="alert alert-danger">Erro ao salvar chave da OpenAI: ' . mysqli_error($conn) . '</div>';
             }
@@ -129,46 +118,33 @@ if (isset($_POST['salvar_openai']) && !empty($_POST['valor_chave_openai']) && !e
 
 // 2) Processa o POST de salvar chave Gemini
 if (isset($_POST['salvar_gemini']) && !empty($_POST['valor_chave_gemini']) && !empty($_POST['plano_gemini'])) {
-    $chave_gemini = mysqli_real_escape_string($conn, $_POST['valor_chave_gemini']);
-    $plano_selecionado = mysqli_real_escape_string($conn, $_POST['plano_gemini']);
-    
-    // Verifica se já existe uma chave diferente (OpenAI) no mesmo plano
-    $sql_verifica_conflito = "
-        SELECT nome 
-        FROM chave_ia_geral 
-        WHERE plano = '{$plano_selecionado}' AND nome != 'gemini'
-        LIMIT 1
-    ";
-    $res_conflito = mysqli_query($conn, $sql_verifica_conflito);
-    
+    $chave_gemini = trim($_POST['valor_chave_gemini']);
+    $plano_selecionado = trim($_POST['plano_gemini']);
+
+    $stmt_conflito = mysqli_prepare($conn,
+        "SELECT nome FROM chave_ia_geral WHERE plano = ? AND nome != 'gemini' LIMIT 1");
+    mysqli_stmt_bind_param($stmt_conflito, "s", $plano_selecionado);
+    mysqli_stmt_execute($stmt_conflito);
+    $res_conflito = mysqli_stmt_get_result($stmt_conflito);
+
     if ($res_conflito && mysqli_num_rows($res_conflito) > 0) {
         $empresa_conflito = mysqli_fetch_assoc($res_conflito)['nome'];
-        echo '<div class="alert alert-danger">Erro: Já existe uma chave da ' . ucfirst($empresa_conflito) . ' no ' . $plano_selecionado . '. Não é possível ter chaves de empresas diferentes no mesmo plano!</div>';
+        echo '<div class="alert alert-danger">Erro: Já existe uma chave da ' . ucfirst($empresa_conflito) . ' no ' . htmlspecialchars($plano_selecionado) . '. Não é possível ter chaves de empresas diferentes no mesmo plano!</div>';
     } else {
-        // Verifica se a chave já existe no mesmo plano
-        $sql_verifica_gemini = "
-            SELECT id 
-            FROM chave_ia_geral 
-            WHERE chave = '{$chave_gemini}' AND nome = 'gemini' AND plano = '{$plano_selecionado}'
-            LIMIT 1
-        ";
-        $res_verifica_gemini = mysqli_query($conn, $sql_verifica_gemini);
-        
+        $stmt_verifica = mysqli_prepare($conn,
+            "SELECT id FROM chave_ia_geral WHERE chave = ? AND nome = 'gemini' AND plano = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt_verifica, "ss", $chave_gemini, $plano_selecionado);
+        mysqli_stmt_execute($stmt_verifica);
+        $res_verifica_gemini = mysqli_stmt_get_result($stmt_verifica);
+
         if ($res_verifica_gemini && mysqli_num_rows($res_verifica_gemini) > 0) {
-            echo '<div class="alert alert-warning">Esta chave da Gemini já está cadastrada no ' . $plano_selecionado . '!</div>';
+            echo '<div class="alert alert-warning">Esta chave da Gemini já está cadastrada no ' . htmlspecialchars($plano_selecionado) . '!</div>';
         } else {
-            // Insere a nova chave
-            $sql_insere_gemini = "
-                INSERT INTO chave_ia_geral (chave, nome, plano, date)
-                VALUES (
-                    '{$chave_gemini}',
-                    'gemini',
-                    '{$plano_selecionado}',
-                    NOW()
-                )
-            ";
-            if (mysqli_query($conn, $sql_insere_gemini)) {
-                echo '<div class="alert alert-success">Chave da Gemini salva com sucesso no ' . $plano_selecionado . '!</div>';
+            $stmt_insere = mysqli_prepare($conn,
+                "INSERT INTO chave_ia_geral (chave, nome, plano, date) VALUES (?, 'gemini', ?, NOW())");
+            mysqli_stmt_bind_param($stmt_insere, "ss", $chave_gemini, $plano_selecionado);
+            if (mysqli_stmt_execute($stmt_insere)) {
+                echo '<div class="alert alert-success">Chave da Gemini salva com sucesso no ' . htmlspecialchars($plano_selecionado) . '!</div>';
             } else {
                 echo '<div class="alert alert-danger">Erro ao salvar chave da Gemini: ' . mysqli_error($conn) . '</div>';
             }

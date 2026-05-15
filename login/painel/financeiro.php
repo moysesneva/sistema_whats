@@ -30,8 +30,10 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
+$stmt_user = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
+mysqli_stmt_bind_param($stmt_user, "s", $login);
+mysqli_stmt_execute($stmt_user);
+$query_busca_usuario = mysqli_stmt_get_result($stmt_user);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
 while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
@@ -63,8 +65,10 @@ if($autorizado != 2){
 
 <?php
 
-$sql_busca_modulos = "SELECT * FROM  agendamento WHERE login = '$login'";
-$query = mysqli_query($conn, $sql_busca_modulos);
+$stmt_mod = mysqli_prepare($conn, "SELECT * FROM agendamento WHERE login = ?");
+mysqli_stmt_bind_param($stmt_mod, "s", $login);
+mysqli_stmt_execute($stmt_mod);
+$query = mysqli_stmt_get_result($stmt_mod);
 $total_financeiro = mysqli_num_rows($query);
 
 
@@ -112,34 +116,54 @@ function getNomeMes($mes) {
     return isset($meses[intval($mes)]) ? $meses[intval($mes)] : 'Mês Inválido';
 }
 
-// Buscar profissionais únicos
-$sql_profissionais = "SELECT DISTINCT profissional_nome FROM agendamento WHERE login = '$login' AND profissional_nome IS NOT NULL AND profissional_nome != ''";
-$query_profissionais = mysqli_query($conn, $sql_profissionais);
+// Validar datas para evitar injeção via campo de data
+function validarDataFinanceiro($data) {
+    if (empty($data)) return '';
+    $d = DateTime::createFromFormat('Y-m-d', $data);
+    return ($d && $d->format('Y-m-d') === $data) ? $data : '';
+}
+$data_inicio = validarDataFinanceiro($data_inicio);
+$data_fim = validarDataFinanceiro($data_fim);
 
-// Construir WHERE mais flexível
-$where_conditions = ["login = '$login'"];
+// Buscar profissionais únicos
+$stmt_prof = mysqli_prepare($conn,
+    "SELECT DISTINCT profissional_nome FROM agendamento WHERE login = ? AND profissional_nome IS NOT NULL AND profissional_nome != ''");
+mysqli_stmt_bind_param($stmt_prof, "s", $login);
+mysqli_stmt_execute($stmt_prof);
+$query_profissionais = mysqli_stmt_get_result($stmt_prof);
+
+// Construir WHERE com parâmetros
+$where_conditions = ["login = ?"];
+$where_params = [$login];
+$where_types = "s";
 
 // Filtro por profissional
 if (!empty($profissional_filtro)) {
-    $prof_escaped = mysqli_real_escape_string($conn, $profissional_filtro);
-    $where_conditions[] = "profissional_nome = '$prof_escaped'";
+    $where_conditions[] = "profissional_nome = ?";
+    $where_params[] = $profissional_filtro;
+    $where_types .= "s";
 }
 
 // Filtro por período
 if (!empty($data_inicio) && !empty($data_fim)) {
-    $where_conditions[] = "data BETWEEN '$data_inicio' AND '$data_fim'";
+    $where_conditions[] = "data BETWEEN ? AND ?";
+    $where_params[] = $data_inicio;
+    $where_params[] = $data_fim;
+    $where_types .= "ss";
 } else {
     $mes_str = str_pad($mes_atual, 2, '0', STR_PAD_LEFT);
-    $where_conditions[] = "data LIKE '$ano_atual-$mes_str-%'";
+    $like_data = "$ano_atual-$mes_str-%";
+    $where_conditions[] = "data LIKE ?";
+    $where_params[] = $like_data;
+    $where_types .= "s";
 }
 
 // Só registros com valor
 $where_conditions[] = "valor_servico IS NOT NULL";
 $where_conditions[] = "valor_servico > 0";
-
 $where_clause = "WHERE " . implode(" AND ", $where_conditions);
 
-// Query principal
+// Query principal com prepared statement
 $sql_financeiro = "SELECT 
     data,
     valor_servico,
@@ -152,7 +176,10 @@ $sql_financeiro = "SELECT
     $where_clause
     ORDER BY data DESC";
 
-$query_financeiro = mysqli_query($conn, $sql_financeiro);
+$stmt_financeiro = mysqli_prepare($conn, $sql_financeiro);
+mysqli_stmt_bind_param($stmt_financeiro, $where_types, ...$where_params);
+mysqli_stmt_execute($stmt_financeiro);
+$query_financeiro = mysqli_stmt_get_result($stmt_financeiro);
 $total_encontrados = $query_financeiro ? mysqli_num_rows($query_financeiro) : 0;
 
 
@@ -163,46 +190,38 @@ VaiPara('sem_financas_mes.php');
 
 
 // Query para evolução mensal (últimos 12 meses)
-$sql_evolucao = "SELECT 
+$stmt_evolucao = mysqli_prepare($conn, "SELECT 
     DATE_FORMAT(data, '%Y-%m') as mes_ano,
     DATE_FORMAT(data, '%m') as mes,
     DATE_FORMAT(data, '%Y') as ano,
     SUM(valor_servico) as total,
     COUNT(*) as quantidade
     FROM agendamento 
-    WHERE login = '$login' 
+    WHERE login = ? 
     AND valor_servico IS NOT NULL 
     AND valor_servico > 0
     AND data >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
     GROUP BY DATE_FORMAT(data, '%Y-%m')
-    ORDER BY mes_ano DESC";
+    ORDER BY mes_ano DESC");
+mysqli_stmt_bind_param($stmt_evolucao, "s", $login);
+mysqli_stmt_execute($stmt_evolucao);
+$query_evolucao = mysqli_stmt_get_result($stmt_evolucao);
 
-$query_evolucao = mysqli_query($conn, $sql_evolucao);
-
-// Query para evolução mensal (últimos 12 meses)
-$sql_evolucao = "SELECT 
-    DATE_FORMAT(data, '%Y-%m') as mes_ano,
-    DATE_FORMAT(data, '%m') as mes,
-    DATE_FORMAT(data, '%Y') as ano,
-    SUM(valor_servico) as total,
-    COUNT(*) as quantidade
-    FROM agendamento 
-    WHERE login = '$login' 
-    AND valor_servico IS NOT NULL 
-    AND valor_servico > 0
-    AND data >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
-    GROUP BY DATE_FORMAT(data, '%Y-%m')
-    ORDER BY mes_ano DESC";
-
-$query_evolucao = mysqli_query($conn, $sql_evolucao);
-
-// Construir WHERE clause para análise de serviços
+// Construir WHERE clause para análise de serviços (datas já validadas)
 $where_clause_servicos = '';
+$servicos_params = [$login];
+$servicos_types = "s";
 if (!empty($data_inicio) && !empty($data_fim)) {
-    $where_clause_servicos = "AND a.data BETWEEN '$data_inicio' AND '$data_fim'";
+    $where_clause_servicos = "AND a.data BETWEEN ? AND ?";
+    $servicos_params[] = $data_inicio;
+    $servicos_params[] = $data_fim;
+    $servicos_types .= "ss";
 } else {
     $mes_str = str_pad($mes_atual, 2, '0', STR_PAD_LEFT);
-    $where_clause_servicos = "AND a.data LIKE '$ano_atual-$mes_str-%'";
+    $like_servico = "$ano_atual-$mes_str-%";
+    $where_clause_servicos = "AND a.data LIKE ?";
+    $servicos_params[] = $like_servico;
+    $servicos_types .= "s";
 }
 
 // Query para análise de serviços mais vendidos
@@ -219,15 +238,20 @@ $sql_servicos_vendidos = "SELECT
     COALESCE(SUM(a.duracao_minutos), 0) as tempo_total
     FROM servicos s
     LEFT JOIN agendamento a ON s.id = a.servico_id 
-    AND a.login = '$login' 
+    AND a.login = ?
     AND a.valor_servico IS NOT NULL 
     AND a.valor_servico > 0
     $where_clause_servicos
-    WHERE s.login = '$login' AND s.ativo = 1
+    WHERE s.login = ? AND s.ativo = 1
     GROUP BY s.id, s.nome, s.descricao, s.valor, s.duracao_minutos, s.categoria
     ORDER BY total_vendas DESC, faturamento_total DESC";
 
-$query_servicos_vendidos = mysqli_query($conn, $sql_servicos_vendidos);
+$stmt_servicos = mysqli_prepare($conn, $sql_servicos_vendidos);
+$sv_params = array_merge([$login], $servicos_params, [$login]);
+$sv_types = "s" . $servicos_types . "s";
+mysqli_stmt_bind_param($stmt_servicos, $sv_types, ...$sv_params);
+mysqli_stmt_execute($stmt_servicos);
+$query_servicos_vendidos = mysqli_stmt_get_result($stmt_servicos);
 
 // Arrays para armazenar dados
 $total_geral = 0;

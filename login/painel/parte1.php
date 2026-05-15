@@ -105,132 +105,162 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $feature_image = processarUpload('feature_image_file', 'feature_image_atual', 'assets/images/', '../../assets/images/');
     $caminho_modelo = processarUpload('caminho_modelo', 'caminho_modelo_atual', 'uploads/', 'uploads/');
     
-    // Inicia a string SQL
-    $sql = "UPDATE config SET ";
+    // Inicia arrays para prepared statement dinâmico
     $updates = array();
-    
-    // O tema é um número, então sempre é atualizado
-    $updates[] = "tema = $tema";
-    
+    $params = array();
+    $types = "";
+
+    // O tema é um número, sempre atualizado
+    $updates[] = "tema = ?";
+    $params[] = $tema;
+    $types .= "i";
+
     // Para cada campo, verificamos se ele não está vazio antes de incluí-lo no SQL
-    // IMPORTANTE: Só incluir campos que não estejam vazios, com exceção do campo video_youtube
-    
-    // Tratar o campo de telefone apenas se não estiver vazio
     if (!empty($telefone)) {
-        $updates[] = "telefone = '" . mysqli_real_escape_string($conn, $telefone) . "'";
+        $updates[] = "telefone = ?";
+        $params[] = $telefone;
+        $types .= "s";
     }
 
-    // Tratar o campo de endereço apenas se não estiver vazio
     if (!empty($endereco)) {
-        $updates[] = "endereco = '" . mysqli_real_escape_string($conn, $endereco) . "'";
+        $updates[] = "endereco = ?";
+        $params[] = $endereco;
+        $types .= "s";
     }
-    
-    // Tratar o campo de modelo apenas se tiver um novo arquivo
+
     if ($caminho_modelo !== null) {
-        $updates[] = "caminho_modelo = '" . mysqli_real_escape_string($conn, $caminho_modelo) . "'";
+        $updates[] = "caminho_modelo = ?";
+        $params[] = $caminho_modelo;
+        $types .= "s";
     }
-    
-    // Tratar o campo de título do hero apenas se não estiver vazio
+
     if (!empty($hero_title)) {
-        $updates[] = "hero_title = '" . mysqli_real_escape_string($conn, $hero_title) . "'";
+        $updates[] = "hero_title = ?";
+        $params[] = $hero_title;
+        $types .= "s";
     }
-    
-    // Tratar o campo de subtítulo do hero apenas se não estiver vazio
+
     if (!empty($hero_subtitle)) {
-        $updates[] = "hero_subtitle = '" . mysqli_real_escape_string($conn, $hero_subtitle) . "'";
+        $updates[] = "hero_subtitle = ?";
+        $params[] = $hero_subtitle;
+        $types .= "s";
     }
-    
-    // Tratar o campo de título dos serviços apenas se não estiver vazio
+
     if (!empty($services_title)) {
-        $updates[] = "services_title = '" . mysqli_real_escape_string($conn, $services_title) . "'";
+        $updates[] = "services_title = ?";
+        $params[] = $services_title;
+        $types .= "s";
     }
-    
-    // Tratar o campo de descrição dos serviços apenas se não estiver vazio
+
     if (!empty($services_description)) {
-        $updates[] = "services_description = '" . mysqli_real_escape_string($conn, $services_description) . "'";
+        $updates[] = "services_description = ?";
+        $params[] = $services_description;
+        $types .= "s";
     }
-    
-    // Tratar o campo de texto de vendas apenas se não estiver vazio
+
     if (!empty($texto_vendas)) {
-        $updates[] = "texto_vendas = '" . mysqli_real_escape_string($conn, $texto_vendas) . "'";
+        $updates[] = "texto_vendas = ?";
+        $params[] = $texto_vendas;
+        $types .= "s";
     }
-    
-    // Para o vídeo do YouTube, tratamento especial:
-    // Se o checkbox de apagar estiver marcado, definimos como vazio
-    // Se não estiver marcado, incluímos o valor atual, mesmo que vazio
+
+    // Para o vídeo do YouTube, tratamento especial
     if (isset($_POST['apagar_video']) && $_POST['apagar_video'] == 1) {
         $updates[] = "video_youtube = ''";
     } else {
-        $updates[] = "video_youtube = '" . mysqli_real_escape_string($conn, $video_youtube) . "'";
+        $updates[] = "video_youtube = ?";
+        $params[] = $video_youtube;
+        $types .= "s";
     }
-    
-    // Card 1 - apenas se os campos não estiverem vazios
-    // Para arquivos, verificamos se o valor não é NULL (NULL = não atualizar no banco)
+
     if ($card1_icon !== null) {
-        $updates[] = "card1_icon = '" . mysqli_real_escape_string($conn, $card1_icon) . "'";
+        $updates[] = "card1_icon = ?";
+        $params[] = $card1_icon;
+        $types .= "s";
     }
-    
+
     if (!empty($card1_title)) {
-        $updates[] = "card1_title = '" . mysqli_real_escape_string($conn, $card1_title) . "'";
+        $updates[] = "card1_title = ?";
+        $params[] = $card1_title;
+        $types .= "s";
     }
-    
+
     if (!empty($card1_description)) {
-        $updates[] = "card1_description = '" . mysqli_real_escape_string($conn, $card1_description) . "'";
+        $updates[] = "card1_description = ?";
+        $params[] = $card1_description;
+        $types .= "s";
     }
-    
-    // Card 2 - apenas se os campos não estiverem vazios
+
     if ($card2_icon !== null) {
-        $updates[] = "card2_icon = '" . mysqli_real_escape_string($conn, $card2_icon) . "'";
+        $updates[] = "card2_icon = ?";
+        $params[] = $card2_icon;
+        $types .= "s";
     }
-    
+
     if (!empty($card2_title)) {
-        $updates[] = "card2_title = '" . mysqli_real_escape_string($conn, $card2_title) . "'";
+        $updates[] = "card2_title = ?";
+        $params[] = $card2_title;
+        $types .= "s";
     }
-    
+
     if (!empty($card2_description)) {
-        $updates[] = "card2_description = '" . mysqli_real_escape_string($conn, $card2_description) . "'";
+        $updates[] = "card2_description = ?";
+        $params[] = $card2_description;
+        $types .= "s";
     }
-    
-    // Card 3 - apenas se os campos não estiverem vazios
+
     if ($card3_icon !== null) {
-        $updates[] = "card3_icon = '" . mysqli_real_escape_string($conn, $card3_icon) . "'";
+        $updates[] = "card3_icon = ?";
+        $params[] = $card3_icon;
+        $types .= "s";
     }
-    
+
     if (!empty($card3_title)) {
-        $updates[] = "card3_title = '" . mysqli_real_escape_string($conn, $card3_title) . "'";
+        $updates[] = "card3_title = ?";
+        $params[] = $card3_title;
+        $types .= "s";
     }
-    
+
     if (!empty($card3_description)) {
-        $updates[] = "card3_description = '" . mysqli_real_escape_string($conn, $card3_description) . "'";
+        $updates[] = "card3_description = ?";
+        $params[] = $card3_description;
+        $types .= "s";
     }
-    
-    // Seção de benefícios - apenas se os campos não estiverem vazios
+
     if ($feature_image !== null) {
-        $updates[] = "feature_image = '" . mysqli_real_escape_string($conn, $feature_image) . "'";
+        $updates[] = "feature_image = ?";
+        $params[] = $feature_image;
+        $types .= "s";
     }
-    
+
     if (!empty($feature_title)) {
-        $updates[] = "feature_title = '" . mysqli_real_escape_string($conn, $feature_title) . "'";
+        $updates[] = "feature_title = ?";
+        $params[] = $feature_title;
+        $types .= "s";
     }
-    
+
     if (!empty($feature_description)) {
-        $updates[] = "feature_description = '" . mysqli_real_escape_string($conn, $feature_description) . "'";
+        $updates[] = "feature_description = ?";
+        $params[] = $feature_description;
+        $types .= "s";
     }
-    
-    // Para feature_items, só atualizamos se o array não estiver vazio
+
     if (!empty($feature_items)) {
-        $escaped_json = mysqli_real_escape_string($conn, $feature_items_json);
-        $updates[] = "feature_items = '$escaped_json'";
+        $updates[] = "feature_items = ?";
+        $params[] = $feature_items_json;
+        $types .= "s";
     }
-    
+
     // Completa a consulta SQL apenas se houver campos para atualizar
     if (!empty($updates)) {
-        $sql .= implode(", ", $updates);
-        
-        // Execute a consulta SQL
-        $resultado = mysqli_query($conn, $sql);
-        
-        if ($resultado) {
+        $sql = "UPDATE config SET " . implode(", ", $updates);
+
+        $stmt = mysqli_prepare($conn, $sql);
+        if ($stmt && !empty($params)) {
+            mysqli_stmt_bind_param($stmt, $types, ...$params);
+        }
+
+        if ($stmt && mysqli_stmt_execute($stmt)) {
             echo "<div class='alert alert-success'>Configurações atualizadas com sucesso!</div>";
         } else {
             echo "<div class='alert alert-danger'>Erro ao atualizar configurações: " . mysqli_error($conn) . "</div>";

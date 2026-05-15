@@ -30,8 +30,10 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
+$stmt_user = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
+mysqli_stmt_bind_param($stmt_user, "s", $login);
+mysqli_stmt_execute($stmt_user);
+$query_busca_usuario = mysqli_stmt_get_result($stmt_user);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
 while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
@@ -73,8 +75,10 @@ while($rows_config = mysqli_fetch_array($query_busca_config)) {
                 
                 <?php
 // Buscar os dados existentes do banco logo no início
-$sql_select = "SELECT * FROM config WHERE chave = '$chave'";
-$result = mysqli_query($conn, $sql_select);
+$stmt_cfg = mysqli_prepare($conn, "SELECT * FROM config WHERE chave = ?");
+mysqli_stmt_bind_param($stmt_cfg, "s", $chave);
+mysqli_stmt_execute($stmt_cfg);
+$result = mysqli_stmt_get_result($stmt_cfg);
 if ($result && mysqli_num_rows($result) > 0) {
     $row = mysqli_fetch_assoc($result);
     $link_plano1 = $row['link_plano1'];
@@ -86,54 +90,51 @@ if ($result && mysqli_num_rows($result) > 0) {
 // Verifica se os links de pagamento foram enviados
 // Quando o formulário para salvar todos os links de uma vez é enviado
 if (isset($_POST['chave']) && isset($_POST['salvar_links'])) {
-    
-    $chave = mysqli_real_escape_string($conn, $_POST['chave']);
-    
-    // Define os links com valores nulos ou os valores enviados
-    $link_plano1 = !empty($_POST['link_plano1']) ? mysqli_real_escape_string($conn, $_POST['link_plano1']) : NULL;
-    $link_plano2 = !empty($_POST['link_plano2']) ? mysqli_real_escape_string($conn, $_POST['link_plano2']) : NULL;
-    $link_plano3 = !empty($_POST['link_plano3']) ? mysqli_real_escape_string($conn, $_POST['link_plano3']) : NULL;
-    $link_creditos = !empty($_POST['link_creditos']) ? mysqli_real_escape_string($conn, $_POST['link_creditos']) : NULL;
 
-    // Atualiza os links de pagamento no banco de dados
-    $sql = "UPDATE config SET 
-            link_plano1 = " . ($link_plano1 ? "'$link_plano1'" : "NULL") . ",
-            link_plano2 = " . ($link_plano2 ? "'$link_plano2'" : "NULL") . ",
-            link_plano3 = " . ($link_plano3 ? "'$link_plano3'" : "NULL") . ",
-            link_creditos = " . ($link_creditos ? "'$link_creditos'" : "NULL") . "
-            WHERE chave = '$chave'";
-            
-    if (mysqli_query($conn, $sql)) {
+    $chave = trim($_POST['chave']);
+    $link_plano1 = !empty($_POST['link_plano1']) ? trim($_POST['link_plano1']) : null;
+    $link_plano2 = !empty($_POST['link_plano2']) ? trim($_POST['link_plano2']) : null;
+    $link_plano3 = !empty($_POST['link_plano3']) ? trim($_POST['link_plano3']) : null;
+    $link_creditos = !empty($_POST['link_creditos']) ? trim($_POST['link_creditos']) : null;
+
+    $stmt_upd = mysqli_prepare($conn,
+        "UPDATE config SET link_plano1 = ?, link_plano2 = ?, link_plano3 = ?, link_creditos = ? WHERE chave = ?");
+    mysqli_stmt_bind_param($stmt_upd, "sssss", $link_plano1, $link_plano2, $link_plano3, $link_creditos, $chave);
+
+    if (mysqli_stmt_execute($stmt_upd)) {
         echo "<div class='alert alert-success'>Links de pagamento atualizados com sucesso!</div>";
-        
-        // Atualiza a tabela planos_online para cada plano
+
         if (!empty($link_plano1)) {
-            $update_plano1 = "UPDATE planos_online SET link_pagamento = '$link_plano1' WHERE id = 1";
-            if(mysqli_query($conn, $update_plano1)) {
+            $stmt_p1 = mysqli_prepare($conn, "UPDATE planos_online SET link_pagamento = ? WHERE id = 1");
+            mysqli_stmt_bind_param($stmt_p1, "s", $link_plano1);
+            if (mysqli_stmt_execute($stmt_p1)) {
                 echo "<div class='alert alert-info'>Link do plano Popular atualizado na tabela de planos!</div>";
             }
         }
-        
+
         if (!empty($link_plano2)) {
-            $update_plano2 = "UPDATE planos_online SET link_pagamento = '$link_plano2' WHERE id = 2";
-            if(mysqli_query($conn, $update_plano2)) {
+            $stmt_p2 = mysqli_prepare($conn, "UPDATE planos_online SET link_pagamento = ? WHERE id = 2");
+            mysqli_stmt_bind_param($stmt_p2, "s", $link_plano2);
+            if (mysqli_stmt_execute($stmt_p2)) {
                 echo "<div class='alert alert-info'>Link do plano Premium atualizado na tabela de planos!</div>";
             }
         }
-        
+
         if (!empty($link_plano3)) {
-            $update_plano3 = "UPDATE planos_online SET link_pagamento = '$link_plano3' WHERE id = 3";
-            if(mysqli_query($conn, $update_plano3)) {
+            $stmt_p3 = mysqli_prepare($conn, "UPDATE planos_online SET link_pagamento = ? WHERE id = 3");
+            mysqli_stmt_bind_param($stmt_p3, "s", $link_plano3);
+            if (mysqli_stmt_execute($stmt_p3)) {
                 echo "<div class='alert alert-info'>Link do plano Enterprise atualizado na tabela de planos!</div>";
             }
         }
     } else {
         echo "<div class='alert alert-danger'>Erro ao atualizar os links de pagamento. Tente novamente.</div>";
     }
-    
-    // Recarregar os dados após a atualização
-    $sql_select = "SELECT * FROM config WHERE chave = '$chave'";
-    $result = mysqli_query($conn, $sql_select);
+
+    $stmt_sel = mysqli_prepare($conn, "SELECT * FROM config WHERE chave = ?");
+    mysqli_stmt_bind_param($stmt_sel, "s", $chave);
+    mysqli_stmt_execute($stmt_sel);
+    $result = mysqli_stmt_get_result($stmt_sel);
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
         $link_plano1 = $row['link_plano1'];
@@ -145,79 +146,14 @@ if (isset($_POST['chave']) && isset($_POST['salvar_links'])) {
 // Quando o formulário para adicionar um plano individual é enviado
 elseif (isset($_POST['adicionar_plano'])) {
     // Adicionar um plano específico
-    $chave = mysqli_real_escape_string($conn, $_POST['chave']);
-    $plano = mysqli_real_escape_string($conn, $_POST['plano']);
-    $novo_link = !empty($_POST['novo_link']) ? mysqli_real_escape_string($conn, $_POST['novo_link']) : NULL;
-    
+    $chave = trim($_POST['chave']);
+    $plano = trim($_POST['plano']);
+    $novo_link = !empty($_POST['novo_link']) ? trim($_POST['novo_link']) : null;
+
     $coluna = '';
     $plano_id = 0;
     $plano_nome = '';
-    
-    switch ($plano) {
-        case 'plano1':
-            $coluna = 'link_plano1';
-            $plano_id = 1;
-            $plano_nome = 'Popular';
-            break;
-        case 'plano2':
-            $coluna = 'link_plano2';
-            $plano_id = 2;
-            $plano_nome = 'Premium';
-            break;
-        case 'plano3':
-            $coluna = 'link_plano3';
-            $plano_id = 3;
-            $plano_nome = 'Enterprise';
-            break;
-        case 'creditos':
-            $coluna = 'link_creditos';
-            $plano_id = 0; // Não existe na tabela planos_online
-            $plano_nome = 'Créditos';
-            break;
-    }
-    
-    if (!empty($coluna)) {
-        // Atualiza a coluna específica na tabela config
-        $sql = "UPDATE config SET $coluna = " . ($novo_link ? "'$novo_link'" : "NULL") . " WHERE chave = '$chave'";
-        
-        if (mysqli_query($conn, $sql)) {
-            echo "<div class='alert alert-success'>Link de pagamento do plano $plano_nome adicionado com sucesso!</div>";
-            
-            // Atualiza também a tabela planos_online se for um dos três planos principais
-            if ($plano_id > 0 && !empty($novo_link)) {
-                $update_plano = "UPDATE planos_online SET link_pagamento = '$novo_link' WHERE id = $plano_id";
-                if(mysqli_query($conn, $update_plano)) {
-                    echo "<div class='alert alert-info'>Link do plano $plano_nome atualizado na tabela de planos!</div>";
-                } else {
-                    echo "<div class='alert alert-warning'>Não foi possível atualizar a tabela de planos. Erro: " . mysqli_error($conn) . "</div>";
-                }
-            }
-        } else {
-            echo "<div class='alert alert-danger'>Erro ao adicionar o link de pagamento. Tente novamente.</div>";
-        }
-        
-        // Recarregar os dados após a atualização
-        $sql_select = "SELECT * FROM config WHERE chave = '$chave'";
-        $result = mysqli_query($conn, $sql_select);
-        if ($result && mysqli_num_rows($result) > 0) {
-            $row = mysqli_fetch_assoc($result);
-            $link_plano1 = $row['link_plano1'];
-            $link_plano2 = $row['link_plano2'];
-            $link_plano3 = $row['link_plano3'];
-            $link_creditos = $row['link_creditos'];
-        }
-    }
-}
-// Quando o botão para apagar um plano é clicado
-elseif (isset($_POST['apagar_plano'])) {
-    // Apagar individualmente um plano específico
-    $chave = mysqli_real_escape_string($conn, $_POST['chave']);
-    $plano = mysqli_real_escape_string($conn, $_POST['plano']);
-    
-    $coluna = '';
-    $plano_id = 0;
-    $plano_nome = '';
-    
+
     switch ($plano) {
         case 'plano1':
             $coluna = 'link_plano1';
@@ -240,20 +176,84 @@ elseif (isset($_POST['apagar_plano'])) {
             $plano_nome = 'Créditos';
             break;
     }
-    
+
     if (!empty($coluna)) {
-        // Atualiza a coluna específica na tabela config, definindo como NULL
-        $sql = "UPDATE config SET $coluna = NULL WHERE chave = '$chave'";
-        
-        if (mysqli_query($conn, $sql)) {
+        $stmt_ai = mysqli_prepare($conn, "UPDATE config SET $coluna = ? WHERE chave = ?");
+        mysqli_stmt_bind_param($stmt_ai, "ss", $novo_link, $chave);
+
+        if (mysqli_stmt_execute($stmt_ai)) {
+            echo "<div class='alert alert-success'>Link de pagamento do plano $plano_nome adicionado com sucesso!</div>";
+
+            if ($plano_id > 0 && !empty($novo_link)) {
+                $stmt_po = mysqli_prepare($conn, "UPDATE planos_online SET link_pagamento = ? WHERE id = ?");
+                mysqli_stmt_bind_param($stmt_po, "si", $novo_link, $plano_id);
+                if (mysqli_stmt_execute($stmt_po)) {
+                    echo "<div class='alert alert-info'>Link do plano $plano_nome atualizado na tabela de planos!</div>";
+                } else {
+                    echo "<div class='alert alert-warning'>Não foi possível atualizar a tabela de planos. Erro: " . mysqli_error($conn) . "</div>";
+                }
+            }
+        } else {
+            echo "<div class='alert alert-danger'>Erro ao adicionar o link de pagamento. Tente novamente.</div>";
+        }
+
+        $stmt_ri = mysqli_prepare($conn, "SELECT * FROM config WHERE chave = ?");
+        mysqli_stmt_bind_param($stmt_ri, "s", $chave);
+        mysqli_stmt_execute($stmt_ri);
+        $result = mysqli_stmt_get_result($stmt_ri);
+        if ($result && mysqli_num_rows($result) > 0) {
+            $row = mysqli_fetch_assoc($result);
+            $link_plano1 = $row['link_plano1'];
+            $link_plano2 = $row['link_plano2'];
+            $link_plano3 = $row['link_plano3'];
+            $link_creditos = $row['link_creditos'];
+        }
+    }
+}
+// Quando o botão para apagar um plano é clicado
+elseif (isset($_POST['apagar_plano'])) {
+    $chave = trim($_POST['chave']);
+    $plano = trim($_POST['plano']);
+
+    $coluna = '';
+    $plano_id = 0;
+    $plano_nome = '';
+
+    switch ($plano) {
+        case 'plano1':
+            $coluna = 'link_plano1';
+            $plano_id = 1;
+            $plano_nome = 'Popular';
+            break;
+        case 'plano2':
+            $coluna = 'link_plano2';
+            $plano_id = 2;
+            $plano_nome = 'Premium';
+            break;
+        case 'plano3':
+            $coluna = 'link_plano3';
+            $plano_id = 3;
+            $plano_nome = 'Enterprise';
+            break;
+        case 'creditos':
+            $coluna = 'link_creditos';
+            $plano_id = 0;
+            $plano_nome = 'Créditos';
+            break;
+    }
+
+    if (!empty($coluna)) {
+        $stmt_ap = mysqli_prepare($conn, "UPDATE config SET $coluna = NULL WHERE chave = ?");
+        mysqli_stmt_bind_param($stmt_ap, "s", $chave);
+
+        if (mysqli_stmt_execute($stmt_ap)) {
             echo "<div class='alert alert-success'>Link de pagamento do plano $plano_nome removido com sucesso!</div>";
-            
-            // Atualiza também a tabela planos_online se for um dos três planos principais
-            // Quando o link é removido, vamos colocar o link padrão de volta
+
             if ($plano_id > 0) {
                 $link_padrao = "https://seusite.com/pagar?plano=premium";
-                $update_plano = "UPDATE planos_online SET link_pagamento = '$link_padrao' WHERE id = $plano_id";
-                if(mysqli_query($conn, $update_plano)) {
+                $stmt_pp = mysqli_prepare($conn, "UPDATE planos_online SET link_pagamento = ? WHERE id = ?");
+                mysqli_stmt_bind_param($stmt_pp, "si", $link_padrao, $plano_id);
+                if (mysqli_stmt_execute($stmt_pp)) {
                     echo "<div class='alert alert-info'>Link do plano $plano_nome redefinido na tabela de planos!</div>";
                 } else {
                     echo "<div class='alert alert-warning'>Não foi possível atualizar a tabela de planos. Erro: " . mysqli_error($conn) . "</div>";
@@ -262,10 +262,11 @@ elseif (isset($_POST['apagar_plano'])) {
         } else {
             echo "<div class='alert alert-danger'>Erro ao remover o link de pagamento. Tente novamente.</div>";
         }
-        
-        // Recarregar os dados após a atualização
-        $sql_select = "SELECT * FROM config WHERE chave = '$chave'";
-        $result = mysqli_query($conn, $sql_select);
+
+        $stmt_ra = mysqli_prepare($conn, "SELECT * FROM config WHERE chave = ?");
+        mysqli_stmt_bind_param($stmt_ra, "s", $chave);
+        mysqli_stmt_execute($stmt_ra);
+        $result = mysqli_stmt_get_result($stmt_ra);
         if ($result && mysqli_num_rows($result) > 0) {
             $row = mysqli_fetch_assoc($result);
             $link_plano1 = $row['link_plano1'];
@@ -276,40 +277,32 @@ elseif (isset($_POST['apagar_plano'])) {
     }
 
 } elseif (isset($_POST['adicionar_plano'])) {
-    // Adicionar um plano específico
-    $chave = mysqli_real_escape_string($conn, $_POST['chave']);
-    $plano = mysqli_real_escape_string($conn, $_POST['plano']);
-    $novo_link = !empty($_POST['novo_link']) ? mysqli_real_escape_string($conn, $_POST['novo_link']) : NULL;
-    
+    $chave = trim($_POST['chave']);
+    $plano = trim($_POST['plano']);
+    $novo_link = !empty($_POST['novo_link']) ? trim($_POST['novo_link']) : null;
+
     $coluna = '';
     switch ($plano) {
-        case 'plano1':
-            $coluna = 'link_plano1';
-            break;
-        case 'plano2':
-            $coluna = 'link_plano2';
-            break;
-        case 'plano3':
-            $coluna = 'link_plano3';
-            break;
-        case 'creditos':
-            $coluna = 'link_creditos';
-            break;
+        case 'plano1': $coluna = 'link_plano1'; break;
+        case 'plano2': $coluna = 'link_plano2'; break;
+        case 'plano3': $coluna = 'link_plano3'; break;
+        case 'creditos': $coluna = 'link_creditos'; break;
     }
-    
+
     if (!empty($coluna)) {
-        // Apenas atualiza a coluna específica, mantendo as outras inalteradas
-        $sql = "UPDATE config SET $coluna = " . ($novo_link ? "'$novo_link'" : "NULL") . " WHERE chave = '$chave'";
-        
-        if (mysqli_query($conn, $sql)) {
+        $stmt_ai2 = mysqli_prepare($conn, "UPDATE config SET $coluna = ? WHERE chave = ?");
+        mysqli_stmt_bind_param($stmt_ai2, "ss", $novo_link, $chave);
+
+        if (mysqli_stmt_execute($stmt_ai2)) {
             echo "<div class='alert alert-success'>Link de pagamento adicionado com sucesso!</div>";
         } else {
             echo "<div class='alert alert-danger'>Erro ao adicionar o link de pagamento. Tente novamente.</div>";
         }
-        
-        // Recarregar os dados após a atualização
-        $sql_select = "SELECT * FROM config WHERE chave = '$chave'";
-        $result = mysqli_query($conn, $sql_select);
+
+        $stmt_ri2 = mysqli_prepare($conn, "SELECT * FROM config WHERE chave = ?");
+        mysqli_stmt_bind_param($stmt_ri2, "s", $chave);
+        mysqli_stmt_execute($stmt_ri2);
+        $result = mysqli_stmt_get_result($stmt_ri2);
         if ($result && mysqli_num_rows($result) > 0) {
             $row = mysqli_fetch_assoc($result);
             $link_plano1 = $row['link_plano1'];
@@ -319,39 +312,31 @@ elseif (isset($_POST['apagar_plano'])) {
         }
     }
 } elseif (isset($_POST['apagar_plano'])) {
-    // Apagar individualmente um plano específico
-    $chave = mysqli_real_escape_string($conn, $_POST['chave']);
-    $plano = mysqli_real_escape_string($conn, $_POST['plano']);
-    
+    $chave = trim($_POST['chave']);
+    $plano = trim($_POST['plano']);
+
     $coluna = '';
     switch ($plano) {
-        case 'plano1':
-            $coluna = 'link_plano1';
-            break;
-        case 'plano2':
-            $coluna = 'link_plano2';
-            break;
-        case 'plano3':
-            $coluna = 'link_plano3';
-            break;
-        case 'creditos':
-            $coluna = 'link_creditos';
-            break;
+        case 'plano1': $coluna = 'link_plano1'; break;
+        case 'plano2': $coluna = 'link_plano2'; break;
+        case 'plano3': $coluna = 'link_plano3'; break;
+        case 'creditos': $coluna = 'link_creditos'; break;
     }
-    
+
     if (!empty($coluna)) {
-        // Apenas atualiza a coluna específica, mantendo as outras inalteradas
-        $sql = "UPDATE config SET $coluna = NULL WHERE chave = '$chave'";
-        
-        if (mysqli_query($conn, $sql)) {
+        $stmt_ap2 = mysqli_prepare($conn, "UPDATE config SET $coluna = NULL WHERE chave = ?");
+        mysqli_stmt_bind_param($stmt_ap2, "s", $chave);
+
+        if (mysqli_stmt_execute($stmt_ap2)) {
             echo "<div class='alert alert-success'>Link de pagamento removido com sucesso!</div>";
         } else {
             echo "<div class='alert alert-danger'>Erro ao remover o link de pagamento. Tente novamente.</div>";
         }
-        
-        // Recarregar os dados após a atualização
-        $sql_select = "SELECT * FROM config WHERE chave = '$chave'";
-        $result = mysqli_query($conn, $sql_select);
+
+        $stmt_ra2 = mysqli_prepare($conn, "SELECT * FROM config WHERE chave = ?");
+        mysqli_stmt_bind_param($stmt_ra2, "s", $chave);
+        mysqli_stmt_execute($stmt_ra2);
+        $result = mysqli_stmt_get_result($stmt_ra2);
         if ($result && mysqli_num_rows($result) > 0) {
             $row = mysqli_fetch_assoc($result);
             $link_plano1 = $row['link_plano1'];

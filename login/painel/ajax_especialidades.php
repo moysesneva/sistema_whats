@@ -1,30 +1,30 @@
 <?php
+session_start();
 include 'conn.php';
-
-// ajax_especialidades.php
-// Assumindo que já existe conexão com o banco ($conn) e sessão iniciada com $login
+$login = isset($_SESSION['login']) ? $_SESSION['login'] : '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $acao = $_POST['acao'];
-    
-    switch($acao) {
+
+    switch ($acao) {
         case 'listar':
             $profissional_id = intval($_POST['profissional_id']);
-            
-            $sql = "SELECT ep.*, p.profissional_nome 
-                    FROM especialidade_profissional ep
-                    JOIN profissional p ON ep.profissional_id = p.id
-                    WHERE ep.profissional_id = '$profissional_id' 
-                    AND ep.login = '$login'";
-            
-            $query = mysqli_query($conn, $sql);
-            
-            if(mysqli_num_rows($query) > 0) {
+
+            $stmt = mysqli_prepare($conn,
+                "SELECT ep.*, p.profissional_nome
+                 FROM especialidade_profissional ep
+                 JOIN profissional p ON ep.profissional_id = p.id
+                 WHERE ep.profissional_id = ? AND ep.login = ?");
+            mysqli_stmt_bind_param($stmt, "is", $profissional_id, $login);
+            mysqli_stmt_execute($stmt);
+            $query = mysqli_stmt_get_result($stmt);
+
+            if (mysqli_num_rows($query) > 0) {
                 echo '<div class="list-group">';
-                while($row = mysqli_fetch_array($query)) {
+                while ($row = mysqli_fetch_array($query)) {
                     echo '<div class="list-group-item d-flex justify-content-between align-items-center">';
-                    echo $row['especialidade'];
-                    echo '<button class="btn btn-danger btn-sm" onclick="removerEspecialidade('.$row['id'].')">Remover</button>';
+                    echo htmlspecialchars($row['especialidade']);
+                    echo '<button class="btn btn-danger btn-sm" onclick="removerEspecialidade(' . $row['id'] . ')">Remover</button>';
                     echo '</div>';
                 }
                 echo '</div>';
@@ -32,20 +32,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo '<p class="text-muted">Nenhuma especialidade cadastrada</p>';
             }
             break;
-            
+
         case 'adicionar':
             $profissional_id = intval($_POST['profissional_id']);
-            $especialidade = mysqli_real_escape_string($conn, $_POST['especialidade']);
-            
-            // Verifica se o profissional pertence ao usuário logado
-            $sql_verifica = "SELECT id FROM profissional WHERE id = '$profissional_id' AND login = '$login'";
-            $query_verifica = mysqli_query($conn, $sql_verifica);
-            
-            if(mysqli_num_rows($query_verifica) > 0) {
-                $sql = "INSERT INTO especialidade_profissional (login, profissional_id, especialidade) 
-                        VALUES ('$login', '$profissional_id', '$especialidade')";
-                
-                if(mysqli_query($conn, $sql)) {
+            $especialidade = trim($_POST['especialidade']);
+
+            $stmt_verifica = mysqli_prepare($conn, "SELECT id FROM profissional WHERE id = ? AND login = ?");
+            mysqli_stmt_bind_param($stmt_verifica, "is", $profissional_id, $login);
+            mysqli_stmt_execute($stmt_verifica);
+            $query_verifica = mysqli_stmt_get_result($stmt_verifica);
+
+            if (mysqli_num_rows($query_verifica) > 0) {
+                $stmt_insert = mysqli_prepare($conn,
+                    "INSERT INTO especialidade_profissional (login, profissional_id, especialidade)
+                     VALUES (?, ?, ?)");
+                mysqli_stmt_bind_param($stmt_insert, "sis", $login, $profissional_id, $especialidade);
+
+                if (mysqli_stmt_execute($stmt_insert)) {
                     echo 'sucesso';
                 } else {
                     echo 'erro';
@@ -54,15 +57,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo 'erro';
             }
             break;
-            
+
         case 'remover':
             $especialidade_id = intval($_POST['especialidade_id']);
-            
-            // Verifica se a especialidade pertence ao usuário logado
-            $sql = "DELETE FROM especialidade_profissional 
-                    WHERE id = '$especialidade_id' AND login = '$login'";
-            
-            if(mysqli_query($conn, $sql)) {
+
+            $stmt_delete = mysqli_prepare($conn,
+                "DELETE FROM especialidade_profissional WHERE id = ? AND login = ?");
+            mysqli_stmt_bind_param($stmt_delete, "is", $especialidade_id, $login);
+
+            if (mysqli_stmt_execute($stmt_delete)) {
                 echo 'sucesso';
             } else {
                 echo 'erro';

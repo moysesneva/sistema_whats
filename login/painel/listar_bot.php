@@ -26,8 +26,10 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
+$stmt_user = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
+mysqli_stmt_bind_param($stmt_user, "s", $login);
+mysqli_stmt_execute($stmt_user);
+$query_busca_usuario = mysqli_stmt_get_result($stmt_user);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
 while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
@@ -238,11 +240,12 @@ if (isset($_POST['usuario_id']) && isset($_POST['quantidade_creditos'])) {
 // Processa alteração de plano
 if (isset($_POST['usuario_id_plano']) && isset($_POST['novo_plano'])) {
     $usuario_id = (int) $_POST['usuario_id_plano'];
-    $novo_plano = mysqli_real_escape_string($conn, $_POST['novo_plano']);
-    
-    $sql_update_plano = "UPDATE login SET plano = '{$novo_plano}' WHERE id = {$usuario_id}";
-    
-    if (mysqli_query($conn, $sql_update_plano)) {
+    $novo_plano = trim($_POST['novo_plano']);
+
+    $stmt_plano = $conn->prepare("UPDATE login SET plano = ? WHERE id = ?");
+    $stmt_plano->bind_param("si", $novo_plano, $usuario_id);
+
+    if ($stmt_plano->execute()) {
         echo '<div class="alert alert-success">Plano alterado com sucesso!</div>';
     } else {
         echo '<div class="alert alert-danger">Erro ao alterar plano: ' . mysqli_error($conn) . '</div>';

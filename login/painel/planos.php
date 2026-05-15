@@ -30,8 +30,10 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
+$stmt_user = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
+mysqli_stmt_bind_param($stmt_user, "s", $login);
+mysqli_stmt_execute($stmt_user);
+$query_busca_usuario = mysqli_stmt_get_result($stmt_user);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
 while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
@@ -71,16 +73,13 @@ if($autorizado != 2){
 // 1) Processa o POST de remover módulo
 if (isset($_POST['remover_modulo']) && !empty($_POST['remover_modulo'])) {
     $modulo_id = (int) $_POST['remover_modulo'];
-    $plano_nome = mysqli_real_escape_string($conn, $_POST['plano']);
-    
-    // Remove o módulo da tabela planos_clientes
-    $sql_remove = "
-        DELETE FROM planos_clientes 
-        WHERE id = {$modulo_id} AND nome_plano = '{$plano_nome}'
-        LIMIT 1
-    ";
-    
-    if (mysqli_query($conn, $sql_remove)) {
+    $plano_nome = trim($_POST['plano']);
+
+    $stmt_remove = mysqli_prepare($conn,
+        "DELETE FROM planos_clientes WHERE id = ? AND nome_plano = ? LIMIT 1");
+    mysqli_stmt_bind_param($stmt_remove, "is", $modulo_id, $plano_nome);
+
+    if (mysqli_stmt_execute($stmt_remove)) {
         echo '<div class="alert alert-success">Módulo removido com sucesso!</div>';
     } else {
         echo '<div class="alert alert-danger">Erro ao remover módulo: ' . mysqli_error($conn) . '</div>';
@@ -90,46 +89,31 @@ if (isset($_POST['remover_modulo']) && !empty($_POST['remover_modulo'])) {
 // 2) Processa o POST de adicionar módulo
 if (isset($_POST['adicionar_modulo']) && !empty($_POST['modulo']) && !empty($_POST['plano'])) {
     $modulo_id = (int) $_POST['modulo'];
-    $nome_plano = mysqli_real_escape_string($conn, $_POST['plano']);
+    $nome_plano = trim($_POST['plano']);
 
-    // Busca o nome do módulo e tipo selecionado
-    $sql_busca = "
-        SELECT nome_modulo, tipo
-        FROM modulos_lista
-        WHERE id = {$modulo_id}
-        LIMIT 1
-    ";
-    $res_busca = mysqli_query($conn, $sql_busca);
+    $stmt_busca = mysqli_prepare($conn, "SELECT nome_modulo, tipo FROM modulos_lista WHERE id = ? LIMIT 1");
+    mysqli_stmt_bind_param($stmt_busca, "i", $modulo_id);
+    mysqli_stmt_execute($stmt_busca);
+    $res_busca = mysqli_stmt_get_result($stmt_busca);
 
     if ($res_busca && mysqli_num_rows($res_busca) > 0) {
         $row = mysqli_fetch_assoc($res_busca);
-        $nome_modulo = mysqli_real_escape_string($conn, $row['nome_modulo']);
-        $tipo_modulo = mysqli_real_escape_string($conn, $row['tipo']);
+        $nome_modulo = $row['nome_modulo'];
+        $tipo_modulo = $row['tipo'];
 
-        // Verifica se o módulo já existe no plano
-        $sql_verifica = "
-            SELECT id 
-            FROM planos_clientes 
-            WHERE nome_plano = '{$nome_plano}' 
-            AND nome_modulo = '{$nome_modulo}'
-            LIMIT 1
-        ";
-        $res_verifica = mysqli_query($conn, $sql_verifica);
+        $stmt_verifica = mysqli_prepare($conn,
+            "SELECT id FROM planos_clientes WHERE nome_plano = ? AND nome_modulo = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt_verifica, "ss", $nome_plano, $nome_modulo);
+        mysqli_stmt_execute($stmt_verifica);
+        $res_verifica = mysqli_stmt_get_result($stmt_verifica);
 
         if ($res_verifica && mysqli_num_rows($res_verifica) > 0) {
             echo '<div class="alert alert-warning">Este módulo já está adicionado ao plano!</div>';
         } else {
-            // Insere em planos_clientes incluindo o tipo
-            $sql_insere = "
-                INSERT INTO planos_clientes (nome_plano, nome_modulo, tipo, date)
-                VALUES (
-                    '{$nome_plano}',
-                    '{$nome_modulo}',
-                    '{$tipo_modulo}',
-                    NOW()
-                )
-            ";
-            if (mysqli_query($conn, $sql_insere)) {
+            $stmt_insere = mysqli_prepare($conn,
+                "INSERT INTO planos_clientes (nome_plano, nome_modulo, tipo, date) VALUES (?, ?, ?, NOW())");
+            mysqli_stmt_bind_param($stmt_insere, "sss", $nome_plano, $nome_modulo, $tipo_modulo);
+            if (mysqli_stmt_execute($stmt_insere)) {
                 echo '<div class="alert alert-success">Módulo adicionado com sucesso! (Tipo: ' . htmlspecialchars($tipo_modulo, ENT_QUOTES) . ')</div>';
             } else {
                 echo '<div class="alert alert-danger">Erro ao adicionar: ' . mysqli_error($conn) . '</div>';

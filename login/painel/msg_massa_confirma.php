@@ -10,8 +10,10 @@ if (!isset($_SESSION['login'])) {
 
 // Buscar dados do usuário
 $login = $_SESSION['login'];
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
+$stmt_user = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
+mysqli_stmt_bind_param($stmt_user, "s", $login);
+mysqli_stmt_execute($stmt_user);
+$query_busca_usuario = mysqli_stmt_get_result($stmt_user);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
 if ($total_busca_usuario == 0) {
@@ -143,83 +145,52 @@ try {
     $total_clientes = count($clientes);
     
     // Inserir na tabela mensagens_massa
-    $sql_insert = "INSERT INTO mensagens_massa (
-        login, 
-        usuario_api, 
-        campaign_name, 
-        media_type, 
-        message_text,
-        media_file_path, 
-        media_file_base64, 
-        media_file_url,
-        clientes_ids, 
-        send_option, 
-        schedule_datetime,
-        interval_seconds, 
-        start_time, 
-        end_time, 
-        repeat_option,
-        days_week, 
-        usar_ia, 
-        status, 
-        total_clientes, 
-        proximo_envio,
-        created_at
-    ) VALUES (
-        '$login',
-        '$usuario_api',
-        '" . mysqli_real_escape_string($conn, $campaign_name) . "',
-        '$media_type',
-        '" . mysqli_real_escape_string($conn, $message_text) . "',
-        '" . mysqli_real_escape_string($conn, $media_file_path) . "',
-        '" . mysqli_real_escape_string($conn, $media_file_base64) . "',
-        '" . mysqli_real_escape_string($conn, $media_file_url) . "',
-        '" . mysqli_real_escape_string($conn, $clientes_json) . "',
-        '$send_option',
-        " . ($schedule_datetime ? "'$schedule_datetime'" : "NULL") . ",
-        $interval_seconds,
-        '$start_time',
-        '$end_time',
-        '$repeat_option',
-        '$days_week',
-        $usar_ia,
-        'pendente',
-        $total_clientes,
-        '$proximo_envio',
-        NOW()
-    )";
-    
-    $result = mysqli_query($conn, $sql_insert);
-    
-    if (!$result) {
+    $stmt_insert = mysqli_prepare($conn, "INSERT INTO mensagens_massa (
+        login, usuario_api, campaign_name, media_type, message_text,
+        media_file_path, media_file_base64, media_file_url, clientes_ids,
+        send_option, schedule_datetime, interval_seconds, start_time, end_time,
+        repeat_option, days_week, usar_ia, status, total_clientes, proximo_envio, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendente', ?, ?, NOW())");
+    mysqli_stmt_bind_param($stmt_insert, "sssssssssssissssiis",
+        $login, $usuario_api, $campaign_name, $media_type, $message_text,
+        $media_file_path, $media_file_base64, $media_file_url, $clientes_json,
+        $send_option, $schedule_datetime, $interval_seconds, $start_time, $end_time,
+        $repeat_option, $days_week, $usar_ia, $total_clientes, $proximo_envio
+    );
+
+    if (!mysqli_stmt_execute($stmt_insert)) {
         throw new Exception('Erro ao salvar campanha: ' . mysqli_error($conn));
     }
-    
+
     $mensagem_massa_id = mysqli_insert_id($conn);
     
     // Inserir registros individuais para cada cliente na tabela mensagens_massa_envios
     $clientes_ids = implode(',', array_map('intval', $clientes));
-    $sql_clientes = "SELECT id, nome, telefone FROM clientes WHERE id IN ($clientes_ids) AND usuario_api = '$usuario_api'";
-    $result_clientes = mysqli_query($conn, $sql_clientes);
-    
+    $sql_clientes = "SELECT id, nome, telefone FROM clientes WHERE id IN ($clientes_ids) AND usuario_api = ?";
+    $stmt_clientes = mysqli_prepare($conn, $sql_clientes);
+    mysqli_stmt_bind_param($stmt_clientes, "s", $usuario_api);
+    mysqli_stmt_execute($stmt_clientes);
+    $result_clientes = mysqli_stmt_get_result($stmt_clientes);
+
+    $stmt_envio = mysqli_prepare($conn,
+        "INSERT INTO mensagens_massa_envios (mensagem_massa_id, cliente_id, cliente_nome, cliente_telefone, status, created_at)
+         VALUES (?, ?, ?, ?, 'pendente', NOW())");
+
     if ($result_clientes && mysqli_num_rows($result_clientes) > 0) {
         while ($cliente = mysqli_fetch_assoc($result_clientes)) {
-            $cliente_nome = mysqli_real_escape_string($conn, $cliente['nome']);
-            $cliente_telefone = mysqli_real_escape_string($conn, $cliente['telefone']);
-            
-            $sql_envio = "INSERT INTO mensagens_massa_envios 
-                         (mensagem_massa_id, cliente_id, cliente_nome, cliente_telefone, status, created_at) 
-                         VALUES 
-                         ($mensagem_massa_id, {$cliente['id']}, '$cliente_nome', '$cliente_telefone', 'pendente', NOW())";
-            
-            mysqli_query($conn, $sql_envio);
+            $cid = $cliente['id'];
+            $cnome = $cliente['nome'];
+            $ctel = $cliente['telefone'];
+            mysqli_stmt_bind_param($stmt_envio, "iiss", $mensagem_massa_id, $cid, $cnome, $ctel);
+            mysqli_stmt_execute($stmt_envio);
         }
     }
-    
+
     // Se for envio imediato, marcar como processando
     if ($send_option === 'now') {
-        $sql_update = "UPDATE mensagens_massa SET status = 'processando' WHERE id = $mensagem_massa_id";
-        mysqli_query($conn, $sql_update);
+        $stmt_update = mysqli_prepare($conn, "UPDATE mensagens_massa SET status = 'processando' WHERE id = ?");
+        mysqli_stmt_bind_param($stmt_update, "i", $mensagem_massa_id);
+        mysqli_stmt_execute($stmt_update);
         
         // Chamar o cron imediatamente para iniciar o processamento
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';

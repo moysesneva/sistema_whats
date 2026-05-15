@@ -7,73 +7,66 @@ include 'config_dados.php';
 
 
 function somenteNumeros($texto) {
-    // Remove tudo que não for número
     return preg_replace('/\D/', '', $texto);
 }
-// cadastrar_profissional_confirma.php
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
-    $nomeProfissional = mysqli_real_escape_string($conn, $_POST['nomeProfissional']);
-    $codigoPais = mysqli_real_escape_string($conn, $_POST['codigoPais']);
-    $telefoneProfissional = mysqli_real_escape_string($conn, $_POST['telefoneProfissional']);
-    $especialidadeProfissional = mysqli_real_escape_string($conn, $_POST['especialidadeProfissional']);
-    
-    // Remove caracteres não numéricos do telefone
-    $telefoneLimpo = $codigoPais.$telefoneProfissional;
-    #$telefoneLimpo = preg_replace('/[^0-9]/', '', $telefoneProfissional);
-    
-    // Gera um usuario_api único para o profissional
-    $usuario_api = 'agenda_' . $login;
-    $telefoneLimpo = somenteNumeros($telefoneLimpo);
 
-    // Inicia transação
+    $nomeProfissional        = trim($_POST['nomeProfissional'] ?? '');
+    $codigoPais              = trim($_POST['codigoPais'] ?? '');
+    $telefoneProfissional    = trim($_POST['telefoneProfissional'] ?? '');
+    $especialidadeProfissional = trim($_POST['especialidadeProfissional'] ?? '');
+
+    $telefoneLimpo = somenteNumeros($codigoPais . $telefoneProfissional);
+
+    $usuario_api = 'agenda_' . $login;
+
     mysqli_begin_transaction($conn);
-    
+
     try {
-        // 1. Inserir na tabela profissional
-        $sql_profissional = "INSERT INTO profissional (usuario_api, login, profissional_nome, profissional_cargo, telefone, codigo_pais) 
-                            VALUES ('$usuario_api', '$login', '$nomeProfissional', '$especialidadeProfissional', '$telefoneLimpo', '$codigoPais')";
-        
-        if (!mysqli_query($conn, $sql_profissional)) {
+        $stmt_prof = mysqli_prepare($conn,
+            "INSERT INTO profissional (usuario_api, login, profissional_nome, profissional_cargo, telefone, codigo_pais)
+             VALUES (?, ?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt_prof, "ssssss",
+            $usuario_api, $login, $nomeProfissional, $especialidadeProfissional, $telefoneLimpo, $codigoPais);
+
+        if (!mysqli_stmt_execute($stmt_prof)) {
             throw new Exception("Erro ao inserir profissional: " . mysqli_error($conn));
         }
-        
-        // 2. Inserir na tabela login com senha padrão 123456 e tipo 5
-        $senha_padrao = '123456'; // Em produção, usar hash
+
+        $senha_padrao = '123456';
         $tipo = 5;
-        
-        
-        $sql = "SELECT * FROM login WHERE login = '$telefoneLimpo'";
-        $query = mysqli_query($conn, $sql);
-        $total = mysqli_num_rows($query);
-        
-      
-        if($total == 0){
-            
-        
-        $sql_login = "INSERT INTO login (login, senha, tipo,perfil_img, usuario_api, nome, autorizado,modo_atuante) 
-                     VALUES ('$telefoneLimpo', '$senha_padrao', '$tipo','img/perfil.png', '$usuario_api', '$nomeProfissional', 2,'prof')";
-     
-        
-        if (!mysqli_query($conn, $sql_login)) {
-            throw new Exception("Erro ao inserir login: " . mysqli_error($conn));
-        }}
-        
-        // Confirma transação
+
+        $stmt_check = mysqli_prepare($conn, "SELECT id FROM login WHERE login = ?");
+        mysqli_stmt_bind_param($stmt_check, "s", $telefoneLimpo);
+        mysqli_stmt_execute($stmt_check);
+        $res_check = mysqli_stmt_get_result($stmt_check);
+        $total = mysqli_num_rows($res_check);
+
+        if ($total == 0) {
+            $stmt_login = mysqli_prepare($conn,
+                "INSERT INTO login (login, senha, tipo, perfil_img, usuario_api, nome, autorizado, modo_atuante)
+                 VALUES (?, ?, ?, 'img/perfil.png', ?, ?, 2, 'prof')");
+            mysqli_stmt_bind_param($stmt_login, "sissss",
+                $telefoneLimpo, $senha_padrao, $tipo, $usuario_api, $nomeProfissional);
+
+            if (!mysqli_stmt_execute($stmt_login)) {
+                throw new Exception("Erro ao inserir login: " . mysqli_error($conn));
+            }
+        }
+
         mysqli_commit($conn);
-        
+
         echo "<script>
                 alert('Profissional cadastrado com sucesso!');
                 window.location.href = 'listar_profissionais.php';
               </script>";
-        
+
     } catch (Exception $e) {
-        // Desfaz transação em caso de erro
         mysqli_rollback($conn);
-        
+
         echo "<script>
-                alert('Erro ao cadastrar profissional: " . $e->getMessage() . "');
+                alert('Erro ao cadastrar profissional: " . addslashes($e->getMessage()) . "');
                 window.history.back();
               </script>";
     }

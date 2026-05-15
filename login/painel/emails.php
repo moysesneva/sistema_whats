@@ -30,8 +30,10 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
+$stmt_user = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
+mysqli_stmt_bind_param($stmt_user, "s", $login);
+mysqli_stmt_execute($stmt_user);
+$query_busca_usuario = mysqli_stmt_get_result($stmt_user);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
 while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
@@ -64,11 +66,11 @@ if($tipo != 1){
 <?php
 // Processar formulário
 if(isset($_POST['salvar'])) {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $senha_app = mysqli_real_escape_string($conn, $_POST['senha_app']);
-    $smtp_host = mysqli_real_escape_string($conn, $_POST['smtp_host']);
+    $email = trim($_POST['email']);
+    $senha_app = trim($_POST['senha_app']);
+    $smtp_host = trim($_POST['smtp_host']);
     $smtp_port = (int)$_POST['smtp_port'];
-    $smtp_secure = mysqli_real_escape_string($conn, $_POST['smtp_secure']);
+    $smtp_secure = trim($_POST['smtp_secure']);
     
     // Verifica se já existe configuração
     $sql_check = "SELECT id FROM email_config WHERE login = ?";

@@ -8,55 +8,52 @@ if (!isset($_SESSION['login'])) {
 
 $login = $_SESSION['login'];
 
-
-
-
-
-
 include 'conn.php';
 include 'config_dados.php';
 
+$stmt_user = mysqli_prepare($conn, "SELECT usuario_api FROM login WHERE login = ?");
+mysqli_stmt_bind_param($stmt_user, "s", $login);
+mysqli_stmt_execute($stmt_user);
+$result_user = mysqli_stmt_get_result($stmt_user);
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
-
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
-    $usuario_api  = Priletra($rows_usuarios['usuario_api']);
-
-
+if (mysqli_num_rows($result_user) == 0) {
+    VaiPara('login.php');
 }
 
-// Obtendo os valores dos parâmetros GET
-$nome = isset($_GET['nome']) ? $_GET['nome'] : '';
-$telefone = isset($_GET['telefone']) ? $_GET['telefone'] : '';
+$row_user = mysqli_fetch_assoc($result_user);
+$usuario_api = $row_user['usuario_api'];
 
-// Construindo a consulta SQL para buscar os clientes
-$sql_busca_clientes = "SELECT * FROM clientes WHERE 1=1 AND usuario_api = '$usuario_api'";
+$nome = isset($_GET['nome']) ? trim($_GET['nome']) : '';
+$telefone = isset($_GET['telefone']) ? trim($_GET['telefone']) : '';
 
-// Adicionando filtros conforme os parâmetros enviados
+$sql_base = "SELECT * FROM clientes WHERE usuario_api = ?";
+$params = [$usuario_api];
+$types = "s";
+
 if (!empty($nome)) {
-    $nome = mysqli_real_escape_string($conn, $nome);
-    $sql_busca_clientes .= " AND nome LIKE '%$nome%'";
+    $sql_base .= " AND nome LIKE ?";
+    $params[] = '%' . $nome . '%';
+    $types .= "s";
 }
 
 if (!empty($telefone)) {
-    $telefone = mysqli_real_escape_string($conn, $telefone);
-    $sql_busca_clientes .= " AND telefone LIKE '%$telefone%'";
+    $sql_base .= " AND telefone LIKE ?";
+    $params[] = '%' . $telefone . '%';
+    $types .= "s";
 }
 
-$query_busca_clientes = mysqli_query($conn, $sql_busca_clientes);
+$stmt = mysqli_prepare($conn, $sql_base);
+mysqli_stmt_bind_param($stmt, $types, ...$params);
+mysqli_stmt_execute($stmt);
+$query_busca_clientes = mysqli_stmt_get_result($stmt);
 
-// Verificando se a consulta retornou algum resultado
 if (mysqli_num_rows($query_busca_clientes) > 0) {
-    // Exibindo os resultados da busca
     echo "<ul class='list-group'>";
     while ($cliente = mysqli_fetch_assoc($query_busca_clientes)) {
-        // Adicionando a função de clique para preencher os campos de nome e telefone
         $nome_cliente = htmlspecialchars($cliente['nome'], ENT_QUOTES);
         $telefone_cliente = htmlspecialchars($cliente['telefone'], ENT_QUOTES);
         echo "<li class='list-group-item' onclick=\"preencherCampos('$nome_cliente', '$telefone_cliente')\">";
-        echo "Nome: " . $cliente['nome'] . " - Telefone: " . $cliente['telefone'];
+        echo "Nome: " . htmlspecialchars($cliente['nome']) . " - Telefone: " . htmlspecialchars($cliente['telefone']);
         echo "</li>";
     }
     echo "</ul>";
