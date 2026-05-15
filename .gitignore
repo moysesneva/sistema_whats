@@ -1,0 +1,3 @@
+# Arquivos de status gerados em tempo de execução pelos scripts de manutenção
+login/painel/api/status_limpar_logs.json
+login/painel/api/status_limpar_uploads.json
