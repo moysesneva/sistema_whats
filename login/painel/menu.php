@@ -52,7 +52,7 @@ $stmt_menu_pagina->close();
 
 if($total_pagina == 0){
     
-VaiPara('index.php');    
+# VaiPara('index.php');    
 }
 }
 if($total_pagina == 0){
