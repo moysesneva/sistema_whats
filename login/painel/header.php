@@ -142,3 +142,38 @@ if ($total_menu > 0) {
                         <div class="pcoded-inner-content">
                             <div class="main-body">
                                 <div class="page-wrapper">
+<?php
+// Alerta de falhas recentes de conexão ao banco (visível apenas para admin tipo 1 ou 4)
+if (isset($tipo) && in_array($tipo, [1, 4])) {
+    $_dbf_log   = __DIR__ . '/logs/db_failures.log';
+    $_dbf_recente = 0;
+    if (is_file($_dbf_log)) {
+        $_dbf_linhas = file($_dbf_log, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $_dbf_agora  = time();
+        foreach ($_dbf_linhas as $_dbf_linha) {
+            $_dbf_obj = json_decode($_dbf_linha, true);
+            if (is_array($_dbf_obj) && isset($_dbf_obj['ts'])) {
+                if (($_dbf_agora - strtotime($_dbf_obj['ts'])) <= 3600) {
+                    $_dbf_recente++;
+                }
+            }
+        }
+        unset($_dbf_linhas, $_dbf_obj, $_dbf_linha, $_dbf_agora);
+    }
+    if ($_dbf_recente > 0):
+?>
+<div class="alert alert-warning alert-dismissible fade show" role="alert"
+     style="margin:16px 16px 0;border-left:4px solid #FF5500;border-radius:8px;">
+    <i class="feather icon-alert-triangle" style="margin-right:6px;color:#FF5500;"></i>
+    <strong>Atenção:</strong>
+    <?= $_dbf_recente ?> falha<?= $_dbf_recente > 1 ? 's' : '' ?> de conexão ao banco registrada<?= $_dbf_recente > 1 ? 's' : '' ?> na última hora.
+    <a href="db_diagnostics.php" style="color:#001f3f;font-weight:600;margin-left:8px;">
+        <i class="feather icon-eye"></i> Ver diagnóstico
+    </a>
+    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+</div>
+<?php
+    endif;
+    unset($_dbf_log, $_dbf_recente);
+}
+?>
