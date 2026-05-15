@@ -795,4 +795,19 @@ if (empty($chave) || empty($webhook) || isset($_GET['modo']) && $_GET['modo'] ==
 ?>
 
 
+
+<div class="card" style="border:none;box-shadow:0 2px 10px rgba(0,0,0,0.08);border-radius:10px;margin-top:30px;">
+    <div class="card-header" style="background:linear-gradient(135deg,#001f3f,#003366);color:#fff;border-radius:10px 10px 0 0;padding:14px 20px;font-weight:600;">
+        <i class="feather icon-hard-drive" style="color:#FF5500;margin-right:8px;"></i> Manutenção do Sistema
+    </div>
+    <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <p class="mb-0" style="color:#555;font-size:14px;">
+            Visualize o espaço em disco consumido por logs e uploads temporários, e veja quando a última limpeza automática foi executada.
+        </p>
+        <a href="disk_stats.php" class="btn btn-outline-primary" style="white-space:nowrap;">
+            <i class="feather icon-bar-chart-2"></i> Ver uso de disco e logs
+        </a>
+    </div>
+</div>
+
 <?php include 'footer.php'; ?>

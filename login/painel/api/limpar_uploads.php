@@ -28,3 +28,5 @@ foreach (glob($pasta . 'imagem_*.png') as $arquivo) {
 
 $timestamp = date('Y-m-d H:i:s');
 echo "[$timestamp] limpar_uploads: $removidos arquivo(s) removido(s) (threshold={$idadeMaxima}s)\n";
+// Linha estruturada para leitura pelo script de varredura
+echo "REMOVED_COUNT={$removidos}\n";

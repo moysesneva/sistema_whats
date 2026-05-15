@@ -29,14 +29,16 @@ SINGLE_LOGS=(
     "$BASE/log_processamento.txt"
     "$BASE/log_recebidos.txt"
 )
+STATUS_FILE="$BASE/status_limpar_logs.json"
 
 run_sweep() {
     local ts
     ts="$(date '+%Y-%m-%d %H:%M:%S')"
+    local removed=0
+    local truncados=0
 
     # --- Apagar arquivos de log diários mais antigos que LOG_MAX_AGE_DAYS ---
     if [ -d "$LOGS_DIR" ]; then
-        local removed
         removed=$(find "$LOGS_DIR" -maxdepth 1 -type f \
             \( -name "*.log" -o -name "*.txt" \) \
             -mtime +"$MAX_DAYS" -print -delete 2>/dev/null | wc -l)
@@ -50,10 +52,16 @@ run_sweep() {
             size=$(wc -c < "$f" 2>/dev/null || echo 0)
             if [ "$size" -gt "$MAX_BYTES" ]; then
                 : > "$f"
+                truncados=$(( truncados + 1 ))
                 echo "[$ts] limpar_logs: $(basename "$f") truncado (era ${size} bytes, limite=${MAX_MB}MB)"
             fi
         fi
     done
+
+    # --- Gravar arquivo de status para o painel ---
+    cat > "$STATUS_FILE" <<EOF
+{"ultima_varredura":"${ts}","arquivos_removidos":${removed},"truncamentos":${truncados},"max_age_dias":${MAX_DAYS},"max_size_mb":${MAX_MB}}
+EOF
 }
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] limpar_logs: varredura iniciada (intervalo=${INTERVALO}s, max_age=${MAX_DAYS}d, max_size=${MAX_MB}MB)"
