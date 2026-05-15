@@ -1,0 +1,41 @@
+#!/bin/bash
+# Pre-commit hook: converte CRLF → LF em arquivos de texto staged antes do commit.
+# Arquivos binários são ignorados automaticamente (verificação via 'file --mime-encoding').
+# Instalação: execute scripts/install-hooks.sh uma vez por clone.
+
+set -e
+
+# Verifica dependências obrigatórias
+for cmd in file grep perl; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        echo "[pre-commit] ERRO: '$cmd' não encontrado — verificação de CRLF desativada." >&2
+        echo "[pre-commit] Instale '$cmd' para habilitar a normalização automática de line endings." >&2
+        exit 1
+    fi
+done
+
+FIXED=0
+
+while IFS= read -r -d '' file; do
+    [ -f "$file" ] || continue
+
+    # Ignora arquivos binários (encoding != charset=xxx de texto)
+    mime_encoding=$(file --mime-encoding -b "$file" 2>/dev/null || true)
+    case "$mime_encoding" in
+        binary|"") continue ;;
+    esac
+
+    # Verifica se há CR no arquivo (modo binário do grep para leitura correta)
+    if grep -qU $'\r' "$file" 2>/dev/null; then
+        perl -pi -e 's/\r$//' "$file"
+        git add "$file"
+        echo "[pre-commit] CRLF corrigido → LF: $file"
+        FIXED=1
+    fi
+done < <(git diff --cached --name-only -z --diff-filter=ACM)
+
+if [ "$FIXED" -eq 1 ]; then
+    echo "[pre-commit] Arquivos de texto corrigidos e re-adicionados ao stage."
+fi
+
+exit 0
