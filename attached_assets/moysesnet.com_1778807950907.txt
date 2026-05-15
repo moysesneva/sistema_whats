@@ -1,0 +1,41 @@
+; Zone file for moysesnet.com
+; Generated on 2026-05-15 01:17:05 UTC
+
+$ORIGIN moysesnet.com
+$TTL 3600
+
+@                              3600 IN SOA   ns1.dns-parking.com. dns.hostinger.com. 2026051503 10000 2400 604800 600
+@                              300 IN ALIAS moysesnet.com.cdn.hstgr.net.
+@                              14400 IN MX    10 mx2.hostinger.com
+                               14400 IN MX    5 mx1.hostinger.com
+@                              86400 IN NS    ns1.dns-parking.com.
+                               86400 IN NS    ns2.dns-parking.com.
+@                              14400 IN TXT   "MS=0AAFC23C5608502F0CC2AC8904666FB3185D1D15"
+                               14400 IN TXT   "v=spf1 include:_spf.mail.hostinger.com ~all"
+_dmarc                         3600 IN TXT   "v=DMARC1; p=none"
+_twilio                        14400 IN TXT   "twilio-domain-verification=d0f98bf54b25d2b091bb3889a9d987c9"
+api                            14400 IN CNAME vps.moysesnet.com.
+autoconfig                     300 IN CNAME autoconfig.mail.hostinger.com.
+autodiscover                   300 IN CNAME autodiscover.mail.hostinger.com.
+chat                           300 IN CNAME vps.moysesnet.com.
+chatwoot                       300 IN CNAME vps.moysesnet.com.
+cnacob                         14400 IN A     34.111.179.208
+cnacob                         14400 IN TXT   "replit-verify=c6166830-7968-4abb-a609-dd0dfe030b2e"
+cnacom                         14400 IN TXT   "replit-verify=c6166830-7968-4abb-a609-dd0dfe030b2e"
+colify                         300 IN CNAME vps.moysesnet.com.
+evoai                          14400 IN CNAME vps.moysesnet.com.
+evoapi                         14400 IN CNAME vps.moysesnet.com.
+evolution                      14400 IN CNAME vps.moysesnet.com.
+ftp                            1800 IN A     145.223.106.195
+hostingermail-a._domainkey     300 IN CNAME hostingermail-a.dkim.mail.hostinger.com.
+hostingermail-b._domainkey     300 IN CNAME hostingermail-b.dkim.mail.hostinger.com.
+hostingermail-c._domainkey     300 IN CNAME hostingermail-c.dkim.mail.hostinger.com.
+img                            14400 IN CNAME vps.moysesnet.com.
+n8n                            14400 IN CNAME vps.moysesnet.com.
+painel                         14400 IN CNAME vps.moysesnet.com.
+sistema                        14400 IN TXT   "replit-verify=70be1b56-a989-494c-91bb-22741c802f8d"
+tryon                          14400 IN CNAME vps.moysesnet.com.
+vps                            14400 IN A     157.173.212.1
+webhook                        14400 IN CNAME vps.moysesnet.com.
+www                            300 IN CNAME www.moysesnet.com.cdn.hstgr.net.
+zapcna                         14400 IN CNAME vps.moysesnet.com.
