@@ -1,3 +1,6 @@
 # Arquivos de status gerados em tempo de execução pelos scripts de manutenção
 login/painel/api/status_limpar_logs.json
 login/painel/api/status_limpar_uploads.json
+
+# Log de falhas de conexão ao banco (gerado em tempo de execução)
+login/painel/logs/db_failures.log
