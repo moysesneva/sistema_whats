@@ -1,4 +1,6 @@
 <?php
+$auth_ajax_mode = true;
+require_once __DIR__ . '/auth_guard.php';
 include 'conn.php';
 include 'funcoes.php';
 $pagina = 'estilo_pagina.php?pagina_nome=8&confirmacao=atualizado';

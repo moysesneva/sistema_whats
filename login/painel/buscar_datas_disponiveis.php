@@ -1,4 +1,6 @@
 <?php
+$auth_ajax_mode = true;
+require_once __DIR__ . '/auth_guard.php';
 include 'conn.php';
 setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.iso-8859-1', 'portuguese');
 

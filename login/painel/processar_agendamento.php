@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/auth_guard.php';
 #session_start();
 include 'login/painel/conn.php';
 include 'login/painel/funcoes.php';

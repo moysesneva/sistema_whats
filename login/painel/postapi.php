@@ -1,4 +1,6 @@
 <?php
+$auth_ajax_mode = true;
+require_once __DIR__ . '/auth_guard.php';
 // postapi.php
 // Salvar todas as requisições num log
 

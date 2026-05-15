@@ -1,4 +1,6 @@
 <?php
+$auth_ajax_mode = true;
+require_once __DIR__ . '/auth_guard.php';
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');

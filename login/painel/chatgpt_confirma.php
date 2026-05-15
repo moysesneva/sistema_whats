@@ -1,4 +1,6 @@
 <?php
+$auth_ajax_mode = true;
+require_once __DIR__ . '/auth_guard.php';
 session_start();
 $login = $_SESSION['login'];
 include 'conn.php';

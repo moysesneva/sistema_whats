@@ -1,4 +1,6 @@
 <?php
+$auth_ajax_mode = true;
+require_once __DIR__ . '/auth_guard.php';
 include 'conn.php';
 if (!$conn) {
     die("Conexão falhou: " . mysqli_connect_error());

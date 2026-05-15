@@ -1,4 +1,6 @@
 <?php
+$auth_ajax_mode = true;
+require_once __DIR__ . '/auth_guard.php';
 header('Content-Type: text/html; charset=utf-8');
 // setlocale(LC_MONETARY, 'pt_BR', 'pt_BR.utf-8'); // Não estritamente necessário aqui se só formatar no final
 

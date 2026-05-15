@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/auth_guard.php';
 // dados da credencial
 $client_id     = "106056944943-8stg3lo5cllnce5co6pu8lvo8p63oasq.apps.googleusercontent.com";
 $redirect_uri  = "https://editacodigo.com.br/calendario";

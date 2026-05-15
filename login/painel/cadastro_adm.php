@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/auth_guard.php';
 // Variáveis PHP para personalizar a logo, favicon e a imagem de fundo
 include 'conn.php';
 include 'estilo.php';

@@ -1,4 +1,6 @@
 <?php
+$auth_ajax_mode = true;
+require_once __DIR__ . '/auth_guard.php';
 // buscar_dias_e_horarios_para_servico.php
 
 header('Content-Type: application/json; charset=utf-8');

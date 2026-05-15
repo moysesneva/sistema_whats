@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/auth_guard.php';
 session_start();
 include 'conn.php';  // Inclui o arquivo de conexão ao banco de dados
 include 'funcoes.php';  // Inclui o arquivo com a função `VaiPara()`

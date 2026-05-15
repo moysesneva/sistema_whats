@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/auth_guard.php';
 // Dados de conexão
 include 'conn.php';
 $sqlFile = __DIR__ . '/banco.sql';

@@ -1,4 +1,6 @@
 <?php
+$auth_ajax_mode = true;
+require_once __DIR__ . '/auth_guard.php';
 // buscar_horarios_disponiveis.php
 
 // Função para conectar ao banco de dados
