@@ -36,7 +36,7 @@ mysqli_stmt_execute($stmt_user);
 $query_busca_usuario = mysqli_stmt_get_result($stmt_user);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome  = Priletra($rows_usuarios['nome']);
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
@@ -156,34 +156,28 @@ if (isset($_POST['salvar_gemini']) && !empty($_POST['valor_chave_gemini']) && !e
 if (isset($_POST['apagar_openai']) && !empty($_POST['id_chave'])) {
     $id_chave = (int) $_POST['id_chave'];
     
-    $sql_apagar_openai = "
-        DELETE FROM chave_ia_geral 
-        WHERE id = {$id_chave} AND nome = 'openai'
-        LIMIT 1
-    ";
-    
-    if (mysqli_query($conn, $sql_apagar_openai)) {
+    $stmt_del_oa = $conn->prepare("DELETE FROM chave_ia_geral WHERE id = ? AND nome = 'openai' LIMIT 1");
+    $stmt_del_oa->bind_param("i", $id_chave);
+    if ($stmt_del_oa->execute()) {
         echo '<div class="alert alert-success">Chave da OpenAI removida com sucesso!</div>';
     } else {
-        echo '<div class="alert alert-danger">Erro ao remover chave da OpenAI: ' . mysqli_error($conn) . '</div>';
+        echo '<div class="alert alert-danger">Erro ao remover chave da OpenAI: ' . $conn->error . '</div>';
     }
+    $stmt_del_oa->close();
 }
 
 // 4) Processa o POST de apagar chave Gemini
 if (isset($_POST['apagar_gemini']) && !empty($_POST['id_chave'])) {
     $id_chave = (int) $_POST['id_chave'];
     
-    $sql_apagar_gemini = "
-        DELETE FROM chave_ia_geral 
-        WHERE id = {$id_chave} AND nome = 'gemini'
-        LIMIT 1
-    ";
-    
-    if (mysqli_query($conn, $sql_apagar_gemini)) {
+    $stmt_del_gem = $conn->prepare("DELETE FROM chave_ia_geral WHERE id = ? AND nome = 'gemini' LIMIT 1");
+    $stmt_del_gem->bind_param("i", $id_chave);
+    if ($stmt_del_gem->execute()) {
         echo '<div class="alert alert-success">Chave da Gemini removida com sucesso!</div>';
     } else {
-        echo '<div class="alert alert-danger">Erro ao remover chave da Gemini: ' . mysqli_error($conn) . '</div>';
+        echo '<div class="alert alert-danger">Erro ao remover chave da Gemini: ' . $conn->error . '</div>';
     }
+    $stmt_del_gem->close();
 }
 
 // Inclui a conexão
@@ -288,21 +282,19 @@ include 'conn.php';
             $planos = ['plano1', 'plano2', 'plano3'];
             foreach ($planos as $plano) {
                 // Busca informações do plano
-                $sql_plano = "
-                    SELECT nome, COUNT(*) as total_chaves
-                    FROM chave_ia_geral 
-                    WHERE plano = '{$plano}'
-                    GROUP BY nome
-                ";
-                $res_plano = mysqli_query($conn, $sql_plano);
+                $stmt_ia_pl = $conn->prepare("SELECT nome, COUNT(*) as total_chaves FROM chave_ia_geral WHERE plano = ? GROUP BY nome");
+                $stmt_ia_pl->bind_param("s", $plano);
+                $stmt_ia_pl->execute();
+                $res_plano = $stmt_ia_pl->get_result();
+                $stmt_ia_pl->close();
                 
                 echo "<div class='col-md-4'>";
                 echo "<div class='card bg-light'>";
                 echo "<div class='card-body text-center'>";
                 echo "<h6>" . strtoupper($plano) . "</h6>";
                 
-                if ($res_plano && mysqli_num_rows($res_plano) > 0) {
-                    while ($row_plano = mysqli_fetch_assoc($res_plano)) {
+                if ($res_plano && $res_plano->num_rows > 0) {
+                    while ($row_plano = $res_plano->fetch_assoc()) {
                         $empresa = ucfirst($row_plano['nome']);
                         $total = $row_plano['total_chaves'];
                         $badge_class = ($row_plano['nome'] == 'openai') ? 'badge-primary' : 'badge-success';

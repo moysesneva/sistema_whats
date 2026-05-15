@@ -13,9 +13,12 @@ if($_POST['nome_cliente']){
 $login = $_POST['telefone_cliente'];
 $email_cliente = $_POST['email_cliente'];
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login' OR email = '$email_cliente'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt = $conn->prepare("SELECT * FROM login WHERE login = ? OR email = ?");
+$stmt->bind_param("ss", $login, $email_cliente);
+$stmt->execute();
+$query_busca_usuario = $stmt->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
+$stmt->close();
    
   
 if($total_busca_usuario > 0){ 
@@ -35,26 +38,21 @@ $nome = Priletra($nome);
 $login = So_numeros($login);
 $usuario_api = $termo . $login;    
  $login = $_POST['telefone_cliente'];   
-// Inserindo os dados na tabela login
 
+$stmt_insert = $conn->prepare("INSERT INTO login (login, senha, tipo, usuario_api, nome, autorizado, perfil_img, situacao, email, funcao, creditos, plano, modo_atuante) VALUES (?, ?, '2', ?, ?, '2', ?, 'ativado', ?, 'IA', ?, ?, 'Agendamento')");
+$stmt_insert->bind_param("ssssssss", $login, $senha, $usuario_api, $nome, $perfil_img, $email_cliente, $creditos, $plano);
+$query = $stmt_insert->execute();
+$stmt_insert->close();
 
-
-$sql = "INSERT INTO login (login, senha, tipo, usuario_api, nome, autorizado,  perfil_img, situacao, email,funcao,creditos,plano,modo_atuante) 
-        VALUES ('$login', '$senha','2', '$usuario_api', '$nome', '2',  '$perfil_img', 'ativado','$email_cliente','IA','$creditos','$plano','Agendamento')";
-
-// Executando a consulta SQL
-$query = mysqli_query($conn, $sql);
-
-// Verificando se houve sucesso na inserção
 if ($query) {
-  #  echo "Registro inserido com sucesso!";
     
-   
 $url = $ip_vps . ':' . $nova_porta . '/webhook';
 $url= barra($url);
 
-$sql = "INSERT INTO gerenciador (celular,usuario_api,comando) VALUES ('$login','$usuario_api','criar_conta')";
-$query = mysqli_query($conn,$sql);
+$stmt_ger = $conn->prepare("INSERT INTO gerenciador (celular, usuario_api, comando) VALUES (?, ?, 'criar_conta')");
+$stmt_ger->bind_param("ss", $login, $usuario_api);
+$stmt_ger->execute();
+$stmt_ger->close();
 
 
 

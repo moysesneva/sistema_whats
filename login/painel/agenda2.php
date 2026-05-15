@@ -31,11 +31,13 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome  = Priletra($rows_usuarios['nome']);
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
@@ -92,8 +94,11 @@ $data_selecionada = $_GET['data'] ?? date('Y-m-d');
 // Preparar a consulta SQL para buscar agendamentos
 $conn = conectarDB();
 
-$sql = "SELECT * FROM agendamento WHERE login = '$login' ORDER BY horario ASC";
-$result = mysqli_query($conn, $sql);
+$stmt_ag2 = $conn->prepare("SELECT * FROM agendamento WHERE login = ? ORDER BY horario ASC");
+$stmt_ag2->bind_param("s", $login);
+$stmt_ag2->execute();
+$result = $stmt_ag2->get_result();
+$stmt_ag2->close();
 
 // Inicializar o array de eventos
 $eventos = [];

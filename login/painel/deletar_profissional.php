@@ -2,41 +2,38 @@
 session_start();
 $login = $_SESSION['login'];
 
-
-// deletar_profissional.php
 include 'conn.php';
-#print_r($_REQUEST);
-#exit();
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
     $profissional_id = intval($_POST['id']);
     
-    // Busca informações do profissional antes de deletar
-    $sql_busca = "SELECT * FROM profissional WHERE id = '$profissional_id' AND login = '$login'";
-    $query_busca = mysqli_query($conn, $sql_busca);
+    $stmt_busca = $conn->prepare("SELECT * FROM profissional WHERE id = ? AND login = ?");
+    $stmt_busca->bind_param("is", $profissional_id, $login);
+    $stmt_busca->execute();
+    $query_busca = $stmt_busca->get_result();
     
-    if(mysqli_num_rows($query_busca) > 0) {
-        $profissional = mysqli_fetch_array($query_busca);
+    if($query_busca->num_rows > 0) {
+        $profissional = $query_busca->fetch_array();
         $telefone = $profissional['telefone'];
+        $stmt_busca->close();
         
-        // Inicia transação
         mysqli_begin_transaction($conn);
         
         try {
-            // 1. Deletar da tabela profissional
-            $sql_del_profissional = "DELETE FROM profissional 
-                                    WHERE id = '$profissional_id' AND login = '$login'";
-            if (!mysqli_query($conn, $sql_del_profissional)) {
+            $stmt_del1 = $conn->prepare("DELETE FROM profissional WHERE id = ? AND login = ?");
+            $stmt_del1->bind_param("is", $profissional_id, $login);
+            if (!$stmt_del1->execute()) {
                 throw new Exception("Erro ao deletar profissional");
             }
+            $stmt_del1->close();
             
-            // 2. Deletar da tabela login (onde tipo = 5 e login = telefone)
-            $sql_del_login = "DELETE FROM login 
-                             WHERE login = '$telefone' AND tipo = 5";
-            if (!mysqli_query($conn, $sql_del_login)) {
+            $stmt_del2 = $conn->prepare("DELETE FROM login WHERE login = ? AND tipo = 5");
+            $stmt_del2->bind_param("s", $telefone);
+            if (!$stmt_del2->execute()) {
                 throw new Exception("Erro ao deletar login do profissional");
             }
+            $stmt_del2->close();
             
-            // Confirma transação
             mysqli_commit($conn);
             
             echo "<script>
@@ -45,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
                   </script>";
             
         } catch (Exception $e) {
-            // Desfaz transação em caso de erro
             mysqli_rollback($conn);
             
             echo "<script>
@@ -54,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
                   </script>";
         }
     } else {
+        $stmt_busca->close();
         echo "<script>
                 alert('Profissional não encontrado ou sem permissão!');
                 window.history.back();

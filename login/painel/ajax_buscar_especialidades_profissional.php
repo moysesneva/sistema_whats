@@ -1,19 +1,19 @@
 <?php
 session_start();
 $login = $_SESSION['login'];
-// ajax_buscar_especialidades_profissional.php
 include 'conn.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['profissional_id'])) {
-    
     $profissional_id = intval($_POST['profissional_id']);
     
-    // Busca o profissional e suas especialidades
-    $sql = "SELECT profissional_cargo FROM profissional WHERE id = '$profissional_id' AND login = '$login'";
-    $query = mysqli_query($conn, $sql);
+    $stmt = $conn->prepare("SELECT profissional_cargo FROM profissional WHERE id = ? AND login = ?");
+    $stmt->bind_param("is", $profissional_id, $login);
+    $stmt->execute();
+    $query = $stmt->get_result();
+    $stmt->close();
     
-    if(mysqli_num_rows($query) > 0) {
-        $row = mysqli_fetch_array($query);
+    if($query->num_rows > 0) {
+        $row = $query->fetch_array();
         $especialidades = explode(',', $row['profissional_cargo']);
         
         echo '<div class="mt-2">';

@@ -30,11 +30,13 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome  = Priletra($rows_usuarios['nome']);
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
@@ -300,11 +302,14 @@ $totalPaginas = ceil($totalRegistros / $registrosPorPagina);
   </div>
   <?php
   // Busca os leads com paginação
-  $sql = "SELECT nome, email, whats, data FROM leads ORDER BY data DESC LIMIT $registrosPorPagina OFFSET $offset";
-  $result = mysqli_query($conn, $sql);
+  $stmt_leads = $conn->prepare("SELECT nome, email, whats, data FROM leads ORDER BY data DESC LIMIT ? OFFSET ?");
+  $stmt_leads->bind_param("ii", $registrosPorPagina, $offset);
+  $stmt_leads->execute();
+  $result = $stmt_leads->get_result();
+  $stmt_leads->close();
   
-  if (mysqli_num_rows($result) > 0):
-    while ($row = mysqli_fetch_assoc($result)):
+  if ($result->num_rows > 0):
+    while ($row = $result->fetch_assoc()):
         // Formata para o padrão brasileiro
         $dataBR = date('d/m/Y H:i:s', strtotime($row['data']));
         

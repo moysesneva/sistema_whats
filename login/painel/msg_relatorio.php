@@ -30,11 +30,13 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome  = Priletra($rows_usuarios['nome']);
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
@@ -83,11 +85,13 @@ if($autorizado != 2){
 require_once 'conn.php';
 $login = $_SESSION['login'];
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome  = Priletra($rows_usuarios['nome']);
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
@@ -96,30 +100,18 @@ while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
 
 }
 // Buscar campanhas do banco de dados
-$query = "SELECT 
-    id,
-    campaign_name,
-    total_clientes,
-    enviados,
-    erros,
-    status,
-    created_at,
-    media_type,
-    login,
-    usuario_api
-FROM mensagens_massa
-WHERE usuario_api = '$usuario_api'
-ORDER BY created_at DESC";
-
-$result = mysqli_query($conn, $query);
-
+$stmt_mr = $conn->prepare("SELECT id, campaign_name, total_clientes, enviados, erros, status, created_at, media_type, login, usuario_api FROM mensagens_massa WHERE usuario_api = ? ORDER BY created_at DESC");
+$stmt_mr->bind_param("s", $usuario_api);
+$stmt_mr->execute();
+$result = $stmt_mr->get_result();
+$stmt_mr->close();
 
 if (!$result) {
-    die("Erro na consulta: " . mysqli_error($conn));
+    die("Erro na consulta: " . $conn->error);
 }
 
 $campanhas = [];
-while ($row = mysqli_fetch_assoc($result)) {
+while ($row = $result->fetch_assoc()) {
     $campanhas[] = $row;
 }
 ?>

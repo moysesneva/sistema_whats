@@ -12,7 +12,7 @@ mysqli_stmt_execute($stmt_busca_usuario);
 $query_busca_usuario = mysqli_stmt_get_result($stmt_busca_usuario);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
 
 $usuario_api = $rows_usuarios['usuario_api'];
 

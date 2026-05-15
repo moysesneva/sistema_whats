@@ -21,9 +21,12 @@ while ($rows_usuarios1 = mysqli_fetch_array($query_busca_usuario1)) {
     $usuario_api = $rows_usuarios1['usuario_api'];
 }
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-while ($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+$stmt_bu = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_bu->bind_param("s", $login);
+$stmt_bu->execute();
+$query_busca_usuario = $stmt_bu->get_result();
+$stmt_bu->close();
+while ($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $code_autorizado = $rows_usuarios['code_autorizado'];
    # $usuario_api = $rows_usuarios['usuario_api'];
 }
@@ -39,23 +42,23 @@ $id_msg = '1';
 include 'api/editacodigo.php';
 
 
-// Imprimindo as vari¨¢veis para verifica0Š40Š0o
+// Imprimindo as variï¿½ï¿½veis para verificaï¿½0ï¿½4ï¿½0ï¿½0o
 echo "Servidor: " . $servidor . "<br>";
 echo "Porta: " . $porta . "<br>";
-echo "Usu¨¢rio API: " . $usuario_api . "<br>";
+echo "Usuï¿½ï¿½rio API: " . $usuario_api . "<br>";
 echo "Token: " . $token . "<br>";
 echo "Telefone: " . $telefone . "<br>";
 echo "Mensagem: " . $msg . "<br>";
 echo "ID da Mensagem: " . $id_msg . "<br>";
-echo "---<br>"; // Para separar a impress0Š0o das vari¨¢veis da resposta da fun0Š40Š0o
-// CORRE0‡50‡1O: Adicionando o par0‰9metro de a0Š40Š0o ('enviarMensagem')
-// Verifique se a sua fun0Š40Š0o na API tem essa sintaxe.
+echo "---<br>"; // Para separar a impressï¿½0ï¿½0o das variï¿½ï¿½veis da resposta da funï¿½0ï¿½4ï¿½0ï¿½0o
+// CORREï¿½0ï¿½5ï¿½0ï¿½1O: Adicionando o parï¿½0ï¿½9metro de aï¿½0ï¿½4ï¿½0ï¿½0o ('enviarMensagem')
+// Verifique se a sua funï¿½0ï¿½4ï¿½0ï¿½0o na API tem essa sintaxe.
 $response = enviarMensagem($servidor, $porta, $usuario_api, $token, $telefone, $msg, $id_msg);
 
 
-// A API vai retornar um JSON. Voc¨º pode trat¨¢-lo aqui.
+// A API vai retornar um JSON. Vocï¿½ï¿½ pode tratï¿½ï¿½-lo aqui.
 // $response_data = json_decode($response, true);
-// if (isset($response_data['status']) && $response_data['status'] === '7¼3 Mensagem enviada') {
+// if (isset($response_data['status']) && $response_data['status'] === 'ï¿½7ï¿½3 Mensagem enviada') {
 //     VaiPara('desbloquear.php?confirmacao=cadastro_sucesso');
 // } else {
 //     // Lida com o erro
@@ -63,5 +66,5 @@ $response = enviarMensagem($servidor, $porta, $usuario_api, $token, $telefone, $
 // }
 #echo $response;
 #exit();
-// Se a sua API retorna apenas uma string, voc¨º pode ir direto para a pr¨®xima p¨¢gina.
+// Se a sua API retorna apenas uma string, vocï¿½ï¿½ pode ir direto para a prï¿½ï¿½xima pï¿½ï¿½gina.
 VaiPara('desbloquear.php?confirmacao=cadastro_sucesso');

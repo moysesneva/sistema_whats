@@ -6,16 +6,18 @@ if (!$conn) {
 
 // Verificar se o ID foi enviado via POST
 if (isset($_POST['id'])) {
-    $id = $_POST['id'];
+    $id = (int) $_POST['id'];
 
     // Query para deletar o agendamento com o ID especificado
-    $sql = "DELETE FROM agenda_padrao WHERE id = $id";
+    $stmt_del = $conn->prepare("DELETE FROM agenda_padrao WHERE id = ?");
+    $stmt_del->bind_param("i", $id);
 
-    if (mysqli_query($conn, $sql)) {
+    if ($stmt_del->execute()) {
         echo "Agendamento deletado com sucesso!";
     } else {
-        echo "Erro ao deletar o agendamento: " . mysqli_error($conn);
+        echo "Erro ao deletar o agendamento: " . $conn->error;
     }
+    $stmt_del->close();
 }
 
 // Fechar a conexão

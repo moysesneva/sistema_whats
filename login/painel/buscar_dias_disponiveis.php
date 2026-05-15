@@ -4,23 +4,20 @@ if (!$conn) {
     die("Conexão falhou: " . mysqli_connect_error());
 }
 
-// Verificar se o ID do profissional e o dia foram enviados via POST
 if (isset($_POST['profissional_id']) && isset($_POST['dia'])) {
-    $profissional_id = $_POST['profissional_id'];
+    $profissional_id = intval($_POST['profissional_id']);
     $dia = $_POST['dia'];
 
-    // Consulta para buscar os horários disponíveis do profissional para o dia selecion
-
-    $sql = "SELECT * FROM agenda_padrao WHERE id_profissional = '$profissional_id' AND dia = '$dia' AND horario NOT IN (SELECT horario FROM agendamentos WHERE profissional_id = '$profissional_id' AND dia = '$dia')";
-    $result = mysqli_query($conn, $sql);
+    $stmt = $conn->prepare("SELECT * FROM agenda_padrao WHERE id_profissional = ? AND dia = ? AND horario NOT IN (SELECT horario FROM agendamentos WHERE profissional_id = ? AND dia = ?)");
+    $stmt->bind_param("isis", $profissional_id, $dia, $profissional_id, $dia);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
 
     echo '<option value="">Escolha um horário</option>';
 
-    // Preencher os horários disponíveis
-    while ($row = mysqli_fetch_assoc($result)) {
+    while ($row = $result->fetch_assoc()) {
         echo "<option value='{$row['horario']}'>{$row['horario']}</option>";
     }
 }
-
-// Fechar a conexão
 ?>

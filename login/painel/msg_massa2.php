@@ -30,11 +30,13 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome  = Priletra($rows_usuarios['nome']);
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
@@ -112,22 +114,13 @@ if($autorizado != 2){
                                 <div class="tags-quick-filter" id="tagsFilter">
                                     <?php
                                     // Buscar todas as etiquetas únicas
-                                    $sqlTags = "
-                                        SELECT DISTINCT TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(etiqueta, ',', numbers.n), ',', -1)) as tag
-                                        FROM clientes
-                                        CROSS JOIN (
-                                            SELECT 1 n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 
-                                            UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8
-                                        ) numbers
-                                        WHERE usuario_api = '{$usuario_api}'
-                                        AND LENGTH(etiqueta) - LENGTH(REPLACE(etiqueta, ',', '')) >= numbers.n - 1
-                                        AND TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(etiqueta, ',', numbers.n), ',', -1)) != ''
-                                        ORDER BY tag
-                                    ";
-                                    
-                                    $resTags = mysqli_query($conn, $sqlTags);
+                                    $stmt_tags = $conn->prepare("SELECT DISTINCT TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(etiqueta, ',', numbers.n), ',', -1)) as tag FROM clientes CROSS JOIN (SELECT 1 n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8) numbers WHERE usuario_api = ? AND LENGTH(etiqueta) - LENGTH(REPLACE(etiqueta, ',', '')) >= numbers.n - 1 AND TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(etiqueta, ',', numbers.n), ',', -1)) != '' ORDER BY tag");
+                                    $stmt_tags->bind_param("s", $usuario_api);
+                                    $stmt_tags->execute();
+                                    $resTags = $stmt_tags->get_result();
+                                    $stmt_tags->close();
                                     $allTags = [];
-                                    while ($row = mysqli_fetch_assoc($resTags)) {
+                                    while ($row = $resTags->fetch_assoc()) {
                                         $tag = trim($row['tag']);
                                         if (!empty($tag) && !in_array($tag, $allTags)) {
                                             $allTags[] = $tag;
@@ -136,14 +129,12 @@ if($autorizado != 2){
                                     
                                     // Contar clientes por tag
                                     foreach ($allTags as $tag): 
-                                        $sqlCount = "
-                                            SELECT COUNT(*) as total 
-                                            FROM clientes 
-                                            WHERE usuario_api = '{$usuario_api}' 
-                                            AND (etiqueta LIKE '%{$tag}%')
-                                        ";
-                                        $resCount = mysqli_query($conn, $sqlCount);
-                                        $count = mysqli_fetch_assoc($resCount)['total'];
+                                        $stmt_cnt = $conn->prepare("SELECT COUNT(*) as total FROM clientes WHERE usuario_api = ? AND (etiqueta LIKE ?)");
+                                        $tag_like = '%' . $tag . '%';
+                                        $stmt_cnt->bind_param("ss", $usuario_api, $tag_like);
+                                        $stmt_cnt->execute();
+                                        $count = $stmt_cnt->get_result()->fetch_assoc()['total'];
+                                        $stmt_cnt->close();
                                     ?>
                                     <div class="tag-filter-pill" onclick="toggleTagFilter('<?= htmlspecialchars($tag) ?>')">
                                         <i class="fas fa-tag"></i> <?= htmlspecialchars($tag) ?> 
@@ -166,14 +157,12 @@ if($autorizado != 2){
 
                             <div class="clientes-container" id="clientesContainer">
                                 <?php
-                                $sql = "
-                                    SELECT id, nome, telefone, etiqueta
-                                    FROM clientes
-                                    WHERE usuario_api = '{$usuario_api}'
-                                    ORDER BY nome
-                                ";
-                                $res = mysqli_query($conn, $sql);
-                                while ($cli = mysqli_fetch_assoc($res)):
+                                $stmt_cli2 = $conn->prepare("SELECT id, nome, telefone, etiqueta FROM clientes WHERE usuario_api = ? ORDER BY nome");
+                                $stmt_cli2->bind_param("s", $usuario_api);
+                                $stmt_cli2->execute();
+                                $res = $stmt_cli2->get_result();
+                                $stmt_cli2->close();
+                                while ($cli = $res->fetch_assoc()):
                                     $id       = $cli['id'];
                                     $nome     = $cli['nome'] ?: 'Sem nome';
                                     $telefone = $cli['telefone'];

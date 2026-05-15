@@ -4,36 +4,26 @@ $login = $_SESSION['login'];
 include 'conn.php';
 include 'funcoes.php';
 
-// Verificar a conexão
 if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
-// Verificar se os dados foram enviados via POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Receber os dados do formulário
-    $boas_vindas = $conn->real_escape_string($_POST["boas_vindas"]);
-    $prompt = $conn->real_escape_string($_POST["prompt"]);
-    $despedida = $conn->real_escape_string($_POST["despedida"]);
-    $tempo = (int) $_POST["tempo"];
+    $boas_vindas = $_POST["boas_vindas"] ?? '';
+    $prompt = $_POST["prompt"] ?? '';
+    $despedida = $_POST["despedida"] ?? '';
+    $tempo = (int)($_POST["tempo"] ?? 0);
 
-    // Montar a consulta SQL para atualizar os dados
-    $sql = "UPDATE login SET 
-                IA_boas_vindas = '$boas_vindas',
-                IA_prompt = '$prompt',
-                IA_despedida = '$despedida',
-                tempo_final = $tempo
-            WHERE login = '$login'"; // Altere para o ID adequado, caso seja necessário
-
-    // Executar a consulta e verificar se foi bem-sucedida
-    if ($conn->query($sql) === TRUE) {
-        #echo "Dados atualizados com sucesso!";
+    $stmt = $conn->prepare("UPDATE login SET IA_boas_vindas = ?, IA_prompt = ?, IA_despedida = ?, tempo_final = ? WHERE login = ?");
+    $stmt->bind_param("sssis", $boas_vindas, $prompt, $despedida, $tempo, $login);
+    if ($stmt->execute()) {
+        $stmt->close();
         VaiPara('prompt.php?pagina_nome=16&confirmacao=atualizado');
     } else {
         echo "Erro ao atualizar dados: " . $conn->error;
+        $stmt->close();
     }
 }
 
-// Fechar a conexão
 $conn->close();
 ?>

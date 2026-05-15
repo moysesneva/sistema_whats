@@ -34,8 +34,8 @@ if ($total_config > 0) {
 
 // Verifica se os parâmetros necessários foram enviados
 if(isset($_POST['usuario']) && isset($_POST['comando'])) {
-    #$usuario = mysqli_real_escape_string($conn, $_POST['usuario']);
-    #$comando = mysqli_real_escape_string($conn, $_POST['comando']);
+    #$usuario = trim($_POST['usuario']);
+    #$comando = trim($_POST['comando']);
         $user_id =  $_POST['usuario'] ;
         $comando = $_POST['comando'] ;
         $usuario =  $_POST['usuario'] ;
@@ -51,8 +51,10 @@ if($comando == 'bloquear'){
 
 
             // Atualiza o status do bot para ativado
-            $sql_update = "UPDATE login SET situacao = 'bloqueado' ,tipo='3' WHERE usuario_api = '$usuario' AND tipo IN ('2', '3')";
-        $query = mysqli_query($conn, $sql_update);
+            $stmt_blq = $conn->prepare("UPDATE login SET situacao = 'bloqueado', tipo = '3' WHERE usuario_api = ? AND tipo IN ('2', '3')");
+            $stmt_blq->bind_param("s", $usuario);
+            $query = $stmt_blq->execute();
+            $stmt_blq->close();
         fechar_instancia($user_id, $servidor,$porta,$token);
        # VaiPara('listar_bot.php');
 
@@ -68,8 +70,10 @@ if($comando == 'bloquear'){
         fechar_instancia($user_id, $servidor,$porta,$token);
 
             // Atualiza o status do bot para ativado
-            $sql_update = "UPDATE login SET situacao = 'desativado' WHERE usuario_api = '$usuario' AND tipo IN ('2', '3')";
-        $query = mysqli_query($conn, $sql_update);
+            $stmt_par = $conn->prepare("UPDATE login SET situacao = 'desativado' WHERE usuario_api = ? AND tipo IN ('2', '3')");
+            $stmt_par->bind_param("s", $usuario);
+            $query = $stmt_par->execute();
+            $stmt_par->close();
         #VaiPara('listar_bot.php');
 
 
@@ -83,8 +87,10 @@ if($comando == 'bloquear'){
         abrir_instancia_terminal($user_id, $servidor,$porta,$token);
 
             // Atualiza o status do bot para ativado
-        $sql_update = "UPDATE login SET  tipo ='2', situacao = 'ativado',funcao = 'IA' WHERE usuario_api = '$usuario' AND tipo IN ('2', '3')";
-        $query = mysqli_query($conn, $sql_update);
+        $stmt_ini = $conn->prepare("UPDATE login SET tipo = '2', situacao = 'ativado', funcao = 'IA' WHERE usuario_api = ? AND tipo IN ('2', '3')");
+        $stmt_ini->bind_param("s", $usuario);
+        $query = $stmt_ini->execute();
+        $stmt_ini->close();
               
 
 
@@ -92,8 +98,10 @@ if($comando == 'bloquear'){
 
     if($comando == 'deletar'){
 
-        $sql = "DELETE FROM login WHERE usuario_api = '$usuario'";
-        $query = mysqli_query($conn, $sql);
+        $stmt_del = $conn->prepare("DELETE FROM login WHERE usuario_api = ?");
+        $stmt_del->bind_param("s", $usuario);
+        $query = $stmt_del->execute();
+        $stmt_del->close();
 
 }
 

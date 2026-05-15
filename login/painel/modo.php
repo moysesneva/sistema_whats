@@ -18,11 +18,13 @@ if (isset($_GET['pagina_nome'])) {
     $pagina_nome_recebe = 0;
 }
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome         = Priletra($rows_usuarios['nome']);
     $img_perfil   = $rows_usuarios['perfil_img'];
     $autorizado   = $rows_usuarios['autorizado'];
@@ -55,12 +57,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $acao = $_POST['acao_robo'];
         $status_robo = ($acao == 'ativar') ? 'IA' : 'desativado';
         $login = $_SESSION['login'];
-        $sql_atualizar_status = "UPDATE login SET funcao = '$status_robo' WHERE login = '$login' ";
-        $resultado_status = mysqli_query($conn, $sql_atualizar_status);
+        $stmt_st = $conn->prepare("UPDATE login SET funcao = ? WHERE login = ?");
+        $stmt_st->bind_param("ss", $status_robo, $login);
+        $resultado_status = $stmt_st->execute();
+        $stmt_st->close();
 
         $login2 = 'agenda_'.$login;
-        $sql_atualizar_status = "UPDATE clientes SET time_resposta = '' WHERE usuario_api = '$login2'";
-        $resultado_status = mysqli_query($conn, $sql_atualizar_status);
+        $stmt_cli = $conn->prepare("UPDATE clientes SET time_resposta = '' WHERE usuario_api = ?");
+        $stmt_cli->bind_param("s", $login2);
+        $resultado_status = $stmt_cli->execute();
+        $stmt_cli->close();
 
         if ($resultado_status) {
             if ($acao == 'ativar') {
@@ -82,37 +88,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['modulo_selecionado']) && !empty($_POST['modulo_selecionado'])) {
         $id_modulo = (int) $_POST['modulo_selecionado'];
 
-        $sql_busca_modulo = "
-            SELECT nome_modulo 
-            FROM planos_clientes 
-            WHERE id = $id_modulo 
-            AND tipo = '1' 
-            AND nome_plano = '$plano'
-            LIMIT 1
-        ";
-        $res_modulo = mysqli_query($conn, $sql_busca_modulo);
+        $stmt_mod = $conn->prepare("SELECT nome_modulo FROM planos_clientes WHERE id = ? AND tipo = '1' AND nome_plano = ? LIMIT 1");
+        $stmt_mod->bind_param("is", $id_modulo, $plano);
+        $stmt_mod->execute();
+        $res_modulo = $stmt_mod->get_result();
+        $stmt_mod->close();
 
-        if ($res_modulo && mysqli_num_rows($res_modulo) > 0) {
-            $modulo_info = mysqli_fetch_assoc($res_modulo);
+        if ($res_modulo && $res_modulo->num_rows > 0) {
+            $modulo_info = $res_modulo->fetch_assoc();
             $nome_modulo = $modulo_info['nome_modulo'];
 
-            $sql_verifica_usuario = "SELECT id FROM funcao WHERE login = '$login' LIMIT 1";
-            $res_verifica_usuario = mysqli_query($conn, $sql_verifica_usuario);
+            $stmt_ver = $conn->prepare("SELECT id FROM funcao WHERE login = ? LIMIT 1");
+            $stmt_ver->bind_param("s", $login);
+            $stmt_ver->execute();
+            $res_verifica_usuario = $stmt_ver->get_result();
+            $stmt_ver->close();
 
-            if ($res_verifica_usuario && mysqli_num_rows($res_verifica_usuario) > 0) {
-                $sql_atualizar_funcao = "
-                    UPDATE login 
-                    SET modo_atuante = '$nome_modulo'
-                    WHERE login = '$login'
-                ";
-                $resultado_funcao = mysqli_query($conn, $sql_atualizar_funcao);
+            if ($res_verifica_usuario && $res_verifica_usuario->num_rows > 0) {
+                $stmt_upd = $conn->prepare("UPDATE login SET modo_atuante = ? WHERE login = ?");
+                $stmt_upd->bind_param("ss", $nome_modulo, $login);
+                $resultado_funcao = $stmt_upd->execute();
+                $stmt_upd->close();
                 $acao_realizada = "atualizada";
             } else {
-                $sql_inserir_funcao = "
-                    INSERT INTO funcao (funcao, id_funcao, login)
-                    VALUES ('$nome_modulo', $id_modulo, '$login')
-                ";
-                $resultado_funcao = mysqli_query($conn, $sql_inserir_funcao);
+                $stmt_ins = $conn->prepare("INSERT INTO funcao (funcao, id_funcao, login) VALUES (?, ?, ?)");
+                $stmt_ins->bind_param("sis", $nome_modulo, $id_modulo, $login);
+                $resultado_funcao = $stmt_ins->execute();
+                $stmt_ins->close();
                 $acao_realizada = "inserida";
             }
 
@@ -136,8 +138,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['modoRobo']) && !empty($_POST['modoRobo'])) {
         $modoRobo = $_POST['modoRobo'];
 
-        $sql_atualizar_modo = "UPDATE login SET funcao = '$modoRobo' WHERE login = '$login'";
-        $resultado_modo = mysqli_query($conn, $sql_atualizar_modo);
+        $stmt_modo = $conn->prepare("UPDATE login SET funcao = ? WHERE login = ?");
+        $stmt_modo->bind_param("ss", $modoRobo, $login);
+        $resultado_modo = $stmt_modo->execute();
+        $stmt_modo->close();
 
         if ($resultado_modo) {
             echo '<div class="alert alert-success" role="alert">
@@ -151,24 +155,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
+$stmt_bu2 = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_bu2->bind_param("s", $login);
+$stmt_bu2->execute();
+$query_busca_usuario = $stmt_bu2->get_result();
+$stmt_bu2->close();
 $funcao_atual = 'desativado';
 $status_robo = false;
 
-if ($query_busca_usuario && mysqli_num_rows($query_busca_usuario) > 0) {
-    $rows_usuarios = mysqli_fetch_array($query_busca_usuario);
+if ($query_busca_usuario && $query_busca_usuario->num_rows > 0) {
+    $rows_usuarios = $query_busca_usuario->fetch_array();
     $nome = $rows_usuarios['nome'];
     $funcao_atual = $rows_usuarios['funcao'];
     $status_robo = ($funcao_atual == 'IA');
 }
 
-$sql_funcao_atual = "SELECT funcao, id_funcao FROM funcao WHERE login = '$login' LIMIT 1";
-$res_funcao_atual = mysqli_query($conn, $sql_funcao_atual);
+$stmt_fa = $conn->prepare("SELECT funcao, id_funcao FROM funcao WHERE login = ? LIMIT 1");
+$stmt_fa->bind_param("s", $login);
+$stmt_fa->execute();
+$res_funcao_atual = $stmt_fa->get_result();
+$stmt_fa->close();
 $funcao_ativa = null;
 $id_funcao_ativa = null;
 
-if ($res_funcao_atual && mysqli_num_rows($res_funcao_atual) > 0) {
+if ($res_funcao_atual && $res_funcao_atual->num_rows > 0) {
     $funcao_data = mysqli_fetch_assoc($res_funcao_atual);
     $funcao_ativa = $funcao_data['funcao'];
     $id_funcao_ativa = $funcao_data['id_funcao'];
@@ -245,17 +255,14 @@ if ($res_funcao_atual && mysqli_num_rows($res_funcao_atual) > 0) {
                         <select name="modulo_selecionado" class="form-control" required>
                             <option value="">Escolha o tipo de função</option>
                             <?php
-                            $sql_modulos = "
-                                SELECT id, nome_modulo 
-                                FROM planos_clientes 
-                                WHERE tipo = '1' 
-                                AND nome_plano = '$plano'
-                                ORDER BY nome_modulo ASC
-                            ";
-                            $res_modulos = mysqli_query($conn, $sql_modulos);
+                            $stmt_mod = $conn->prepare("SELECT id, nome_modulo FROM planos_clientes WHERE tipo = '1' AND nome_plano = ? ORDER BY nome_modulo ASC");
+                            $stmt_mod->bind_param("s", $plano);
+                            $stmt_mod->execute();
+                            $res_modulos = $stmt_mod->get_result();
+                            $stmt_mod->close();
 
-                            if ($res_modulos && mysqli_num_rows($res_modulos) > 0) {
-                                while ($modulo = mysqli_fetch_assoc($res_modulos)) {
+                            if ($res_modulos && $res_modulos->num_rows > 0) {
+                                while ($modulo = $res_modulos->fetch_assoc()) {
                                     $selected = ($modulo['id'] == $id_funcao_ativa) ? 'selected' : '';
                                     echo "<option value='{$modulo['id']}' {$selected}>" .
                                          htmlspecialchars($modulo['nome_modulo'], ENT_QUOTES) .
@@ -294,17 +301,14 @@ if ($res_funcao_atual && mysqli_num_rows($res_funcao_atual) > 0) {
                 </thead>
                 <tbody>
                     <?php
-                    $sql_lista_modulos = "
-                        SELECT id, nome_modulo, date
-                        FROM planos_clientes 
-                        WHERE tipo = '1' 
-                        AND nome_plano = '$plano'
-                        ORDER BY nome_modulo ASC
-                    ";
-                    $res_lista = mysqli_query($conn, $sql_lista_modulos);
+                    $stmt_lm = $conn->prepare("SELECT id, nome_modulo, date FROM planos_clientes WHERE tipo = '1' AND nome_plano = ? ORDER BY nome_modulo ASC");
+                    $stmt_lm->bind_param("s", $plano);
+                    $stmt_lm->execute();
+                    $res_lista = $stmt_lm->get_result();
+                    $stmt_lm->close();
 
-                    if ($res_lista && mysqli_num_rows($res_lista) > 0) {
-                        while ($modulo = mysqli_fetch_assoc($res_lista)) {
+                    if ($res_lista && $res_lista->num_rows > 0) {
+                        while ($modulo = $res_lista->fetch_assoc()) {
                             $is_active = ($modulo['id'] == $id_funcao_ativa);
                             $status_badge = $is_active ?
                                 '<span class="badge badge-success">Em Uso</span>' :
@@ -336,11 +340,14 @@ if ($res_funcao_atual && mysqli_num_rows($res_funcao_atual) > 0) {
     </div>
     <div class="card-block">
         <?php
-        $sql_debug = "SELECT * FROM funcao WHERE login = '$login'";
-        $res_debug = mysqli_query($conn, $sql_debug);
+        $stmt_dbg = $conn->prepare("SELECT * FROM funcao WHERE login = ?");
+        $stmt_dbg->bind_param("s", $login);
+        $stmt_dbg->execute();
+        $res_debug = $stmt_dbg->get_result();
+        $stmt_dbg->close();
 
-        if ($res_debug && mysqli_num_rows($res_debug) > 0) {
-            $debug_data = mysqli_fetch_assoc($res_debug);
+        if ($res_debug && $res_debug->num_rows > 0) {
+            $debug_data = $res_debug->fetch_assoc();
             echo "<small>";
             echo "<strong>ID:</strong> " . $debug_data['id'] . "<br>";
             echo "<strong>Função:</strong> " . htmlspecialchars($debug_data['funcao'], ENT_QUOTES) . "<br>";

@@ -95,9 +95,12 @@ echo json_encode(["status" => "sucesso", "mensagem" => "Dados salvos com sucesso
 
 
 
-$sql_lista = "SELECT * FROM lista_negra WHERE telefone = '$telefone' AND usuario_api = '$usuario_api'";
-$query_lista = mysqli_query($conn, $sql_lista);
-$total_lista = mysqli_num_rows($query_lista);
+$stmt_lista = $conn->prepare("SELECT * FROM lista_negra WHERE telefone = ? AND usuario_api = ?");
+$stmt_lista->bind_param("ss", $telefone, $usuario_api);
+$stmt_lista->execute();
+$query_lista = $stmt_lista->get_result();
+$total_lista = $query_lista->num_rows;
+$stmt_lista->close();
 
 
 
@@ -196,9 +199,12 @@ while($rows_config = mysqli_fetch_array($query_config)) {
     
 ///buscar configuracoes de login
 #$sql_busca_usuario = "SELECT * FROM login WHERE usuario_api = '$usuario_api'AND (tipo = '2' OR tipo = '1')";
-$sql_busca_usuario = "SELECT * FROM login WHERE usuario_api = '$usuario_api'AND tipo = '2'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_bu = $conn->prepare("SELECT * FROM login WHERE usuario_api = ? AND tipo = '2'");
+$stmt_bu->bind_param("s", $usuario_api);
+$stmt_bu->execute();
+$query_busca_usuario = $stmt_bu->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
+$stmt_bu->close();
 
 while ($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
 
@@ -216,11 +222,14 @@ while ($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
 }
 ////////////////////////////////////////////////
 //// busca de planos
-$sql_busca_planos = "SELECT * FROM chave_ia_geral WHERE plano = '$plano' ORDER BY RAND() LIMIT 1"; 
-$query_busca_planos = mysqli_query($conn, $sql_busca_planos); 
+$stmt_planos = $conn->prepare("SELECT * FROM chave_ia_geral WHERE plano = ? ORDER BY RAND() LIMIT 1");
+$stmt_planos->bind_param("s", $plano);
+$stmt_planos->execute();
+$query_busca_planos = $stmt_planos->get_result();
+$stmt_planos->close();
 
-if ($query_busca_planos && mysqli_num_rows($query_busca_planos) > 0) {
-    $rows_planos = mysqli_fetch_array($query_busca_planos);
+if ($query_busca_planos && $query_busca_planos->num_rows > 0) {
+    $rows_planos = $query_busca_planos->fetch_array();
     $chave = $rows_planos['chave'];
     $ia_nome = $rows_planos['nome'];
 } 
@@ -229,17 +238,18 @@ if ($query_busca_planos && mysqli_num_rows($query_busca_planos) > 0) {
 //// buscar clientes
 
 
-$sql_busca_clientes = "SELECT * FROM clientes WHERE usuario_api = '$usuario_api' AND telefone = '$telefone'";
-$query_busca_clientes = mysqli_query($conn, $sql_busca_clientes);
-$total_busca_clientes = mysqli_num_rows($query_busca_clientes);
+$stmt_buc = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? AND telefone = ?");
+$stmt_buc->bind_param("ss", $usuario_api, $telefone);
+$stmt_buc->execute();
+$query_busca_clientes = $stmt_buc->get_result();
+$total_busca_clientes = $query_busca_clientes->num_rows;
+$stmt_buc->close();
 
-while($rows_clientes = mysqli_fetch_array($query_busca_clientes)) {
-    
+while($rows_clientes = $query_busca_clientes->fetch_array()) {
     $id_agendamento = $rows_clientes['id_agendamento'];
     $situacao = $rows_clientes['situacao'];
     $nome = $rows_clientes['nome'];
     $time_reposta = $rows_clientes['time_resposta'];
-
 }
 
 }///if (isset($_POST['codigo'])){
@@ -262,8 +272,10 @@ if (isset($data['de']) && strtolower(trim($data['de'])) == 'sim') {
     $novo_time = somaVinteMinutos($dataHoraAtual);
 
     // Atualiza no banco de dados
-    $sql = "UPDATE clientes SET time_resposta = '$novo_time' WHERE telefone = '$telefone' AND usuario_api = '$usuario_api'";
-    $query = mysqli_query($conn, $sql);
+    $stmt_upd_tr = $conn->prepare("UPDATE clientes SET time_resposta = ? WHERE telefone = ? AND usuario_api = ?");
+    $stmt_upd_tr->bind_param("sss", $novo_time, $telefone, $usuario_api);
+    $query = $stmt_upd_tr->execute();
+    $stmt_upd_tr->close();
 
     // Encerra o script após atualizar
     exit();

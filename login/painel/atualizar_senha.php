@@ -6,8 +6,10 @@ include 'api/api_funcao.php';
 include 'config_dados.php';
 $login = $_SESSION['login'];
 $senha = $_POST['confirmar_senha'];
-$sql = "UPDATE login SET senha = '$senha' WHERE login='$login'";
-$query = mysqli_query($conn,$sql);
+$stmt = $conn->prepare("UPDATE login SET senha = ? WHERE login = ?");
+$stmt->bind_param("ss", $senha, $login);
+$query = $stmt->execute();
+$stmt->close();
 if($query){
     
 VaiPara('senha.php?pagina_nome=6&confirmacao=atualizado')   ; 

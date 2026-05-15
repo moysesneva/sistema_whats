@@ -25,7 +25,7 @@ while($rows_config = mysqli_fetch_array($query_config)) {
 $query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome = $rows_usuarios['nome'];
     $usuario_api = $rows_usuarios['usuario_api'];
 

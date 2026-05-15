@@ -1,10 +1,12 @@
 <?php
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome          = Priletra($rows_usuarios['nome']);
     $img_perfil    = $rows_usuarios['perfil_img'];
     $autorizado    = $rows_usuarios['autorizado'];
@@ -50,9 +52,10 @@ $qr_response  =  abrir_instancia_terminal($usuario_api,$servidor,$porta,$token);
 #exit();
 
 
-$sql = "UPDATE login SET situacao = 'ativado' WHERE login='$login'";
-
-$query = mysqli_query($conn,$sql);
+$stmt_upd_sit = $conn->prepare("UPDATE login SET situacao = 'ativado' WHERE login = ?");
+$stmt_upd_sit->bind_param("s", $login);
+$query = $stmt_upd_sit->execute();
+$stmt_upd_sit->close();
 
 VaiPara('qrcode.php');
   
@@ -63,17 +66,15 @@ $mes_atual = date('m');
 $ano_atual = date('Y');
 
 // Query para contar os envios do mês atual
-$sql_envios = "SELECT COUNT(*) as total_envios 
-               FROM envio 
-               WHERE usuario_api = '$usuario_api' 
-               AND MONTH(data_envio) = '$mes_atual' 
-               AND YEAR(data_envio) = '$ano_atual'";
-
-$query_envios = mysqli_query($conn, $sql_envios);
+$stmt_env = $conn->prepare("SELECT COUNT(*) as total_envios FROM envio WHERE usuario_api = ? AND MONTH(data_envio) = ? AND YEAR(data_envio) = ?");
+$stmt_env->bind_param("sss", $usuario_api, $mes_atual, $ano_atual);
+$stmt_env->execute();
+$query_envios = $stmt_env->get_result();
+$stmt_env->close();
 $total_envios = 0;
 
 if ($query_envios) {
-    $row_envios = mysqli_fetch_assoc($query_envios);
+    $row_envios = $query_envios->fetch_assoc();
     $total_envios = $row_envios['total_envios'];
     #$total_envios = '1000';
 }

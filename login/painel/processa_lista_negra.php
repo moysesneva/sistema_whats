@@ -14,8 +14,7 @@ mysqli_set_charset($conn, "utf8");
 
 // Função para sanitizar dados
 function sanitizar($data) {
-    global $conn;
-    return mysqli_real_escape_string($conn, trim($data));
+    return trim($data);
 }
 
 // Função para validar telefone

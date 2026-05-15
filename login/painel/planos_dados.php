@@ -8,11 +8,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // -- ATIVAR/DESATIVAR PLANO --
     if (isset($_POST['toggle_plan'])) {
         $id = intval($_POST['toggle_plan']);
-        $row = mysqli_fetch_assoc(
-            mysqli_query($conn, "SELECT ativo FROM planos_online WHERE id = $id")
-        );
+        $stmt_sel = $conn->prepare("SELECT ativo FROM planos_online WHERE id = ?");
+        $stmt_sel->bind_param("i", $id);
+        $stmt_sel->execute();
+        $row = $stmt_sel->get_result()->fetch_assoc();
+        $stmt_sel->close();
         $novo = $row['ativo'] ? 0 : 1;
-        mysqli_query($conn, "UPDATE planos_online SET ativo = $novo WHERE id = $id");
+        $stmt_upd = $conn->prepare("UPDATE planos_online SET ativo = ? WHERE id = ?");
+        $stmt_upd->bind_param("ii", $novo, $id);
+        $stmt_upd->execute();
+        $stmt_upd->close();
     }
 
     // -- ATUALIZAR PLANO (nome, preço, link) --
@@ -60,7 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // -- EXCLUIR FEATURE --
     if (isset($_POST['delete_feature'])) {
         $fid = intval($_POST['delete_feature']);
-        mysqli_query($conn, "DELETE FROM planos_features WHERE id = $fid");
+        $stmt_del = $conn->prepare("DELETE FROM planos_features WHERE id = ?");
+        $stmt_del->bind_param("i", $fid);
+        $stmt_del->execute();
+        $stmt_del->close();
     }
 }
 

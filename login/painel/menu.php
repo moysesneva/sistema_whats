@@ -2,67 +2,53 @@
 #session_start();
 #$tipo_usuario = $_SESSION['tipo_menu'];
 
-$sql_busca_modulos = "SELECT * FROM login WHERE login = '$login'";
-$query = mysqli_query($conn, $sql_busca_modulos);
-$total = mysqli_num_rows($query);
+$stmt_menu_login = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_menu_login->bind_param("s", $login);
+$stmt_menu_login->execute();
+$query = $stmt_menu_login->get_result();
+$total = $query->num_rows;
 
 
 if($total){
-while($rows_usuarios = mysqli_fetch_array($query)) {
+while($rows_usuarios = $query->fetch_array()) {
     $funcao = $rows_usuarios['modo_atuante'];
 }   
-     
 
-
-$sql_menu = "SELECT * FROM menu 
-             WHERE funcao IS NOT NULL 
-             AND funcao != '' 
-             AND FIND_IN_SET('$funcao', funcao) > 0 
-             ORDER BY ordem ASC";
-
-$query_menu = mysqli_query($conn, $sql_menu);
-
-// Verifica o número de registros retornados
-$total_menu = mysqli_num_rows($query_menu);
+$stmt_menu = $conn->prepare("SELECT * FROM menu WHERE funcao IS NOT NULL AND funcao != '' AND FIND_IN_SET(?, funcao) > 0 ORDER BY ordem ASC");
+$stmt_menu->bind_param("s", $funcao);
+$stmt_menu->execute();
+$query_menu = $stmt_menu->get_result();
+$total_menu = $query_menu->num_rows;
+$stmt_menu->close();
 }else{
     
-  // Consulta SQL para selecionar todos os registros da tabela
-$sql_menu = "SELECT * FROM menu WHERE tipo ='$tipo'  ORDER BY ordem ASC";
-$query_menu = mysqli_query($conn, $sql_menu);
-
-// Verifica o número de registros retornados
-$total_menu = mysqli_num_rows($query_menu);  
+$stmt_menu2 = $conn->prepare("SELECT * FROM menu WHERE tipo = ? ORDER BY ordem ASC");
+$stmt_menu2->bind_param("s", $tipo);
+$stmt_menu2->execute();
+$query_menu = $stmt_menu2->get_result();
+$total_menu = $query_menu->num_rows;
+$stmt_menu2->close();
     
     
 }
+$stmt_menu_login->close();
 $pagina_atual = basename($_SERVER['PHP_SELF']); // Ex: "agenda.php"
 
-
-$sql_pagina = "SELECT * FROM menu WHERE menu_pagina ='$pagina_atual'  ORDER BY ordem ASC";
-$query_pagina = mysqli_query($conn, $sql_pagina);
-$total_pagina = mysqli_num_rows($query_pagina);  
-
-
-// Verifica o número de registros retornados
-
-
+$stmt_pag = $conn->prepare("SELECT * FROM menu WHERE menu_pagina = ? ORDER BY ordem ASC");
+$stmt_pag->bind_param("s", $pagina_atual);
+$stmt_pag->execute();
+$query_pagina = $stmt_pag->get_result();
+$total_pagina = $query_pagina->num_rows;
+$stmt_pag->close();
 
 if($total_pagina > 0){
-    
 
-$sql_menu_pagina = "SELECT * FROM menu 
-             WHERE funcao IS NOT NULL 
-             AND funcao != '' 
-             AND FIND_IN_SET('$funcao', funcao) > 0 AND menu_pagina = '$pagina_atual'
-             ORDER BY ordem ASC";
-
-$query_pagina = mysqli_query($conn, $sql_menu_pagina);
-
-// Verifica o número de registros retornados
-$total_pagina = mysqli_num_rows($query_pagina);
-
-
-
+$stmt_menu_pagina = $conn->prepare("SELECT * FROM menu WHERE funcao IS NOT NULL AND funcao != '' AND FIND_IN_SET(?, funcao) > 0 AND menu_pagina = ? ORDER BY ordem ASC");
+$stmt_menu_pagina->bind_param("ss", $funcao, $pagina_atual);
+$stmt_menu_pagina->execute();
+$query_pagina = $stmt_menu_pagina->get_result();
+$total_pagina = $query_pagina->num_rows;
+$stmt_menu_pagina->close();
 
 if($total_pagina == 0){
     

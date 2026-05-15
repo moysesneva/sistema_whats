@@ -1,43 +1,21 @@
 <?php
 include 'conn.php';
 
-// Verificar se o ID do profissional foi enviado via POST
 if (isset($_POST['profissional_id'])) {
-    $profissional_id = $_POST['profissional_id'];
+    $profissional_id = intval($_POST['profissional_id']);
 
-    // Consulta para buscar os agendamentos do profissional selecionado
-    #$sql = "SELECT id, dia, horario FROM agenda_padrao WHERE profissional_id = '$profissional_id'";
-    #
-    #
-    #
-    #
-    #$sql = "SELECT * FROM agenda_padrao WHERE id_profissional = '$profissional_id'";
-$sql = "
-    SELECT * 
-    FROM agenda_padrao 
-    WHERE id_profissional = '$profissional_id'
-    ORDER BY 
-        CASE 
-            WHEN dia = 'segunda' THEN 1
-            WHEN dia = 'terca' THEN 2
-            WHEN dia = 'quarta' THEN 3
-            WHEN dia = 'quinta' THEN 4
-            WHEN dia = 'sexta' THEN 5
-            WHEN dia = 'sabado' THEN 6
-            WHEN dia = 'domingo' THEN 7
-        END,
-        horario
-";
-    $result = mysqli_query($conn, $sql);
+    $stmt = $conn->prepare("SELECT * FROM agenda_padrao WHERE id_profissional = ? ORDER BY CASE WHEN dia = 'segunda' THEN 1 WHEN dia = 'terca' THEN 2 WHEN dia = 'quarta' THEN 3 WHEN dia = 'quinta' THEN 4 WHEN dia = 'sexta' THEN 5 WHEN dia = 'sabado' THEN 6 WHEN dia = 'domingo' THEN 7 END, horario");
+    $stmt->bind_param("i", $profissional_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
 
-    // Verificar se há resultados
-    if (mysqli_num_rows($result) > 0) {
+    if ($result->num_rows > 0) {
         echo '<table class="table table-bordered">';
         echo '<thead><tr><th>Dia</th><th>Horário</th><th>Ação</th></tr></thead>';
         echo '<tbody>';
         
-        // Exibir os resultados em uma tabela
-        while ($row = mysqli_fetch_assoc($result)) {
+        while ($row = $result->fetch_assoc()) {
             echo "<tr>";
             echo "<td>{$row['dia']}</td>";
             echo "<td>{$row['horario']}</td>";
@@ -51,6 +29,5 @@ $sql = "
     }
 }
 
-// Fechar a conexão
 mysqli_close($conn);
 ?>

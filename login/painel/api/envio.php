@@ -31,19 +31,24 @@ while (true) {
         $status = $rows_usuarios['status'];
         $usuario = $rows_usuarios['usuario_api'];
 
-        $sql = "UPDATE envio SET status = '2' WHERE id='$id_msg'";
-        $query = mysqli_query($conn, $sql);
+        $stmt_upd1 = $conn->prepare("UPDATE envio SET status = '2' WHERE id = ?");
+        $stmt_upd1->bind_param("i", $id_msg);
+        $stmt_upd1->execute();
+        $stmt_upd1->close();
 
         $resposta = EnviarMsg($telefone, $msg, $id_msg, $usuario, $token, $servidor);
 
         if (strpos($resposta, 'Erro:') !== false) {
-            // Exibe a mensagem de erro
             echo "Ocorreu um erro: " . $resposta;
-            $sql = "UPDATE envio SET status = '1' WHERE id='$id_msg'";
-            $query = mysqli_query($conn, $sql);
+            $stmt_upd2 = $conn->prepare("UPDATE envio SET status = '1' WHERE id = ?");
+            $stmt_upd2->bind_param("i", $id_msg);
+            $stmt_upd2->execute();
+            $stmt_upd2->close();
         } else {
-            $sql = "UPDATE envio SET status = '2' WHERE id='$id_msg'";
-            $query = mysqli_query($conn, $sql);
+            $stmt_upd3 = $conn->prepare("UPDATE envio SET status = '2' WHERE id = ?");
+            $stmt_upd3->bind_param("i", $id_msg);
+            $stmt_upd3->execute();
+            $stmt_upd3->close();
         }
     }
 

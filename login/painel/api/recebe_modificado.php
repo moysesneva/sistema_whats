@@ -107,38 +107,32 @@ function processarEnquete()
 
     if ($resposta === 'sim') {
         // 2a. Atualizar agendamento: confirmacao = 1, lembrete = 3
-        $sql = "UPDATE agendamento
-                   SET confirmacao = '1',
-                       lembrete     = '3'
-                 WHERE usuario_api    = '{$usuario_api}'
-                   AND cliente_telefone = '{$telefone}'
-                   AND lembrete         = '2'";
-        $query = mysqli_query($conn, $sql);
-        if (!$query) {
-            error_log("Erro SQL (enquete/sim): " . mysqli_error($conn));
+        $stmt_sim = $conn->prepare("UPDATE agendamento SET confirmacao = '1', lembrete = '3' WHERE usuario_api = ? AND cliente_telefone = ? AND lembrete = '2'");
+        $stmt_sim->bind_param("ss", $usuario_api, $telefone);
+        $stmt_sim->execute();
+        $query = $stmt_sim;
+        if ($conn->error) {
+            error_log("Erro SQL (enquete/sim): " . $conn->error);
         }
 
-        // 2b. Verificar quantas linhas foram afetadas
-        if (mysqli_affected_rows($conn) > 0) {
+        if ($stmt_sim->affected_rows > 0) {
+        $stmt_sim->close();
             $textoEnvio = "*Agendamento:* processado";
         } else {
             $textoEnvio = "Nenhum agendamento pendente para processar no momento.";
         }
     } elseif ($resposta === 'não') {
         // 3a. Atualizar agendamento: confirmacao = 2, lembrete = 3
-        $sql = "UPDATE agendamento
-                   SET confirmacao = '2',
-                       lembrete     = '3'
-                 WHERE usuario_api    = '{$usuario_api}'
-                   AND cliente_telefone = '{$telefone}'
-                   AND lembrete         = '2'";
-        $query = mysqli_query($conn, $sql);
-        if (!$query) {
-            error_log("Erro SQL (enquete/nao): " . mysqli_error($conn));
+        $stmt_nao = $conn->prepare("UPDATE agendamento SET confirmacao = '2', lembrete = '3' WHERE usuario_api = ? AND cliente_telefone = ? AND lembrete = '2'");
+        $stmt_nao->bind_param("ss", $usuario_api, $telefone);
+        $stmt_nao->execute();
+        $query = $stmt_nao;
+        if ($conn->error) {
+            error_log("Erro SQL (enquete/nao): " . $conn->error);
         }
 
-        // 3b. Verificar resultado
-        if (mysqli_affected_rows($conn) > 0) {
+        if ($stmt_nao->affected_rows > 0) {
+        $stmt_nao->close();
             $textoEnvio = "*Agendamento:* processado";
         } else {
             $textoEnvio = "Nenhum agendamento pendente para processar no momento.";
@@ -149,14 +143,12 @@ function processarEnquete()
     }
 
     // 4. Inserir na fila de envio e chamar API
-    $sqlInsere = "INSERT INTO envio 
-                     (comando, telefone, msg, status, usuario_api)
-                  VALUES
-                     ('MsgTexto', '{$telefone}', '{$textoEnvio}', '2', '{$usuario_api}')";
-    mysqli_query($conn, $sqlInsere);
+    $stmt_ins_enq = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+    $stmt_ins_enq->bind_param("sss", $telefone, $textoEnvio, $usuario_api);
+    $stmt_ins_enq->execute();
+    $stmt_ins_enq->close();
     $id_msg = mysqli_insert_id($conn);
 
-    // Enviar mensagem via API externa
     enviarMensagem($servidor, $porta, $usuario_api, $token, $telefone, $textoEnvio, $id_msg);
 }
 
@@ -179,51 +171,43 @@ function processarQrcode()
 
     // 1. Atualizar login
     $horaAtual = hora(); // Função que retorna a string "HH:MM:SS"
-    $sql = "UPDATE login
-               SET qrcode   = '{$qrcode}',
-                   tempo_code = '{$horaAtual}',
-                   situacao   = 'ativado'
-             WHERE usuario_api = '{$usuario_api}'";
-    $query = mysqli_query($conn, $sql);
+    $stmt_upd_qr = $conn->prepare("UPDATE login SET qrcode = ?, tempo_code = ?, situacao = 'ativado' WHERE usuario_api = ?");
+    $stmt_upd_qr->bind_param("sss", $qrcode, $horaAtual, $usuario_api);
+    $query = $stmt_upd_qr->execute();
+    $stmt_upd_qr->close();
     if (!$query) {
-        error_log("Erro SQL (qrcode/update): " . mysqli_error($conn));
+        error_log("Erro SQL (qrcode/update): " . $conn->error);
         echo "Erro ao atualizar QR code.";
         return;
     }
 
     // 2. Se foi bem sucedido e $qrcode não está vazio, limpa pendências de envio
     if (!empty($qrcode)) {
-        $sqlDel = "DELETE FROM envio
-                     WHERE usuario_api = '{$usuario_api}'
-                       AND status      = '1'";
-        mysqli_query($conn, $sqlDel);
+        $stmt_del_env = $conn->prepare("DELETE FROM envio WHERE usuario_api = ? AND status = '1'");
+        $stmt_del_env->bind_param("s", $usuario_api);
+        $stmt_del_env->execute();
+        $stmt_del_env->close();
     }
 
     // 3. Lógica de contagem de QRs (opcional, conforme regras internas):
     //    Exemplo: buscar qr_quantidade, incrementar até um limite
-    $sqlBusca = "SELECT qr_quantidade
-                   FROM login
-                  WHERE usuario_api = '{$usuario_api}'";
-    $resBusca = mysqli_query($conn, $sqlBusca);
-    if ($resBusca && mysqli_num_rows($resBusca) === 1) {
-        $row = mysqli_fetch_assoc($resBusca);
+    $stmt_sel_qr = $conn->prepare("SELECT qr_quantidade FROM login WHERE usuario_api = ?");
+    $stmt_sel_qr->bind_param("s", $usuario_api);
+    $stmt_sel_qr->execute();
+    $resBusca = $stmt_sel_qr->get_result();
+    $stmt_sel_qr->close();
+    if ($resBusca && $resBusca->num_rows === 1) {
+        $row = $resBusca->fetch_assoc();
         $qtde = intval($row['qr_quantidade']);
 
-        if ($qtde >= 900) {
-            // Se atingiu 900, resetar
-            $novaQtde = 0;
-        } else {
-            $novaQtde = $qtde + 1;
-        }
+        $novaQtde = ($qtde >= 900) ? 0 : $qtde + 1;
 
-        $sqlAtualiza = "UPDATE login
-                          SET qr_quantidade = '{$novaQtde}',
-                              qr_data       = CURDATE()
-                        WHERE usuario_api   = '{$usuario_api}'";
-        mysqli_query($conn, $sqlAtualiza);
+        $stmt_upd_qrd = $conn->prepare("UPDATE login SET qr_quantidade = ?, qr_data = CURDATE() WHERE usuario_api = ?");
+        $stmt_upd_qrd->bind_param("is", $novaQtde, $usuario_api);
+        $stmt_upd_qrd->execute();
+        $stmt_upd_qrd->close();
     } else {
-        // Usuário não encontrado ou erro na consulta
-        error_log("Erro SQL (qrcode/seleção login): " . mysqli_error($conn));
+        error_log("Erro SQL (qrcode/seleção login): " . $conn->error);
         echo "Usuário não encontrado.";
     }
 }
@@ -411,46 +395,41 @@ function processarMsgTexto()
     salvar_dados_resquest();
 
     // 2. Verificar existência do cliente
-    $sqlBusca = "SELECT id_agendamento, situacao, nome
-                   FROM clientes
-                  WHERE usuario_api = '{$usuario_api}'
-                    AND telefone     = '{$telefone}'";
-    $resBusca = mysqli_query($conn, $sqlBusca);
+    $stmt_buc_msg = $conn->prepare("SELECT id_agendamento, situacao, nome FROM clientes WHERE usuario_api = ? AND telefone = ?");
+    $stmt_buc_msg->bind_param("ss", $usuario_api, $telefone);
+    $stmt_buc_msg->execute();
+    $resBusca = $stmt_buc_msg->get_result();
+    $stmt_buc_msg->close();
     if (!$resBusca) {
-        error_log("Erro SQL (msg/seleção clientes): " . mysqli_error($conn));
+        error_log("Erro SQL (msg/seleção clientes): " . $conn->error);
         return;
     }
 
-    $total = mysqli_num_rows($resBusca);
+    $total = $resBusca->num_rows;
 
     if ($total === 1) {
-        // Cliente já existe
-        $row = mysqli_fetch_assoc($resBusca);
+        $row = $resBusca->fetch_assoc();
         // Dependendo da função atribuída ao cliente (IA ou ENQUETE):
         if ($funcao === "IA") {
             include 'segundo_contato_ia.php';
         } elseif ($funcao === "ENQUETE") {
             // Exemplo simples: notificar sobre enquete
             $textoEnvio = "Você ainda não respondeu à enquete. Por favor, responda 'Sim' ou 'Não'.";
-            $sqlIns = "INSERT INTO envio 
-                          (comando, telefone, msg, status, usuario_api)
-                       VALUES
-                          ('Enquete', '{$telefone}', '{$textoEnvio}', '2', '{$usuario_api}')";
-            mysqli_query($conn, $sqlIns);
+            $stmt_ins_enq2 = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('Enquete', ?, ?, '2', ?)");
+            $stmt_ins_enq2->bind_param("sss", $telefone, $textoEnvio, $usuario_api);
+            $stmt_ins_enq2->execute();
+            $stmt_ins_enq2->close();
             $id_msg = mysqli_insert_id($conn);
             enviarMensagem($servidor, $porta, $usuario_api, $token, $telefone, $textoEnvio, $id_msg);
         }
     } else {
-        // Cliente não existe
         if ($funcao === "IA") {
-            include 'primeiro_contato.php'; // Define $IA_boas_vindas
-            // Envia mensagem de boas-vindas
+            include 'primeiro_contato.php';
             $textoEnvio = $IA_boas_vindas;
-            $sqlIns = "INSERT INTO envio
-                          (comando, telefone, msg, status, usuario_api)
-                       VALUES
-                          ('MsgTexto', '{$telefone}', '{$textoEnvio}', '2', '{$usuario_api}')";
-            $queryIns = mysqli_query($conn, $sqlIns);
+            $stmt_ins_bv = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+            $stmt_ins_bv->bind_param("sss", $telefone, $textoEnvio, $usuario_api);
+            $queryIns = $stmt_ins_bv->execute();
+            $stmt_ins_bv->close();
             if ($queryIns) {
                 $id_msg = mysqli_insert_id($conn);
                 enviarMensagem($servidor, $porta, $usuario_api, $token, $telefone, $textoEnvio, $id_msg);
@@ -458,11 +437,10 @@ function processarMsgTexto()
         } elseif ($funcao === "ENQUETE") {
             // Exemplo: primeiro envio de enquete para novo cliente
             $textoEnvio = "Olá! Por favor, responda à enquete: 'Você confirma seu agendamento? Sim/Não'";
-            $sqlIns = "INSERT INTO envio
-                          (comando, telefone, msg, status, usuario_api)
-                       VALUES
-                          ('Enquete', '{$telefone}', '{$textoEnvio}', '2', '{$usuario_api}')";
-            mysqli_query($conn, $sqlIns);
+            $stmt_ins_enq3 = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('Enquete', ?, ?, '2', ?)");
+            $stmt_ins_enq3->bind_param("sss", $telefone, $textoEnvio, $usuario_api);
+            $stmt_ins_enq3->execute();
+            $stmt_ins_enq3->close();
             $id_msg = mysqli_insert_id($conn);
             enviarMensagem($servidor, $porta, $usuario_api, $token, $telefone, $textoEnvio, $id_msg);
         }

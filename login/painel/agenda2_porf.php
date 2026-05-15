@@ -31,11 +31,13 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome  = Priletra($rows_usuarios['nome']);
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
@@ -44,13 +46,15 @@ while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
 }
 
 
-$sql_busca_prof = "SELECT * FROM  profissional WHERE telefone = '$login'";
-$sql_busca_profs = mysqli_query($conn, $sql_busca_prof);
-$total_busca_profs = mysqli_num_rows($sql_busca_profs);
+$stmt_bp = $conn->prepare("SELECT * FROM profissional WHERE telefone = ?");
+$stmt_bp->bind_param("s", $login);
+$stmt_bp->execute();
+$sql_busca_profs = $stmt_bp->get_result();
+$total_busca_profs = $sql_busca_profs->num_rows;
+$stmt_bp->close();
 
-while($rows_usuarios = mysqli_fetch_array($sql_busca_profs)) {
+while($rows_usuarios = $sql_busca_profs->fetch_array()) {
     $id_profissional  = $rows_usuarios['id'];
-
 }
 
 
@@ -105,8 +109,11 @@ $data_selecionada = $_GET['data'] ?? date('Y-m-d');
 // Preparar a consulta SQL para buscar agendamentos
 $conn = conectarDB();
 
-$sql = "SELECT * FROM agendamento WHERE	id_profissional = '$id_profissional' ORDER BY horario ASC";
-$result = mysqli_query($conn, $sql);
+$stmt_ag = $conn->prepare("SELECT * FROM agendamento WHERE id_profissional = ? ORDER BY horario ASC");
+$stmt_ag->bind_param("i", $id_profissional);
+$stmt_ag->execute();
+$result = $stmt_ag->get_result();
+$stmt_ag->close();
 
 // Inicializar o array de eventos
 $eventos = [];

@@ -21,7 +21,7 @@ if ($total_busca_usuario == 0) {
     exit;
 }
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome = $rows_usuarios['nome'];
     $img_perfil = $rows_usuarios['perfil_img'];
     $autorizado = $rows_usuarios['autorizado'];
@@ -165,10 +165,13 @@ try {
     $mensagem_massa_id = mysqli_insert_id($conn);
     
     // Inserir registros individuais para cada cliente na tabela mensagens_massa_envios
-    $clientes_ids = implode(',', array_map('intval', $clientes));
-    $sql_clientes = "SELECT id, nome, telefone FROM clientes WHERE id IN ($clientes_ids) AND usuario_api = ?";
+    $clientes_ids_int = array_map('intval', $clientes);
+    $in_placeholders = implode(',', array_fill(0, count($clientes_ids_int), '?'));
+    $sql_clientes = "SELECT id, nome, telefone FROM clientes WHERE id IN ($in_placeholders) AND usuario_api = ?";
     $stmt_clientes = mysqli_prepare($conn, $sql_clientes);
-    mysqli_stmt_bind_param($stmt_clientes, "s", $usuario_api);
+    $bind_types = str_repeat('i', count($clientes_ids_int)) . 's';
+    $bind_values = array_merge($clientes_ids_int, [$usuario_api]);
+    mysqli_stmt_bind_param($stmt_clientes, $bind_types, ...$bind_values);
     mysqli_stmt_execute($stmt_clientes);
     $result_clientes = mysqli_stmt_get_result($stmt_clientes);
 

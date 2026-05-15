@@ -19,26 +19,23 @@ while($rows_config = mysqli_fetch_array($query_config)) {
     $link_pagamento  = $rows_config['link_pagamento'];
 }
 
-// Verifica se o formulário foi enviado via POST e se o ID do agendamento foi enviado
 if ($_SERVER['REQUEST_METHOD'] === 'GET' ) {
-    $id_agendamento = intval($_GET['id']); // Sanitiza o ID do agendamento
-$idd = $_GET['id'];
-$id_agendamento = $_GET['id'];
-    // Verifica se o agendamento existe
-    $sql_busca_agendamento = "SELECT * FROM agendamento WHERE id = '$id_agendamento'";
-    $query_busca_agendamento = mysqli_query($conn, $sql_busca_agendamento);
+    $id_agendamento = intval($_GET['id']);
+    $idd = $id_agendamento;
 
-    if (mysqli_num_rows($query_busca_agendamento) > 0) {
-        // Remove o agendamento da tabela
-        $sql_cancelar = "DELETE FROM agendamento WHERE id = '$id_agendamento'";
-        if (mysqli_query($conn, $sql_cancelar)) {
-            // Redireciona para cancelar.php com status de cancelado
-            
-            
-      if ($query_busca_agendamento && mysqli_num_rows($query_busca_agendamento) > 0) {
-    // Itera pelos resultados da consulta com um while
-    while ($row = mysqli_fetch_assoc($query_busca_agendamento)) {
-        // Extrai os dados para cada coluna da tabela
+    $stmt_busca = $conn->prepare("SELECT * FROM agendamento WHERE id = ?");
+    $stmt_busca->bind_param("i", $id_agendamento);
+    $stmt_busca->execute();
+    $query_busca_agendamento = $stmt_busca->get_result();
+
+    if ($query_busca_agendamento->num_rows > 0) {
+        $stmt_del = $conn->prepare("DELETE FROM agendamento WHERE id = ?");
+        $stmt_del->bind_param("i", $id_agendamento);
+        if ($stmt_del->execute()) {
+            $stmt_del->close();
+
+      if ($query_busca_agendamento->num_rows > 0) {
+    while ($row = $query_busca_agendamento->fetch_assoc()) {
         $id = $row['id'];
         $usuario_api = $row['usuario_api'];
         $login = $row['login'];
@@ -50,54 +47,53 @@ $id_agendamento = $_GET['id'];
         $cliente_nome = $row['cliente_nome'];
         $data = $row['data'];
         $id_profissional = $row['id_profissional'];
-             $servico_id = $row['servico_id'];
+        $servico_id = $row['servico_id'];
         $valor_servico = $row['valor_servico'];
-
-
     }
 } else {
     echo "Nenhum agendamento encontrado.";
-}      
-            
-   $sql_busca_usuario = "SELECT * FROM login WHERE usuario_api = '$usuario_api'";
-    $query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-    if ($row_usuario = mysqli_fetch_array($query_busca_usuario)) {
+}
+$stmt_busca->close();
+
+    $stmt_usu = $conn->prepare("SELECT * FROM login WHERE usuario_api = ?");
+    $stmt_usu->bind_param("s", $usuario_api);
+    $stmt_usu->execute();
+    $query_busca_usuario = $stmt_usu->get_result();
+    if ($row_usuario = $query_busca_usuario->fetch_array()) {
         $login = $row_usuario['login'];
         $agenda_cancela = $row_usuario['agenda_cancela'];
-                $cancela_prof = $row_usuario['cancela_prof'];
-
+        $cancela_prof = $row_usuario['cancela_prof'];
     }
-                
-     
-     
-     
-         $sql_busca_clientes = "SELECT * FROM clientes WHERE telefone = '$telefone'";
-    $query_busca_clientes = mysqli_query($conn, $sql_busca_clientes);
-    if ($row = mysqli_fetch_array($query_busca_clientes)) {
+    $stmt_usu->close();
+
+    $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE telefone = ?");
+    $stmt_cli->bind_param("s", $telefone);
+    $stmt_cli->execute();
+    $query_busca_clientes = $stmt_cli->get_result();
+    if ($row = $query_busca_clientes->fetch_array()) {
         $nome = $row['nome'];
         $telefone = $row['telefone'];
     }
-    
- 
- 
-   $sql_busca_modulos = "SELECT * FROM servicos WHERE id = '$servico_id'";
-$query = mysqli_query($conn, $sql_busca_modulos);
+    $stmt_cli->close();
 
-while($rows_usuarios = mysqli_fetch_array($query)) {
-    $servico_nome = $rows_usuarios['nome'];
-}   
-          
-    
-   $sql_busca_modulos = "SELECT * FROM  profissional WHERE id = '$id_profissional'";
-$query = mysqli_query($conn, $sql_busca_modulos);
+    $stmt_serv = $conn->prepare("SELECT * FROM servicos WHERE id = ?");
+    $stmt_serv->bind_param("i", $servico_id);
+    $stmt_serv->execute();
+    $query_serv = $stmt_serv->get_result();
+    while($rows_usuarios = $query_serv->fetch_array()) {
+        $servico_nome = $rows_usuarios['nome'];
+    }
+    $stmt_serv->close();
 
-while($rows_usuarios = mysqli_fetch_array($query)) {
-    $telefone_profissional = $rows_usuarios['telefone'];
-}   
-      
-     
-    
-    
+    $stmt_prof = $conn->prepare("SELECT * FROM profissional WHERE id = ?");
+    $stmt_prof->bind_param("i", $id_profissional);
+    $stmt_prof->execute();
+    $query_prof = $stmt_prof->get_result();
+    while($rows_usuarios = $query_prof->fetch_array()) {
+        $telefone_profissional = $rows_usuarios['telefone'];
+    }
+    $stmt_prof->close();
+
     function novo_texto($string, $nome, $data,$horario, $profissional_nome,$servico_nome,$valor_servico,$telefone) {
             $substituicoes = [
                 '{nome}' => $nome,
@@ -125,43 +121,28 @@ while($rows_usuarios = mysqli_fetch_array($query)) {
         $agendamento = $horario . " " . $data_formatada;
         $profissional = $profissional_nome;
             
-    $agenda_cancela =novo_texto($agenda_cancela, $nome, $data,$horario, $profissional_nome,$servico_nome,$valor_servico,$telefone) ;
-            
-            
-            
-  $id_msg = mysqli_insert_id($conn); // Pega o ID gerado na última inserção
-        $response = enviarMensagem($servidor,$porta , $usuario_api, $token, $telefone, $agenda_cancela, $id_msg);                  
-            
-        // Inserir mensagem de confirmação na tabela de envio
-        $sql = "INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', '$telefone', '$agenda_cancela', '1', '$usuario_api')";
-        $query = mysqli_query($conn, $sql);       
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+    $agenda_cancela = novo_texto($agenda_cancela, $nome, $data,$horario, $profissional_nome,$servico_nome,$valor_servico,$telefone);
+
+  $id_msg = mysqli_insert_id($conn);
+        $response = enviarMensagem($servidor,$porta , $usuario_api, $token, $telefone, $agenda_cancela, $id_msg);
+
+    $stmt_env = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '1', ?)");
+    $stmt_env->bind_param("sss", $telefone, $agenda_cancela, $usuario_api);
+    $stmt_env->execute();
+    $stmt_env->close();
+
             VaiPara("agenda.php?pagina_nome=18&confirmacao=atualizado");
             exit;
         } else {
-            // Redireciona com mensagem de erro
             VaiPara("agenda.php?pagina_nome=18&status=erro");
             exit;
         }
     } else {
-        // Redireciona caso o agendamento não seja encontrado
+        $stmt_busca->close();
         VaiPara("agenda.php?pagina_nome=18&status=naoencontrado");
         exit;
     }
 } else {
-    // Redireciona caso o método não seja POST ou o ID não seja fornecido
     VaiPara("agenda.php?pagina_nome=18&status=erro");
     exit;
 }

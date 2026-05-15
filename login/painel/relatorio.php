@@ -18,11 +18,13 @@ if (isset($_GET['pagina_nome'])) {
 }
 
 // Busca informações do usuário
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome = Priletra($rows_usuarios['nome']);
     $img_perfil = $rows_usuarios['perfil_img'];
     $autorizado = $rows_usuarios['autorizado'];
@@ -40,23 +42,35 @@ if($autorizado != 2){
 }
 
 // Filtros
-$filtro_data_inicio = isset($_GET['data_inicio']) ? $_GET['data_inicio'] : date('Y-m-d');
-$filtro_data_fim = isset($_GET['data_fim']) ? $_GET['data_fim'] : date('Y-m-d', strtotime('+60 days'));
-$filtro_profissional = isset($_GET['profissional']) ? $_GET['profissional'] : '';
-$filtro_confirmacao = isset($_GET['confirmacao']) ? $_GET['confirmacao'] : '';
+$filtro_data_inicio = isset($_GET['data_inicio']) ? preg_replace('/[^0-9\-]/', '', $_GET['data_inicio']) : date('Y-m-d');
+$filtro_data_fim = isset($_GET['data_fim']) ? preg_replace('/[^0-9\-]/', '', $_GET['data_fim']) : date('Y-m-d', strtotime('+60 days'));
+$filtro_profissional = isset($_GET['profissional']) ? intval($_GET['profissional']) : 0;
+$filtro_confirmacao = isset($_GET['confirmacao']) && $_GET['confirmacao'] !== '' ? intval($_GET['confirmacao']) : -1;
 
-// Query base
-$sql_agendamentos = "SELECT * FROM agendamento WHERE data BETWEEN '$filtro_data_inicio' AND '$filtro_data_fim' AND usuario_api = '$usuario_api'";
+// Query base com prepared statement
+$sql_agendamentos_base = "SELECT * FROM agendamento WHERE data BETWEEN ? AND ? AND usuario_api = ?";
+$params = [$filtro_data_inicio, $filtro_data_fim, $usuario_api];
+$types = "sss";
 
-if ($filtro_profissional) {
-    $sql_agendamentos .= " AND id_profissional = '$filtro_profissional'";
+if ($filtro_profissional > 0) {
+    $sql_agendamentos_base .= " AND id_profissional = ?";
+    $params[] = $filtro_profissional;
+    $types .= "i";
 }
-if ($filtro_confirmacao !== '') {
-    $sql_agendamentos .= " AND confirmacao = '$filtro_confirmacao'";
+if ($filtro_confirmacao >= 0) {
+    $sql_agendamentos_base .= " AND confirmacao = ?";
+    $params[] = $filtro_confirmacao;
+    $types .= "i";
 }
 
-$sql_agendamentos .= " ORDER BY data DESC, horario ASC";
-$query_agendamentos = mysqli_query($conn, $sql_agendamentos);
+$sql_agendamentos_base .= " ORDER BY data DESC, horario ASC";
+$stmt_ag = $conn->prepare($sql_agendamentos_base);
+$stmt_ag->bind_param($types, ...$params);
+$stmt_ag->execute();
+$query_agendamentos = $stmt_ag->get_result();
+$stmt_ag->close();
+// Keep $sql_agendamentos for re-use in display section
+$sql_agendamentos = $sql_agendamentos_base;
 ?>
 
 <?php $css_extra = '    <link rel="stylesheet" type="text/css" href="../files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">';
@@ -123,35 +137,25 @@ $query_agendamentos = mysqli_query($conn, $sql_agendamentos);
                                             <!-- Dashboard de Estatísticas -->
                                             <div class="stats-grid">
                                                 <?php
-                                                // Estatísticas (mantendo a lógica original)
-                                                $sql_total = "
-                                                    SELECT COUNT(*) as total 
-                                                    FROM agendamento 
-                                                    WHERE data BETWEEN '$filtro_data_inicio' AND '$filtro_data_fim'
-                                                      AND usuario_api = '$usuario_api'
-                                                ";
-                                                $query_total = mysqli_query($conn, $sql_total);
-                                                $total_agendamentos = mysqli_fetch_assoc($query_total)['total'];
+                                                $stmt_total = $conn->prepare("SELECT COUNT(*) as total FROM agendamento WHERE data BETWEEN ? AND ? AND usuario_api = ?");
+                                                $stmt_total->bind_param("sss", $filtro_data_inicio, $filtro_data_fim, $usuario_api);
+                                                $stmt_total->execute();
+                                                $total_agendamentos = $stmt_total->get_result()->fetch_assoc()['total'];
+                                                $stmt_total->close();
 
-                                                $sql_confirmados = "
-                                                    SELECT COUNT(*) as total 
-                                                    FROM agendamento 
-                                                    WHERE data BETWEEN '$filtro_data_inicio' AND '$filtro_data_fim'
-                                                      AND confirmacao = 1
-                                                      AND usuario_api = '$usuario_api'
-                                                ";
-                                                $query_confirmados = mysqli_query($conn, $sql_confirmados);
-                                                $total_confirmados = mysqli_fetch_assoc($query_confirmados)['total'];
+                                                $conf_val = 1;
+                                                $stmt_confirmados = $conn->prepare("SELECT COUNT(*) as total FROM agendamento WHERE data BETWEEN ? AND ? AND confirmacao = ? AND usuario_api = ?");
+                                                $stmt_confirmados->bind_param("ssis", $filtro_data_inicio, $filtro_data_fim, $conf_val, $usuario_api);
+                                                $stmt_confirmados->execute();
+                                                $total_confirmados = $stmt_confirmados->get_result()->fetch_assoc()['total'];
+                                                $stmt_confirmados->close();
 
-                                                $sql_pendentes = "
-                                                    SELECT COUNT(*) as total 
-                                                    FROM agendamento 
-                                                    WHERE data BETWEEN '$filtro_data_inicio' AND '$filtro_data_fim'
-                                                      AND confirmacao = 0
-                                                      AND usuario_api = '$usuario_api'
-                                                ";
-                                                $query_pendentes = mysqli_query($conn, $sql_pendentes);
-                                                $total_pendentes = mysqli_fetch_assoc($query_pendentes)['total'];
+                                                $pend_val = 0;
+                                                $stmt_pendentes = $conn->prepare("SELECT COUNT(*) as total FROM agendamento WHERE data BETWEEN ? AND ? AND confirmacao = ? AND usuario_api = ?");
+                                                $stmt_pendentes->bind_param("ssis", $filtro_data_inicio, $filtro_data_fim, $pend_val, $usuario_api);
+                                                $stmt_pendentes->execute();
+                                                $total_pendentes = $stmt_pendentes->get_result()->fetch_assoc()['total'];
+                                                $stmt_pendentes->close();
                                                 ?>
 
                                                 <div class="stat-card total">
@@ -200,10 +204,14 @@ $query_agendamentos = mysqli_query($conn, $sql_agendamentos);
                                                         </thead>
                                                         <tbody>
                                                             <?php 
-                                                            // Reiniciar a query para exibir os resultados (mantendo a lógica original)
-                                                            $query_agendamentos = mysqli_query($conn, $sql_agendamentos);
+                                                            // Re-executar a query para exibir os resultados
+                                                            $stmt_ag2 = $conn->prepare($sql_agendamentos_base);
+                                                            $stmt_ag2->bind_param($types, ...$params);
+                                                            $stmt_ag2->execute();
+                                                            $query_agendamentos = $stmt_ag2->get_result();
+                                                            $stmt_ag2->close();
                                                             
-                                                            while($row = mysqli_fetch_array($query_agendamentos)) { 
+                                                            while($row = $query_agendamentos->fetch_array()) { 
                                                             ?>
                                                                 <tr>
                                                                     <td><strong><?= date('d/m/Y', strtotime($row['data'])) ?></strong></td>

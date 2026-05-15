@@ -29,11 +29,13 @@ $pagina_nome_recebe = isset($_GET['pagina_nome']) ? $_GET['pagina_nome'] : 0;
 // ===================================
 // BUSCA DADOS DO USUÁRIO
 // ===================================
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome = Priletra($rows_usuarios['nome']);
     $img_perfil = $rows_usuarios['perfil_img'];
     $autorizado = $rows_usuarios['autorizado'];
@@ -57,24 +59,11 @@ include 'menu.php';
 // ===================================
 // BUSCA HORÁRIOS EXISTENTES
 // ===================================
-$sql_horarios_existentes = "SELECT 
-    hp.id as horario_id,
-    hp.profissional_id,
-    hp.dia_semana,
-    hp.hora_entrada,
-    hp.almoco_inicio,
-    hp.almoco_fim,
-    hp.hora_saida,
-    hp.ativo,
-    p.profissional_nome,
-    p.profissional_cargo
-    FROM horarios_profissional hp
-    INNER JOIN profissional p ON hp.profissional_id = p.id
-    WHERE p.login = '$login'
-    ORDER BY p.profissional_nome, 
-    FIELD(hp.dia_semana, 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo')";
-
-$query_horarios_existentes = mysqli_query($conn, $sql_horarios_existentes);
+$stmt_horarios = $conn->prepare("SELECT hp.id as horario_id, hp.profissional_id, hp.dia_semana, hp.hora_entrada, hp.almoco_inicio, hp.almoco_fim, hp.hora_saida, hp.ativo, p.profissional_nome, p.profissional_cargo FROM horarios_profissional hp INNER JOIN profissional p ON hp.profissional_id = p.id WHERE p.login = ? ORDER BY p.profissional_nome, FIELD(hp.dia_semana, 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo')");
+$stmt_horarios->bind_param("s", $login);
+$stmt_horarios->execute();
+$query_horarios_existentes = $stmt_horarios->get_result();
+$stmt_horarios->close();
 ?>
 
 
@@ -332,9 +321,12 @@ $query_horarios_existentes = mysqli_query($conn, $sql_horarios_existentes);
                                                                                 <select class="form-control form-control-lg" id="profissional_servico" name="profissional_servico" required>
                                                                                     <option value="">🔍 Selecione um profissional...</option>
                                                                                     <?php              
-                                                                                    $sql_busca_profissional = "SELECT * FROM profissional WHERE login = '$login' ORDER BY profissional_nome";
-                                                                                    $query_busca_profissional = mysqli_query($conn, $sql_busca_profissional);
-                                                                                    while($rows_profissional = mysqli_fetch_array($query_busca_profissional)) {
+                                                                                    $stmt_ch1 = $conn->prepare("SELECT * FROM profissional WHERE login = ? ORDER BY profissional_nome");
+                                                                                    $stmt_ch1->bind_param("s", $login);
+                                                                                    $stmt_ch1->execute();
+                                                                                    $query_busca_profissional = $stmt_ch1->get_result();
+                                                                                    $stmt_ch1->close();
+                                                                                    while($rows_profissional = $query_busca_profissional->fetch_array()) {
                                                                                         echo '<option value="'.$rows_profissional['id'].'">👤 '.$rows_profissional['profissional_nome'].' - '.$rows_profissional['profissional_cargo'].'</option>';
                                                                                     }            
                                                                                     ?>                  
@@ -477,9 +469,12 @@ $query_horarios_existentes = mysqli_query($conn, $sql_horarios_existentes);
                                                                                             <select class="form-control servico-select" name="servico_id[]" required>
                                                                                                 <option value="">🔍 Selecione um serviço...</option>
                                                                                                 <?php
-                                                                                                $sql_servicos = "SELECT * FROM servicos WHERE login = '$login' AND ativo = 1 ORDER BY nome";
-                                                                                                $query_servicos = mysqli_query($conn, $sql_servicos);
-                                                                                                while($servico = mysqli_fetch_array($query_servicos)) {
+                                                                                                $stmt_ch2 = $conn->prepare("SELECT * FROM servicos WHERE login = ? AND ativo = 1 ORDER BY nome");
+                                                                                                $stmt_ch2->bind_param("s", $login);
+                                                                                                $stmt_ch2->execute();
+                                                                                                $query_servicos = $stmt_ch2->get_result();
+                                                                                                $stmt_ch2->close();
+                                                                                                while($servico = $query_servicos->fetch_array()) {
                                                                                                     echo '<option value="'.$servico['id'].'" 
                                                                                                           data-duracao="'.$servico['duracao_minutos'].'" 
                                                                                                           data-valor="'.$servico['valor'].'">🛠️ '.$servico['nome'].'</option>';
@@ -555,9 +550,12 @@ $query_horarios_existentes = mysqli_query($conn, $sql_horarios_existentes);
                                                                                 style="width: 250px;">
                                                                             <option value="">👥 Todos os Profissionais</option>
                                                                             <?php
-                                                                            $sql_profs = "SELECT DISTINCT id, profissional_nome FROM profissional WHERE login = '$login' ORDER BY profissional_nome";
-                                                                            $query_profs = mysqli_query($conn, $sql_profs);
-                                                                            while($prof = mysqli_fetch_array($query_profs)) {
+                                                                            $stmt_ch3 = $conn->prepare("SELECT DISTINCT id, profissional_nome FROM profissional WHERE login = ? ORDER BY profissional_nome");
+                                                                            $stmt_ch3->bind_param("s", $login);
+                                                                            $stmt_ch3->execute();
+                                                                            $query_profs = $stmt_ch3->get_result();
+                                                                            $stmt_ch3->close();
+                                                                            while($prof = $query_profs->fetch_array()) {
                                                                                 echo '<option value="'.$prof['id'].'">👤 '.$prof['profissional_nome'].'</option>';
                                                                             }
                                                                             ?>
@@ -757,9 +755,12 @@ $query_horarios_existentes = mysqli_query($conn, $sql_horarios_existentes);
                                     </thead>
                                     <tbody id="listaServicos">
                                         <?php
-                                        $sql_lista_servicos = "SELECT * FROM servicos WHERE login = '$login' ORDER BY nome";
-                                        $query_lista_servicos = mysqli_query($conn, $sql_lista_servicos);
-                                        while($servico = mysqli_fetch_array($query_lista_servicos)) {
+                                        $stmt_ch4 = $conn->prepare("SELECT * FROM servicos WHERE login = ? ORDER BY nome");
+                                        $stmt_ch4->bind_param("s", $login);
+                                        $stmt_ch4->execute();
+                                        $query_lista_servicos = $stmt_ch4->get_result();
+                                        $stmt_ch4->close();
+                                        while($servico = $query_lista_servicos->fetch_array()) {
                                             $status_badge = $servico['ativo'] == 1 ? 
                                                 '<span class="badge badge-success"><i class="fa fa-check"></i> Ativo</span>' : 
                                                 '<span class="badge badge-danger"><i class="fa fa-times"></i> Inativo</span>';

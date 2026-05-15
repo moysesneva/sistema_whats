@@ -104,14 +104,17 @@ foreach ($usuarios_array as $usuario_api) {
     } 
     
     // === Buscar dados do login ===
-    $sql = "SELECT * FROM login WHERE usuario_api = '$usuario_api' AND tipo = '2'";
-    $query = mysqli_query($conn, $sql);
+    $stmt_lg = $conn->prepare("SELECT * FROM login WHERE usuario_api = ? AND tipo = '2'");
+    $stmt_lg->bind_param("s", $usuario_api);
+    $stmt_lg->execute();
+    $query = $stmt_lg->get_result();
+    $stmt_lg->close();
 
     $tempo = '';
     $despedida = '';
     $agenda_verfica = '';
     
-    while ($lista_login = mysqli_fetch_array($query)) {
+    while ($lista_login = $query->fetch_array()) {
         $tempo           = $lista_login['tempo_final'];
         $despedida       = $lista_login['IA_despedida'];
         $agenda_verfica  = $lista_login['agenda_verfica'];
@@ -121,24 +124,16 @@ foreach ($usuarios_array as $usuario_api) {
     if (!empty($tempo) && !empty($despedida)) {
         
         // === Buscar clientes para envio de mensagem de despedida ===
-        $sql = "
-            SELECT * 
-            FROM clientes 
-            WHERE usuario_api = '$usuario_api' 
-              AND (situacao = '1' OR situacao IS NULL) 
-              AND time_atendimento <= DATE_SUB(NOW(), INTERVAL '$tempo' MINUTE) 
-            LIMIT 1
-        ";
-        $query = mysqli_query($conn, $sql);
-        $total = mysqli_num_rows($query);
-
-        if (!$query) {
-            echo "Erro na consulta SQL de despedida para $usuario_api: " . mysqli_error($conn) . "\n";
-            continue;
-        }
+        $tempo_int = (int)$tempo;
+        $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? AND (situacao = '1' OR situacao IS NULL) AND time_atendimento <= DATE_SUB(NOW(), INTERVAL ? MINUTE) LIMIT 1");
+        $stmt_cli->bind_param("si", $usuario_api, $tempo_int);
+        $stmt_cli->execute();
+        $query = $stmt_cli->get_result();
+        $total = $query->num_rows;
+        $stmt_cli->close();
 
         if ($total > 0) {
-            while ($lista_login = mysqli_fetch_array($query)) {
+            while ($lista_login = $query->fetch_array()) {
                 $id       = $lista_login['id'];
                 $telefone = $lista_login['telefone'];
 
@@ -146,15 +141,16 @@ foreach ($usuarios_array as $usuario_api) {
                 $log_processamento .= "DESPEDIDA: Cliente ID $id, Telefone: $telefone\n";
 
                 // Atualizar situação do cliente
-                $sql = "UPDATE clientes SET situacao = '2' WHERE id = '$id'";
-                mysqli_query($conn, $sql);
+                $stmt_upd_cli = $conn->prepare("UPDATE clientes SET situacao = '2' WHERE id = ?");
+                $stmt_upd_cli->bind_param("i", $id);
+                $stmt_upd_cli->execute();
+                $stmt_upd_cli->close();
 
                 // Registrar no histórico de envio
-                $sql = "
-                    INSERT INTO envio (comando, telefone, msg, status, usuario_api) 
-                    VALUES ('MsgTexto', '$telefone', '$despedida', '2', '$usuario_api')
-                ";
-                mysqli_query($conn, $sql);
+                $stmt_ins_env = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+                $stmt_ins_env->bind_param("sss", $telefone, $despedida, $usuario_api);
+                $stmt_ins_env->execute();
+                $stmt_ins_env->close();
 
                 $id_msg = mysqli_insert_id($conn);
 
@@ -166,8 +162,10 @@ foreach ($usuarios_array as $usuario_api) {
                 salvando($response);
                 
                 // Limpar histórico da IA
-                $sql = "DELETE FROM ia_historico WHERE usuario_api = '$usuario_api' AND telefone_usuario = '$telefone'";
-                mysqli_query($conn, $sql);
+                $stmt_del_hist = $conn->prepare("DELETE FROM ia_historico WHERE usuario_api = ? AND telefone_usuario = ?");
+                $stmt_del_hist->bind_param("ss", $usuario_api, $telefone);
+                $stmt_del_hist->execute();
+                $stmt_del_hist->close();
             }
         } else {
             $log_processamento .= "Nenhum cliente encontrado para despedida\n";
@@ -177,12 +175,15 @@ foreach ($usuarios_array as $usuario_api) {
     // === PROCESSAMENTO DE AGENDAMENTOS ===
     
     // === Buscar tempo de verificação ===
-    $sql = "SELECT * FROM login WHERE usuario_api = '$usuario_api' AND tipo = '2'";
-    $query = mysqli_query($conn, $sql);
+    $stmt_tv = $conn->prepare("SELECT * FROM login WHERE usuario_api = ? AND tipo = '2'");
+    $stmt_tv->bind_param("s", $usuario_api);
+    $stmt_tv->execute();
+    $query = $stmt_tv->get_result();
+    $stmt_tv->close();
 
     $tempo_verificar = '';
     $agenda_verifica_msg = '';
-    while ($lista_login = mysqli_fetch_array($query)) {
+    while ($lista_login = $query->fetch_array()) {
         $tempo_verificar = $lista_login['tempo_verifica'];
         $agenda_verifica_msg = $lista_login['agenda_verfica'];
     }
@@ -194,28 +195,21 @@ foreach ($usuarios_array as $usuario_api) {
         $log_processamento .= "Buscando agendamentos para lembrete com $tempo_verificar minutos de antecedência\n";
         
         // === Buscar agendamento próximo para enviar enquete ===
-        $sql = "
-            SELECT *, 
-                   TIMESTAMP(data, horario) AS agendamento_completo, 
-                   TIMESTAMP(data, horario) - INTERVAL $tempo_verificar MINUTE AS lembrete_ajustado 
-            FROM agendamento 
-            WHERE usuario_api = '$usuario_api'
-              AND TIMESTAMP(data, horario) - INTERVAL $tempo_verificar MINUTE <= '$data_hora_atual'
-              AND lembrete = '0'
-            ORDER BY agendamento_completo ASC
-            LIMIT 1
-        ";
-
-        $query = mysqli_query($conn, $sql);
+        $tempo_verificar_int = (int)$tempo_verificar;
+        $stmt_agend = $conn->prepare("SELECT *, TIMESTAMP(data, horario) AS agendamento_completo, TIMESTAMP(data, horario) - INTERVAL ? MINUTE AS lembrete_ajustado FROM agendamento WHERE usuario_api = ? AND TIMESTAMP(data, horario) - INTERVAL ? MINUTE <= ? AND lembrete = '0' ORDER BY agendamento_completo ASC LIMIT 1");
+        $stmt_agend->bind_param("isis", $tempo_verificar_int, $usuario_api, $tempo_verificar_int, $data_hora_atual);
+        $stmt_agend->execute();
+        $query = $stmt_agend->get_result();
+        $stmt_agend->close();
         
-        if (!$query) {
-            $log_processamento .= "ERRO na consulta de agendamentos: " . mysqli_error($conn) . "\n";
+        if ($query) {
+            $log_processamento .= "Consulta de agendamentos executada. Resultados encontrados: " . $query->num_rows . "\n";
         } else {
-            $log_processamento .= "Consulta de agendamentos executada. Resultados encontrados: " . mysqli_num_rows($query) . "\n";
+            $log_processamento .= "ERRO na consulta de agendamentos: " . $conn->error . "\n";
         }
 
-        if (mysqli_num_rows($query) > 0) {
-            while ($row = mysqli_fetch_assoc($query)) {
+        if ($query && $query->num_rows > 0) {
+            while ($row = $query->fetch_assoc()) {
                 $id               = $row['id'];
                 $telefone         = $row['cliente_telefone'];
                 $profissional_nome = $row['profissional_nome'];
@@ -230,60 +224,59 @@ foreach ($usuarios_array as $usuario_api) {
             }
 
             // === Buscar nome do cliente ===
-            $sql_busca_clientes = "
-                SELECT * 
-                FROM clientes 
-                WHERE telefone = '$telefone' 
-                  AND usuario_api = '$usuario_api'
-            ";
-            $query_busca_clientes = mysqli_query($conn, $sql_busca_clientes);
+            $stmt_cli2 = $conn->prepare("SELECT * FROM clientes WHERE telefone = ? AND usuario_api = ?");
+            $stmt_cli2->bind_param("ss", $telefone, $usuario_api);
+            $stmt_cli2->execute();
+            $query_busca_clientes = $stmt_cli2->get_result();
+            $stmt_cli2->close();
             
-            $nome = "Cliente"; // Nome padrão caso não encontre
-            if ($row = mysqli_fetch_array($query_busca_clientes)) {
+            $nome = "Cliente";
+            if ($row = $query_busca_clientes->fetch_array()) {
                 $nome     = $row['nome'];
                 $telefone = $row['telefone'];
             }
             
             $log_processamento .= "Nome do cliente encontrado: '$nome'\n";
                 
-             $sql_busca_servico = "SELECT * FROM servicos WHERE id = '$servico_id'";
-            $query = mysqli_query($conn, $sql_busca_servico);
+            $stmt_serv = $conn->prepare("SELECT * FROM servicos WHERE id = ?");
+            $stmt_serv->bind_param("i", $servico_id);
+            $stmt_serv->execute();
+            $query_serv = $stmt_serv->get_result();
+            $stmt_serv->close();
 
-            while($rows_usuarios = mysqli_fetch_array($query)) {
+            while($rows_usuarios = $query_serv->fetch_array()) {
                 $servico = $rows_usuarios['nome'];
             }      
-                
                 
             // === Montar mensagem de enquete ===
             $data_formatada = formatar_data_brasileira($data_agend);
             $agendamento = "$horario $data_formatada";
             $profissional = $profissional_nome;
-
-            #$agenda_verfica2 = novo_texto($agenda_verifica_msg,$nome, $horario,$data_formatada, $profissional) ;
             
-            $agenda_verfica2 =novo_texto($agenda_verifica_msg, $nome, $horario,$data_formatada, $profissional,$servico,$valor_servico) ;
+            $agenda_verfica2 = novo_texto($agenda_verifica_msg, $nome, $horario, $data_formatada, $profissional, $servico, $valor_servico);
             $agenda_verfica3 = formatarTexto($agenda_verfica2);
             
             $log_processamento .= "Mensagem da enquete montada: '$agenda_verfica3'\n";
 
             // === Inserir enquete na fila de envio ===
-            $sql = "
-                INSERT INTO envio (comando, telefone, msg, status, usuario_api) 
-                VALUES ('Enquete', '$telefone', '$agenda_verfica3', '2', '$usuario_api')
-            ";
-            mysqli_query($conn, $sql);
+            $stmt_ins_enq = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('Enquete', ?, ?, '2', ?)");
+            $stmt_ins_enq->bind_param("sss", $telefone, $agenda_verfica3, $usuario_api);
+            $stmt_ins_enq->execute();
+            $stmt_ins_enq->close();
 
             $id_msg = mysqli_insert_id($conn);
             $opcoes    = ['Sim', 'Não'];
 
             // === Enviar enquete ===
-          $response = EscreverEnquete($servidor, $porta, $usuario_api, $token, $telefone, $agenda_verfica2, $opcoes, $id_msg);
+            $response = EscreverEnquete($servidor, $porta, $usuario_api, $token, $telefone, $agenda_verfica2, $opcoes, $id_msg);
 
             $log_processamento .= "RESPOSTA ENQUETE: " . print_r($response, true) . "\n";
 
             // === Atualizar lembrete como enviado ===
-            $sql = "UPDATE agendamento SET lembrete = '2' WHERE id = '$id'";
-            mysqli_query($conn, $sql);
+            $stmt_upd_lemb = $conn->prepare("UPDATE agendamento SET lembrete = '2' WHERE id = ?");
+            $stmt_upd_lemb->bind_param("i", $id);
+            $stmt_upd_lemb->execute();
+            $stmt_upd_lemb->close();
 
             echo "Enquete enviada para agendamento ID: $id\n";
             $log_processamento .= "Enquete enviada com sucesso para agendamento ID: $id\n";
@@ -584,10 +577,11 @@ $mensagem_final = strtr($mensagem, $substituicoes);
               #  }
                 
                 
-                $stmt_update_envio = mysqli_prepare($conn, "UPDATE mensagens_massa_envios SET status = '$valor_enviado', enviado_em = NOW(), response_api = ? WHERE id = ?");
+                $stmt_update_envio = $conn->prepare("UPDATE mensagens_massa_envios SET status = ?, enviado_em = NOW(), response_api = ? WHERE id = ?");
                 $response_json = json_encode($response);
-                mysqli_stmt_bind_param($stmt_update_envio, 'si', $response_json, $envio_id);
-                mysqli_stmt_execute($stmt_update_envio);
+                $stmt_update_envio->bind_param('ssi', $valor_enviado, $response_json, $envio_id);
+                $stmt_update_envio->execute();
+                $stmt_update_envio->close();
                 
                 // Atualiza a campanha com o próximo envio agendado
                 $proximo_envio = date('Y-m-d H:i:s', time() + $interval_seconds);

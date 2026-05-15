@@ -18,11 +18,13 @@ if (isset($_GET['pagina_nome'])) {
 }
 
 // Busca informações do usuário
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome = Priletra($rows_usuarios['nome']);
     $img_perfil = $rows_usuarios['perfil_img'];
     $autorizado = $rows_usuarios['autorizado'];
@@ -41,13 +43,15 @@ if($autorizado != 2){
 
 
 
-$sql_busca_prof = "SELECT * FROM  profissional WHERE telefone = '$login'";
-$sql_busca_profs = mysqli_query($conn, $sql_busca_prof);
-$total_busca_profs = mysqli_num_rows($sql_busca_profs);
+$stmt_bprof = $conn->prepare("SELECT * FROM profissional WHERE telefone = ?");
+$stmt_bprof->bind_param("s", $login);
+$stmt_bprof->execute();
+$sql_busca_profs = $stmt_bprof->get_result();
+$total_busca_profs = $sql_busca_profs->num_rows;
+$stmt_bprof->close();
 
-while($rows_usuarios = mysqli_fetch_array($sql_busca_profs)) {
+while($rows_usuarios = $sql_busca_profs->fetch_array()) {
     $id_profissional  = $rows_usuarios['id'];
-
 }
 
 
@@ -62,18 +66,28 @@ $filtro_data_fim = isset($_GET['data_fim']) ? $_GET['data_fim'] : date('Y-m-d', 
 $filtro_profissional = isset($_GET['profissional']) ? $_GET['profissional'] : '';
 $filtro_confirmacao = isset($_GET['confirmacao']) ? $_GET['confirmacao'] : '';
 
-// Query base
-$sql_agendamentos = "SELECT * FROM agendamento WHERE data BETWEEN '$filtro_data_inicio' AND '$filtro_data_fim' AND id_profissional = '$id_profissional'";
+// Query base com prepared statements
+$sql_agendamentos = "SELECT * FROM agendamento WHERE data BETWEEN ? AND ? AND id_profissional = ?";
+$tipos_ag = "ssi";
+$params_ag = [$filtro_data_inicio, $filtro_data_fim, $id_profissional];
 
 if ($filtro_profissional) {
-    $sql_agendamentos .= " AND id_profissional = '$filtro_profissional'";
+    $sql_agendamentos .= " AND id_profissional = ?";
+    $tipos_ag .= "i";
+    $params_ag[] = (int)$filtro_profissional;
 }
 if ($filtro_confirmacao !== '') {
-    $sql_agendamentos .= " AND confirmacao = '$filtro_confirmacao'";
+    $sql_agendamentos .= " AND confirmacao = ?";
+    $tipos_ag .= "s";
+    $params_ag[] = $filtro_confirmacao;
 }
 
 $sql_agendamentos .= " ORDER BY data DESC, horario ASC";
-$query_agendamentos = mysqli_query($conn, $sql_agendamentos);
+$stmt_ag = $conn->prepare($sql_agendamentos);
+$stmt_ag->bind_param($tipos_ag, ...$params_ag);
+$stmt_ag->execute();
+$query_agendamentos = $stmt_ag->get_result();
+$stmt_ag->close();
 
 
 
@@ -149,34 +163,23 @@ $query_agendamentos = mysqli_query($conn, $sql_agendamentos);
                                             <div class="stats-grid">
                                                 <?php
                                                 // Estatísticas (mantendo a lógica original)
-                                                $sql_total = "
-                                                    SELECT COUNT(*) as total 
-                                                    FROM agendamento 
-                                                    WHERE data BETWEEN '$filtro_data_inicio' AND '$filtro_data_fim'
-                                                      AND id_profissional = '$id_profissional'
-                                                ";
-                                                $query_total = mysqli_query($conn, $sql_total);
-                                                $total_agendamentos = mysqli_fetch_assoc($query_total)['total'];
+                                                $stmt_tot = $conn->prepare("SELECT COUNT(*) as total FROM agendamento WHERE data BETWEEN ? AND ? AND id_profissional = ?");
+                                                $stmt_tot->bind_param("ssi", $filtro_data_inicio, $filtro_data_fim, $id_profissional);
+                                                $stmt_tot->execute();
+                                                $total_agendamentos = $stmt_tot->get_result()->fetch_assoc()['total'];
+                                                $stmt_tot->close();
 
-                                                $sql_confirmados = "
-                                                    SELECT COUNT(*) as total 
-                                                    FROM agendamento 
-                                                    WHERE data BETWEEN '$filtro_data_inicio' AND '$filtro_data_fim'
-                                                      AND confirmacao = 1
-                                                      AND id_profissional = '$id_profissional'
-                                                ";
-                                                $query_confirmados = mysqli_query($conn, $sql_confirmados);
-                                                $total_confirmados = mysqli_fetch_assoc($query_confirmados)['total'];
+                                                $stmt_conf = $conn->prepare("SELECT COUNT(*) as total FROM agendamento WHERE data BETWEEN ? AND ? AND confirmacao = 1 AND id_profissional = ?");
+                                                $stmt_conf->bind_param("ssi", $filtro_data_inicio, $filtro_data_fim, $id_profissional);
+                                                $stmt_conf->execute();
+                                                $total_confirmados = $stmt_conf->get_result()->fetch_assoc()['total'];
+                                                $stmt_conf->close();
 
-                                                $sql_pendentes = "
-                                                    SELECT COUNT(*) as total 
-                                                    FROM agendamento 
-                                                    WHERE data BETWEEN '$filtro_data_inicio' AND '$filtro_data_fim'
-                                                      AND confirmacao = 0
-                                                      AND id_profissional = '$id_profissional'
-                                                ";
-                                                $query_pendentes = mysqli_query($conn, $sql_pendentes);
-                                                $total_pendentes = mysqli_fetch_assoc($query_pendentes)['total'];
+                                                $stmt_pend = $conn->prepare("SELECT COUNT(*) as total FROM agendamento WHERE data BETWEEN ? AND ? AND confirmacao = 0 AND id_profissional = ?");
+                                                $stmt_pend->bind_param("ssi", $filtro_data_inicio, $filtro_data_fim, $id_profissional);
+                                                $stmt_pend->execute();
+                                                $total_pendentes = $stmt_pend->get_result()->fetch_assoc()['total'];
+                                                $stmt_pend->close();
                                                 ?>
 
                                                 <div class="stat-card total">

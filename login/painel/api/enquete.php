@@ -1,9 +1,6 @@
 <?php
 function verificaSimNao($texto) {
-    // Converte o texto para minúsculas para garantir a comparação correta
     $texto = strtolower($texto);
-
-    // Verifica se a string contém 's' ou 'n'
     if (strpos($texto, 's') !== false) {
         return "sim";
     } elseif (strpos($texto, 'n') !== false) {
@@ -20,43 +17,38 @@ $texto  =   verificaSimNao($texto) ;
  
  if($texto == 'sim'){
 
-
-
-$sql = "UPDATE agendamento SET confirmacao = '1',lembrete = '3' WHERE usuario_api='$usuario_api' AND cliente_telefone = '$telefone' AND lembrete = '2'";
-
-$query = mysqli_query($conn,$sql);
+$stmt = $conn->prepare("UPDATE agendamento SET confirmacao = '1', lembrete = '3' WHERE usuario_api = ? AND cliente_telefone = ? AND lembrete = '2'");
+$stmt->bind_param("ss", $usuario_api, $telefone);
+$query = $stmt->execute();
+$stmt->close();
 
 if (!$query) {
-    die("Erro na atualização: " . mysqli_error($conn));
+    die("Erro na atualização: " . $conn->error);
 }
 
 
 if (mysqli_affected_rows($conn) > 0) {
     $resultado = '*Agendamento:* processado';
 
-$sql = "INSERT INTO envio (comando,telefone,msg,status,usuario_api) VALUES ('MsgTexto','$telefone','$resultado','2','$usuario_api')";
-$query = mysqli_query($conn,$sql);  
-$id_msg = mysqli_insert_id($conn); // Pega o ID gerado na última inserção
+$stmt_env = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+$stmt_env->bind_param("sss", $telefone, $resultado, $usuario_api);
+$stmt_env->execute();
+$stmt_env->close();
+$id_msg = mysqli_insert_id($conn);
 
 $response = enviarMensagem($servidor,$porta , $user_id, $token, $telefone, $resultado, $id_msg);
 salvando($response);
 
 
 
-#$reponse = enviarMensagem($servidor,$porta , $user_id, $token, $telefone, $msg, $id_msg) ;
-#exit();
-
-
-
 } else {
  $resultado = 'Nenhum agendamento pendente para processar no momento.';
 
-$id_msg = mysqli_insert_id($conn); // Pega o ID gerado na última inserção
+$id_msg = mysqli_insert_id($conn);
 
  $response = enviarMensagem($servidor,$porta , $user_id, $token, $telefone, $resultado, $id_msg);
  salvando($response);
 
-# exit();
 }
 
 }
@@ -68,39 +60,37 @@ $id_msg = mysqli_insert_id($conn); // Pega o ID gerado na última inserção
  
 if($texto == 'não'){
 
-
-
-$sql = "UPDATE agendamento SET confirmacao = '2',lembrete = '3' WHERE usuario_api='$usuario_api' AND cliente_telefone = '$telefone' AND lembrete = '2'";
-
-$query = mysqli_query($conn,$sql);
+$stmt = $conn->prepare("UPDATE agendamento SET confirmacao = '2', lembrete = '3' WHERE usuario_api = ? AND cliente_telefone = ? AND lembrete = '2'");
+$stmt->bind_param("ss", $usuario_api, $telefone);
+$query = $stmt->execute();
+$stmt->close();
 
 if (!$query) {
-    die("Erro na atualização: " . mysqli_error($conn));
+    die("Erro na atualização: " . $conn->error);
 }
 
 
 if (mysqli_affected_rows($conn) > 0) {
     $resultado = '*Agendamento:* processado';
 
-$sql = "INSERT INTO envio (comando,telefone,msg,status,usuario_api) VALUES ('MsgTexto','$telefone','$resultado','2','$usuario_api')";
-$query = mysqli_query($conn,$sql);  
-$id_msg = mysqli_insert_id($conn); // Pega o ID gerado na última inserção
+$stmt_env = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+$stmt_env->bind_param("sss", $telefone, $resultado, $usuario_api);
+$stmt_env->execute();
+$stmt_env->close();
+$id_msg = mysqli_insert_id($conn);
 
 $response = enviarMensagem($servidor,$porta , $user_id, $token, $telefone, $resultado, $id_msg);
 salvando($response);
-
-#exit();
 
 } else {
 
 $resultado = 'Nenhum agendamento pendente para processar no momento.';
 
-$id_msg = mysqli_insert_id($conn); // Pega o ID gerado na última inserção
+$id_msg = mysqli_insert_id($conn);
 
 $response = enviarMensagem($servidor,$porta , $user_id, $token, $telefone, $resultado, $id_msg);
 salvando($response);
 
-#exit();
 }
 
 }

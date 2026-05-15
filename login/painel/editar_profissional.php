@@ -10,30 +10,27 @@ $login = $_SESSION['login'];
 include 'conn.php';
 include 'config_dados.php';
 
-// Receber dados do formulário de edição
-$profissional_id = $_POST['profissional_id'];
-$profissional_nome = $_POST['nomeProfissional'];
-$telefone_profissional = $_POST['telefoneProfissional'];
-$especialidade_profissional = $_POST['especialidadeProfissional'];
+$profissional_id = intval($_POST['profissional_id'] ?? 0);
+$profissional_nome = $_POST['nomeProfissional'] ?? '';
+$telefone_profissional = $_POST['telefoneProfissional'] ?? '';
+$especialidade_profissional = $_POST['especialidadeProfissional'] ?? '';
 
-// Buscar dados do usuário
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
 if ($total_busca_usuario > 0) {
-    while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+    while($rows_usuarios = $query_busca_usuario->fetch_array()) {
         $usuario_api = $rows_usuarios['usuario_api'];
     }
+    $stmt_busca_usuario->close();
     
-    // Atualizar profissional na tabela
-    $sql = "UPDATE profissional SET 
-            profissional_nome = '$profissional_nome',
-            telefone = '$telefone_profissional',
-            profissional_cargo = '$especialidade_profissional'
-            WHERE id = '$profissional_id' AND login = '$login'";
-    
-    $query = mysqli_query($conn, $sql);
+    $stmt_update = $conn->prepare("UPDATE profissional SET profissional_nome = ?, telefone = ?, profissional_cargo = ? WHERE id = ? AND login = ?");
+    $stmt_update->bind_param("sssis", $profissional_nome, $telefone_profissional, $especialidade_profissional, $profissional_id, $login);
+    $query = $stmt_update->execute();
+    $stmt_update->close();
     
     if($query) {
         VaiPara('cadastrar_profissional.php?confirmacao=profissional_atualizado');    
@@ -41,9 +38,8 @@ if ($total_busca_usuario > 0) {
         VaiPara('cadastrar_profissional.php?erro=profissional_erro_edicao');
     }
 } else {
+    $stmt_busca_usuario->close();
     VaiPara('cadastrar_profissional.php?erro=usuario_nao_encontrado');
 }
 
-// Debug (remover em produção)
-// print_r($_REQUEST);
 ?>

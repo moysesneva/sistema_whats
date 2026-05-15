@@ -25,11 +25,13 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome  = Priletra($rows_usuarios['nome']);
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
@@ -114,11 +116,13 @@ if (isset($_POST['deletar'])) {
                                     $conn = conectarDB();
 
                                     // Consulta para obter os profissionais
-                                    $sql = "SELECT * FROM profissional WHERE login = '$login'";
-                                    $result = mysqli_query($conn, $sql);
+                                    $stmt_de1 = $conn->prepare("SELECT * FROM profissional WHERE login = ?");
+                                    $stmt_de1->bind_param("s", $login);
+                                    $stmt_de1->execute();
+                                    $result = $stmt_de1->get_result();
+                                    $stmt_de1->close();
 
-                                    // Preencher o campo options com os profissionais
-                                    while ($row = mysqli_fetch_assoc($result)) {
+                                    while ($row = $result->fetch_assoc()) {
                                         echo '<option value="' . $row['id'] . '">' . $row['profissional_nome'] . ' - ' . $row['profissional_cargo'] . '</option>';
                                     }
 
@@ -196,24 +200,26 @@ if (isset($_POST['deletar'])) {
                     $conn = conectarDB();
 
                     // Verificar se o login foi definido
-                    $sql_busca_profissional = "SELECT * FROM profissional WHERE login = '$login'";
-                    $query_busca_profissional = mysqli_query($conn, $sql_busca_profissional);
+                    $stmt_de2 = $conn->prepare("SELECT * FROM profissional WHERE login = ?");
+                    $stmt_de2->bind_param("s", $login);
+                    $stmt_de2->execute();
+                    $query_busca_profissional = $stmt_de2->get_result();
+                    $stmt_de2->close();
 
-                    // Criar o array para armazenar os IDs
                     $ID_ARRAY = [];
 
-                    while ($rows_profissional = mysqli_fetch_array($query_busca_profissional)) {
+                    while ($rows_profissional = $query_busca_profissional->fetch_array()) {
                         // Adicionar cada ID ao array
                         $ID_ARRAY[] = $rows_profissional['id'];
                     }
 
                     // Verificar se o array não está vazio
                     if (!empty($ID_ARRAY)) {
-                        // Transformar o array em uma string separada por vírgulas
-                        $ids_para_busca = implode(',', $ID_ARRAY);
+                        // Gerar placeholders para o IN (...)
+                        $id_placeholders = implode(',', array_fill(0, count($ID_ARRAY), '?'));
 
                         // Base da consulta SQL
-                        $sql = "SELECT * FROM datas_excluidas WHERE id_profissional IN ($ids_para_busca)";
+                        $sql = "SELECT * FROM datas_excluidas WHERE id_profissional IN ($id_placeholders)";
                         
                         // Verificar se há um filtro de data
                         if (isset($_GET['data_filtro']) && !empty($_GET['data_filtro'])) {
@@ -224,10 +230,15 @@ if (isset($_POST['deletar'])) {
                         // Preparar a consulta SQL
                         $stmt = mysqli_prepare($conn, $sql);
 
-                        // Associar parâmetros se houver um filtro de data
+                        // Associar parâmetros
                         if (isset($data_filtro)) {
-                            mysqli_stmt_bind_param($stmt, 's', $data_filtro);
+                            $bind_args = array_merge($ID_ARRAY, [$data_filtro]);
+                            $bind_types = str_repeat('i', count($ID_ARRAY)) . 's';
+                        } else {
+                            $bind_args = $ID_ARRAY;
+                            $bind_types = str_repeat('i', count($ID_ARRAY));
                         }
+                        mysqli_stmt_bind_param($stmt, $bind_types, ...$bind_args);
 
                         // Executar a consulta
                         mysqli_stmt_execute($stmt);

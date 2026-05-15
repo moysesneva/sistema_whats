@@ -1,5 +1,7 @@
 <?php
 $creditos = $creditos - 1;
-$sql = "UPDATE login SET creditos = '$creditos' WHERE usuario_api = '$usuario_api'";
-$query = mysqli_query($conn,$sql);
+$stmt = $conn->prepare("UPDATE login SET creditos = ? WHERE usuario_api = ?");
+$stmt->bind_param("is", $creditos, $usuario_api);
+$query = $stmt->execute();
+$stmt->close();
 ?>

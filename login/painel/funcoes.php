@@ -161,20 +161,15 @@ function compara_segundos($hora1, $hora2) {
 
 
 function MsgTexto($conn, $msg, $telefone, $usuario_api) {
-    // Escapar as variáveis para evitar SQL Injection
-    $msg = mysqli_real_escape_string($conn, $msg);
-    $telefone = mysqli_real_escape_string($conn, $telefone);
-    $usuario_api = mysqli_real_escape_string($conn, $usuario_api);
-    
-    // Montar o SQL de inserção
-    $sql = "INSERT INTO envio (comando,msg, telefone, status, usuario_api) 
-            VALUES ('MsgTexto','$msg', '$telefone', '2', '$usuario_api')";
-
-    // Executar a query
-    if (mysqli_query($conn, $sql)) {
+    $stmt = $conn->prepare("INSERT INTO envio (comando, msg, telefone, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+    $stmt->bind_param("sss", $msg, $telefone, $usuario_api);
+    if ($stmt->execute()) {
+        $stmt->close();
         return "Mensagem enviada com sucesso!";
     } else {
-        return "Erro ao enviar mensagem: " . mysqli_error($conn);
+        $err = $conn->error;
+        $stmt->close();
+        return "Erro ao enviar mensagem: " . $err;
     }
 }
 

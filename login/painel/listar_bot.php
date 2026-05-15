@@ -32,7 +32,7 @@ mysqli_stmt_execute($stmt_user);
 $query_busca_usuario = mysqli_stmt_get_result($stmt_user);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome  = Priletra($rows_usuarios['nome']);
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
@@ -228,13 +228,15 @@ if (isset($_POST['usuario_id']) && isset($_POST['quantidade_creditos'])) {
     $usuario_id = (int) $_POST['usuario_id'];
     $quantidade_creditos = (int) $_POST['quantidade_creditos'];
     
-    $sql_update_creditos = "UPDATE login SET creditos = {$quantidade_creditos} WHERE id = {$usuario_id}";
-    
-    if (mysqli_query($conn, $sql_update_creditos)) {
+    $stmt_cr = $conn->prepare("UPDATE login SET creditos = ? WHERE id = ?");
+    $stmt_cr->bind_param("ii", $quantidade_creditos, $usuario_id);
+
+    if ($stmt_cr->execute()) {
         echo '<div class="alert alert-success">Créditos atualizados com sucesso!</div>';
     } else {
-        echo '<div class="alert alert-danger">Erro ao atualizar créditos: ' . mysqli_error($conn) . '</div>';
+        echo '<div class="alert alert-danger">Erro ao atualizar créditos: ' . $conn->error . '</div>';
     }
+    $stmt_cr->close();
 }
 
 // Processa alteração de plano
@@ -288,7 +290,7 @@ include 'conn.php';
                 $query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
                 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
-                while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+                while($rows_usuarios = $query_busca_usuario->fetch_array()) {
                     $nome = $rows_usuarios['nome'];
                     $usuario_api = $rows_usuarios['usuario_api'];
                     $situacao = $rows_usuarios['situacao'];

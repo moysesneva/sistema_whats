@@ -4,24 +4,29 @@ $dataHoraCompleta =  gerarDataHoraCompleta();
 if($situacao == 2){
 
 
-$sql = "INSERT INTO envio (comando,telefone,msg,status,usuario_api) VALUES ('MsgTexto','$telefone','$IA_boas_vindas','2','$usuario_api')";
-$query = mysqli_query($conn,$sql);
+$stmt_ins_bv = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+$stmt_ins_bv->bind_param("sss", $telefone, $IA_boas_vindas, $usuario_api);
+$query = $stmt_ins_bv->execute();
+$stmt_ins_bv->close();
 include 'creditos.php';
 if($query){
-    $id_msg = mysqli_insert_id($conn); // Pega o ID gerado na última inserção
+    $id_msg = mysqli_insert_id($conn);
 $msg = $IA_boas_vindas;  
 $response = enviarMensagem($servidor,$porta , $user_id, $token, $telefone, $msg, $id_msg);
 }
 /////////////////////
 /////////////////
-$sql = "INSERT INTO ia_historico (ia_msg,telefone_usuario,usuario_api,data_hora) VALUES ('$IA_boas_vindas ','$telefone','$usuario_api','$hora')";
-$query = mysqli_query($conn,$sql);
+$stmt_ins_ih = $conn->prepare("INSERT INTO ia_historico (ia_msg, telefone_usuario, usuario_api, data_hora) VALUES (?, ?, ?, ?)");
+$stmt_ins_ih->bind_param("ssss", $IA_boas_vindas, $telefone, $usuario_api, $hora);
+$query = $stmt_ins_ih->execute();
+$stmt_ins_ih->close();
 if($query){
 ##########################
 #ATUALIZA OS DADOS DO TEMPO DA ULTIMA CONVERSA 
-$sql = "UPDATE clientes SET time_atendimento = '$dataHoraCompleta', situacao = '1' WHERE telefone = '$telefone' AND usuario_api = '$usuario_api'";
-$query = mysqli_query($conn,$sql);   
-}  
+$stmt_upd_cl = $conn->prepare("UPDATE clientes SET time_atendimento = ?, situacao = '1' WHERE telefone = ? AND usuario_api = ?");
+$stmt_upd_cl->bind_param("sss", $dataHoraCompleta, $telefone, $usuario_api);
+$stmt_upd_cl->execute();
+$stmt_upd_cl->close();  
     
 
 
@@ -48,13 +53,16 @@ $data_hora = date('Y-m-d'); // Formato: 2025-03-11 15:30:00
 
 
 
-$sql_busca_agendamento = "SELECT * FROM agendamento WHERE cliente_telefone = '$telefone' AND usuario_api = '$usuario_api'AND data >= '$data_hora'";
-$query_busca_agendamento = mysqli_query($conn, $sql_busca_agendamento);
-$total_busca_agendamento = mysqli_num_rows($query_busca_agendamento);
+$stmt_bag = $conn->prepare("SELECT * FROM agendamento WHERE cliente_telefone = ? AND usuario_api = ? AND data >= ?");
+$stmt_bag->bind_param("sss", $telefone, $usuario_api, $data_hora);
+$stmt_bag->execute();
+$query_busca_agendamento = $stmt_bag->get_result();
+$total_busca_agendamento = $query_busca_agendamento->num_rows;
+$stmt_bag->close();
 
-$agendamentos_concatenados = ""; // Variável para armazenar todos os agendamentos concatenados
+$agendamentos_concatenados = "";
 
-while ($rows_agendamento = mysqli_fetch_array($query_busca_agendamento)) {
+while ($rows_agendamento = $query_busca_agendamento->fetch_array()) {
     $cliente_nome = $rows_agendamento['cliente_nome'];
     $dia_agenda = $rows_agendamento['dia'];
     $horario_agenda = $rows_agendamento['horario'];
@@ -127,16 +135,18 @@ $IA_prompt = $IA_prompt;
 
 
 # INSIRO NO HISOTORICO
-$sql_historico = "INSERT INTO ia_historico (usuario_msg,telefone_usuario,usuario_api,data_hora) VALUES ('$msg','$telefone','$usuario_api','$hora')";
-$query_historico = mysqli_query($conn,$sql_historico);
-
-
+$stmt_ins_hm = $conn->prepare("INSERT INTO ia_historico (usuario_msg, telefone_usuario, usuario_api, data_hora) VALUES (?, ?, ?, ?)");
+$stmt_ins_hm->bind_param("ssss", $msg, $telefone, $usuario_api, $hora);
+$stmt_ins_hm->execute();
+$stmt_ins_hm->close();
 
 
 $versao_gpt = 'gpt-4o-mini';
-$sql_busca_historico = "SELECT * FROM ia_historico WHERE telefone_usuario = '$telefone' AND usuario_api = '$usuario_api' ORDER BY id ASC";
-$query_busca_historico = mysqli_query($conn,$sql_busca_historico);
-#$total = mysqli_num_rows($query);
+$stmt_bhi = $conn->prepare("SELECT * FROM ia_historico WHERE telefone_usuario = ? AND usuario_api = ? ORDER BY id ASC");
+$stmt_bhi->bind_param("ss", $telefone, $usuario_api);
+$stmt_bhi->execute();
+$query_busca_historico = $stmt_bhi->get_result();
+$stmt_bhi->close();
 
 ###################################################################
 ########## AQUI COMEÇA O GPT #####################################
@@ -155,7 +165,7 @@ $query_busca_historico = mysqli_query($conn,$sql_busca_historico);
 
   // Adicionar mensagens ao histórico
 
-while($lista_historico = mysqli_fetch_array($query_busca_historico)){
+while($lista_historico = $query_busca_historico->fetch_array()){
 
 $usuario_msg = $lista_historico['usuario_msg'];
 
@@ -263,24 +273,25 @@ $api_response = limparInterrogacoes($api_response);
 
 
 
-$sql = "INSERT INTO envio (comando,telefone,msg,status,usuario_api) VALUES ('MsgTexto','$telefone','$api_response','2','$usuario_api')";
-$query = mysqli_query($conn,$sql);
+$stmt_ins_ev = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+$stmt_ins_ev->bind_param("sss", $telefone, $api_response, $usuario_api);
+$query = $stmt_ins_ev->execute();
+$stmt_ins_ev->close();
 include 'creditos.php';
 
-
 if($query){
-$id_msg = mysqli_insert_id($conn); // Pega o ID gerado na última inserção
+$id_msg = mysqli_insert_id($conn);
 $msg = $api_response;
 $response = enviarMensagem($servidor,$porta , $user_id, $token, $telefone, $msg, $id_msg);  
-    ##########################
-#ARMAZENA A MENSAGEM DO BOT NO HISTORICO  
-$sql = "INSERT INTO ia_historico (ia_msg,telefone_usuario,usuario_api,data_hora) VALUES ('$api_response ','$telefone','$usuario_api','$hora')";
-$query = mysqli_query($conn,$sql);
+$stmt_ins_hb = $conn->prepare("INSERT INTO ia_historico (ia_msg, telefone_usuario, usuario_api, data_hora) VALUES (?, ?, ?, ?)");
+$stmt_ins_hb->bind_param("ssss", $api_response, $telefone, $usuario_api, $hora);
+$query = $stmt_ins_hb->execute();
+$stmt_ins_hb->close();
 if($query){
-##########################
-#ATUALIZA OS DADOS DO TEMPO DA ULTIMA CONVERSA 
-$sql = "UPDATE clientes SET time_atendimento = '$dataHoraCompleta' WHERE telefone = '$telefone' AND usuario_api = '$usuario_api'";
-$query = mysqli_query($conn,$sql);
+$stmt_upd_cl2 = $conn->prepare("UPDATE clientes SET time_atendimento = ? WHERE telefone = ? AND usuario_api = ?");
+$stmt_upd_cl2->bind_param("sss", $dataHoraCompleta, $telefone, $usuario_api);
+$query = $stmt_upd_cl2->execute();
+$stmt_upd_cl2->close();
 if($query){
 mysqli_close($conn);
 }
@@ -301,11 +312,13 @@ $api_response = 'Não a saldo na Openai para esta função';
 
 
 
-$sql = "INSERT INTO envio (comando,telefone,msg,status,usuario_api) VALUES ('MsgTexto','$telefone','$api_response','2','$usuario_api')";
-$query = mysqli_query($conn,$sql);
+$stmt_ins_en = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+$stmt_ins_en->bind_param("sss", $telefone, $api_response, $usuario_api);
+$query = $stmt_ins_en->execute();
+$stmt_ins_en->close();
 include 'creditos.php';
 if($query){
-$id_msg = mysqli_insert_id($conn); // Pega o ID gerado na última inserção
+$id_msg = mysqli_insert_id($conn);
 $msg = $api_response;
 $response = enviarMensagem($servidor,$porta , $user_id, $token, $telefone, $msg, $id_msg);
 }
@@ -356,13 +369,17 @@ if ($modo_atuante == 'Atendimento') {
 }
 
 # INSIRO NO HISOTORICO
-$sql_historico = "INSERT INTO ia_historico (usuario_msg,telefone_usuario,usuario_api,data_hora) VALUES ('$msg','$telefone','$usuario_api','$hora')";
-$query_historico = mysqli_query($conn, $sql_historico);
+$stmt_ins_hg = $conn->prepare("INSERT INTO ia_historico (usuario_msg, telefone_usuario, usuario_api, data_hora) VALUES (?, ?, ?, ?)");
+$stmt_ins_hg->bind_param("ssss", $msg, $telefone, $usuario_api, $hora);
+$stmt_ins_hg->execute();
+$stmt_ins_hg->close();
 
-// A versão do modelo para Gemini
-$versao_gemini = 'gemini-2.5-flash-lite-preview-06-17'; // ou gemini-pro-vision se for usar imagens
-$sql_busca_historico = "SELECT * FROM ia_historico WHERE telefone_usuario = '$telefone' AND usuario_api = '$usuario_api' ORDER BY id ASC";
-$query_busca_historico = mysqli_query($conn, $sql_busca_historico);
+$versao_gemini = 'gemini-2.5-flash-lite-preview-06-17';
+$stmt_bhg = $conn->prepare("SELECT * FROM ia_historico WHERE telefone_usuario = ? AND usuario_api = ? ORDER BY id ASC");
+$stmt_bhg->bind_param("ss", $telefone, $usuario_api);
+$stmt_bhg->execute();
+$query_busca_historico = $stmt_bhg->get_result();
+$stmt_bhg->close();
 
 ###################################################################
 ########## AQUI COMEÇA O GEMINI ###################################
@@ -379,7 +396,7 @@ $contents[] = [
 ];
 
 // Adiciona mensagens do histórico ao array de conteúdos
-while ($lista_historico = mysqli_fetch_array($query_busca_historico)) {
+while ($lista_historico = $query_busca_historico->fetch_array()) {
     $usuario_msg = $lista_historico['usuario_msg'];
     $gemini_msg = $lista_historico['ia_msg'];
 
@@ -475,22 +492,24 @@ if ($api_response) {
 
     $api_response = limparInterrogacoes($api_response);
 
-    $sql = "INSERT INTO envio (comando,telefone,msg,status,usuario_api) VALUES ('MsgTexto','$telefone','$api_response','2','$usuario_api')";
-    $query = mysqli_query($conn, $sql);
+    $stmt_ins_eg = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+    $stmt_ins_eg->bind_param("sss", $telefone, $api_response, $usuario_api);
+    $query = $stmt_ins_eg->execute();
+    $stmt_ins_eg->close();
 include 'creditos.php';
     if ($query) {
-        $id_msg = mysqli_insert_id($conn); // Pega o ID gerado na última inserção
+        $id_msg = mysqli_insert_id($conn);
         $msg = $api_response;
         $response = enviarMensagem($servidor, $porta, $user_id, $token, $telefone, $msg, $id_msg);
-        ##########################
-        #ARMAZENA A MENSAGEM DO BOT NO HISTORICO
-        $sql = "INSERT INTO ia_historico (ia_msg,telefone_usuario,usuario_api,data_hora) VALUES ('$api_response ','$telefone','$usuario_api','$hora')";
-        $query = mysqli_query($conn, $sql);
+        $stmt_ins_hbg = $conn->prepare("INSERT INTO ia_historico (ia_msg, telefone_usuario, usuario_api, data_hora) VALUES (?, ?, ?, ?)");
+        $stmt_ins_hbg->bind_param("ssss", $api_response, $telefone, $usuario_api, $hora);
+        $query = $stmt_ins_hbg->execute();
+        $stmt_ins_hbg->close();
         if ($query) {
-            ##########################
-            #ATUALIZA OS DADOS DO TEMPO DA ULTIMA CONVERSA
-            $sql = "UPDATE clientes SET time_atendimento = '$dataHoraCompleta' WHERE telefone = '$telefone' AND usuario_api = '$usuario_api'";
-            $query = mysqli_query($conn, $sql);
+            $stmt_upd_clg = $conn->prepare("UPDATE clientes SET time_atendimento = ? WHERE telefone = ? AND usuario_api = ?");
+            $stmt_upd_clg->bind_param("sss", $dataHoraCompleta, $telefone, $usuario_api);
+            $query = $stmt_upd_clg->execute();
+            $stmt_upd_clg->close();
             if ($query) {
                 mysqli_close($conn);
             }
@@ -509,11 +528,13 @@ if (!$api_response) {
         $api_response = 'Não foi possível gerar uma resposta no momento. Por favor, tente novamente mais tarde.';
     }
 
-    $sql = "INSERT INTO envio (comando,telefone,msg,status,usuario_api) VALUES ('MsgTexto','$telefone','$api_response','2','$usuario_api')";
-    $query = mysqli_query($conn, $sql);
+    $stmt_ins_eng = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+    $stmt_ins_eng->bind_param("sss", $telefone, $api_response, $usuario_api);
+    $query = $stmt_ins_eng->execute();
+    $stmt_ins_eng->close();
     include 'creditos.php';
     if ($query) {
-        $id_msg = mysqli_insert_id($conn); // Pega o ID gerado na última inserção
+        $id_msg = mysqli_insert_id($conn);
         $msg = $api_response;
         $response = enviarMensagem($servidor, $porta, $user_id, $token, $telefone, $msg, $id_msg);
     }

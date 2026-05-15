@@ -30,11 +30,13 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome  = Priletra($rows_usuarios['nome']);
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
@@ -112,19 +114,12 @@ if($autorizado != 2){
                 <div class="stat-content">
                     <h3 id="totalClientes">
                         <?php 
-$sql_busca_clientes = "
-    SELECT * FROM clientes 
-    WHERE usuario_api = '$usuario_api' 
-    ORDER BY 
-        CASE 
-            WHEN nome IS NULL OR nome = '' THEN 1 
-            ELSE 0 
-        END,
-        nome ASC
-";
-
-                        $query_busca_clientes = mysqli_query($conn, $sql_busca_clientes);
-                        $total_busca_clientes = mysqli_num_rows($query_busca_clientes);
+$stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER BY CASE WHEN nome IS NULL OR nome = '' THEN 1 ELSE 0 END, nome ASC");
+                        $stmt_cli->bind_param("s", $usuario_api);
+                        $stmt_cli->execute();
+                        $query_busca_clientes = $stmt_cli->get_result();
+                        $total_busca_clientes = $query_busca_clientes->num_rows;
+                        $stmt_cli->close();
                         echo $total_busca_clientes;
                         ?>
                     </h3>

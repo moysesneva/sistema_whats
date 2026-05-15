@@ -28,7 +28,7 @@ try {
         exit;
     }
 
-    $usuario_data = mysqli_fetch_array($query_busca_usuario);
+    $usuario_data = $query_busca_usuario->fetch_array();
     $usuario_api = $usuario_data['usuario_api'];
     $tipo = $usuario_data['tipo'];
 

@@ -31,11 +31,13 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome  = Priletra($rows_usuarios['nome']);
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
@@ -515,10 +517,12 @@ if($autorizado != 2){
                     <?php
                     // A lógica PHP permanece a mesma
                     include 'conn.php';
-                  $sql_esp = "SELECT * FROM especialidades WHERE login = '$login' ORDER BY especialidades ASC";
-
-                    $query_esp = mysqli_query($conn, $sql_esp);
-                    while($row_esp = mysqli_fetch_array($query_esp)) {
+                  $stmt_esp = $conn->prepare("SELECT * FROM especialidades WHERE login = ? ORDER BY especialidades ASC");
+                    $stmt_esp->bind_param("s", $login);
+                    $stmt_esp->execute();
+                    $query_esp = $stmt_esp->get_result();
+                    $stmt_esp->close();
+                    while($row_esp = $query_esp->fetch_array()) {
                         $especialidade = htmlspecialchars($row_esp['especialidades']);
                         echo '<option value="'.$especialidade.'">'.$especialidade.'</option>';
                     }
@@ -560,11 +564,14 @@ if($autorizado != 2){
                 <?php
                 // A lógica PHP permanece a mesma
                 include 'conn.php';
-                $sql_busca_profissional = "SELECT * FROM profissional WHERE login = '$login'";
-                $query_busca_profissional = mysqli_query($conn, $sql_busca_profissional);
+                $stmt_bp = $conn->prepare("SELECT * FROM profissional WHERE login = ?");
+                $stmt_bp->bind_param("s", $login);
+                $stmt_bp->execute();
+                $query_busca_profissional = $stmt_bp->get_result();
+                $stmt_bp->close();
                 
-                if(mysqli_num_rows($query_busca_profissional) > 0){
-                    while($rows_profissional = mysqli_fetch_assoc($query_busca_profissional)) {
+                if($query_busca_profissional->num_rows > 0){
+                    while($rows_profissional = $query_busca_profissional->fetch_assoc()) {
                         $profissional_id = $rows_profissional['id'];
                         $profissional_nome = htmlspecialchars($rows_profissional['profissional_nome']);
                         $profissional_cargo = htmlspecialchars($rows_profissional['profissional_cargo']);
@@ -683,8 +690,12 @@ if($autorizado != 2){
                             <?php
                             // Reutilizando a consulta de especialidades
                             #$query_esp_modal = mysqli_query($conn, "SELECT * FROM especialidades ORDER BY especialidades ASC");
-                            $query_esp_modal = mysqli_query($conn, "SELECT * FROM especialidades WHERE login = '$login' ORDER BY especialidades ASC");
-                            while($row_esp = mysqli_fetch_array($query_esp_modal)) {
+                            $stmt_epm = $conn->prepare("SELECT * FROM especialidades WHERE login = ? ORDER BY especialidades ASC");
+                            $stmt_epm->bind_param("s", $login);
+                            $stmt_epm->execute();
+                            $query_esp_modal = $stmt_epm->get_result();
+                            $stmt_epm->close();
+                            while($row_esp = $query_esp_modal->fetch_array()) {
                                 $especialidade = htmlspecialchars($row_esp['especialidades']);
                                 echo '<option value="'.$especialidade.'">'.$especialidade.'</option>';
                             }

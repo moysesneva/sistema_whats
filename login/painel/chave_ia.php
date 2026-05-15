@@ -25,11 +25,13 @@ $pagina_nome_recebe = 0;
 }
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
-$total_busca_usuario = mysqli_num_rows($query_busca_usuario);
+$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_busca_usuario->bind_param("s", $login);
+$stmt_busca_usuario->execute();
+$query_busca_usuario = $stmt_busca_usuario->get_result();
+$total_busca_usuario = $query_busca_usuario->num_rows;
 
-while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
+while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $nome  = Priletra($rows_usuarios['nome']);
     $img_perfil  = $rows_usuarios['perfil_img'];
     $autorizado  = $rows_usuarios['autorizado'];
@@ -82,8 +84,11 @@ if($autorizado != 2){
 </div>
 <?php
 // Consulta para buscar todas as chaves
-$sql_busca_chaves = "SELECT * FROM chave WHERE login = '$login'";
-$query_busca_chaves = mysqli_query($conn, $sql_busca_chaves);
+$stmt_chaves = $conn->prepare("SELECT * FROM chave WHERE login = ?");
+$stmt_chaves->bind_param("s", $login);
+$stmt_chaves->execute();
+$query_busca_chaves = $stmt_chaves->get_result();
+$stmt_chaves->close();
 
 ?>
    <div class="container mt-5">
@@ -93,9 +98,8 @@ $query_busca_chaves = mysqli_query($conn, $sql_busca_chaves);
                 <ul class="list-group">
                     <?php
                     // Verifica se existem chaves
-                    if (mysqli_num_rows($query_busca_chaves) > 0) {
-                        // Itera por cada linha retornada
-                        while ($row = mysqli_fetch_assoc($query_busca_chaves)) {
+                    if ($query_busca_chaves->num_rows > 0) {
+                        while ($row = $query_busca_chaves->fetch_assoc()) {
                             $id_chave = $row['id']; // ID da chave (deve existir na tabela)
                             $chave = $row['chave'];
                             $chave_mascarada = substr($chave, 0, 8) . '****'; // Máscara para ocultar parte da chave
@@ -119,14 +123,14 @@ $query_busca_chaves = mysqli_query($conn, $sql_busca_chaves);
    <?php
    
 // Consulta SQL para buscar uma chave aleatória que tenha `usuario_api` preenchido
-$sql_busca_chave_aleatoria = "SELECT * FROM chave WHERE usuario_api	 = '$usuario_api' ORDER BY RAND() LIMIT 1";
+$stmt_cha = $conn->prepare("SELECT * FROM chave WHERE usuario_api = ? ORDER BY RAND() LIMIT 1");
+$stmt_cha->bind_param("s", $usuario_api);
+$stmt_cha->execute();
+$query_busca_chave_aleatoria = $stmt_cha->get_result();
+$stmt_cha->close();
 
-
-$query_busca_chave_aleatoria = mysqli_query($conn, $sql_busca_chave_aleatoria);
-
-// Verificando se a consulta retornou algum resultado
-if (mysqli_num_rows($query_busca_chave_aleatoria) > 0) {
-    $chave_aleatoria = mysqli_fetch_assoc($query_busca_chave_aleatoria);
+if ($query_busca_chave_aleatoria->num_rows > 0) {
+    $chave_aleatoria = $query_busca_chave_aleatoria->fetch_assoc();
     
     // Obtendo os dados da chave
     $chave = $chave_aleatoria['chave'];
