@@ -1,11 +1,6 @@
 <?php
 // buscar_dias_e_horarios_para_servico.php
 
-// HABILITAR EXIBIÇÃO DE ERROS (REMOVER OU COMENTAR EM PRODUÇÃO)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 header('Content-Type: application/json; charset=utf-8');
 
 $basePath = ''; // Ajuste este caminho se o seu conn.php estiver em outro lugar relativo a este arquivo
