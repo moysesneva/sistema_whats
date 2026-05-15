@@ -25,6 +25,7 @@ while (count($feature_items_array) < 3) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Obtém os valores do formulário
     $telefone = $_POST['telefone'];
+    $endereco = $_POST['endereco'];
     $tema = (int)$_POST['tema'];
     $hero_title = $_POST['hero_title'];
     $hero_subtitle = $_POST['hero_subtitle'];
@@ -117,6 +118,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Tratar o campo de telefone apenas se não estiver vazio
     if (!empty($telefone)) {
         $updates[] = "telefone = '" . mysqli_real_escape_string($conn, $telefone) . "'";
+    }
+
+    // Tratar o campo de endereço apenas se não estiver vazio
+    if (!empty($endereco)) {
+        $updates[] = "endereco = '" . mysqli_real_escape_string($conn, $endereco) . "'";
     }
     
     // Tratar o campo de modelo apenas se tiver um novo arquivo
@@ -260,7 +266,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="telefone">Telefone:</label>
                     <input type="text" class="form-control" id="telefone" name="telefone" value="<?php echo isset($config['telefone']) ? htmlspecialchars($config['telefone']) : ''; ?>">
                 </div>
-                
+
+                <div class="form-group">
+                    <label for="endereco">Endereço:</label>
+                    <input type="text" class="form-control" id="endereco" name="endereco" value="<?php echo isset($config['endereco']) ? htmlspecialchars($config['endereco']) : ''; ?>">
+                </div>
+
                 <div class="form-group">
                     <label for="tema">Tema:</label>
                     <select class="form-control" id="tema" name="tema">

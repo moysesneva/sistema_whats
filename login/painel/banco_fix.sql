@@ -180,6 +180,9 @@ CREATE OR REPLACE VIEW `view_lista_negra_ativa` AS SELECT `lista_negra`.`id` AS 
 
 INSERT IGNORE INTO `login` (`id`, `login`, `senha`, `tipo`, `usuario_api`, `nome`, `autorizado`, `code_autorizado`, `porta`, `webhook_completo`, `qrcode`, `tempo_code`, `situacao`, `email`, `servidor_recebe`, `servidor_envia`, `servidor_confirma`, `qr_data`, `caminho_vps`, `funcao`, `tempo_final`, `tempo_verifica`, `solicitar_confirmacao`, `pagamento_cliente`, `id_assinatura`, `vencimento`, `creditos`, `plano`, `modo_atuante`, `modelo_ia`, `google_cal`, `numero_bot`) VALUES (1, 'admin', 'admin123', '1', 'admin', 'Administrador', '2', '', '', '', '', '', 'ativo', 'admin@admin.com', '', '', '', '', '', 'adm', 0, 0, '', '', '', '', 9999, 'plano3', '', 'gpt-4o-mini', '', '');
 
+-- Adicionar coluna endereco na tabela config (idempotente)
+ALTER TABLE `config` ADD COLUMN IF NOT EXISTS `endereco` VARCHAR(255) DEFAULT NULL;
+
 -- Logo MoysesNet (Modelo 1 Hexágono) — persiste após reinício
 UPDATE `estilo` SET
   `logo_site`    = 'img/logo-moysesnet.svg',
