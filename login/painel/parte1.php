@@ -115,18 +115,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $params[] = $tema;
     $types .= "i";
 
-    // Para cada campo, verificamos se ele não está vazio antes de incluí-lo no SQL
-    if (!empty($telefone)) {
-        $updates[] = "telefone = ?";
-        $params[] = $telefone;
-        $types .= "s";
-    }
+    // Telefone e endereço são sempre salvos (inclusive em branco, para permitir limpeza)
+    $updates[] = "telefone = ?";
+    $params[] = $telefone;
+    $types .= "s";
 
-    if (!empty($endereco)) {
-        $updates[] = "endereco = ?";
-        $params[] = $endereco;
-        $types .= "s";
-    }
+    $updates[] = "endereco = ?";
+    $params[] = $endereco;
+    $types .= "s";
 
     if ($caminho_modelo !== null) {
         $updates[] = "caminho_modelo = ?";
