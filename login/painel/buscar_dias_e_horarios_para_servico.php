@@ -43,7 +43,7 @@ if (!isset($_POST['profissional_id']) || empty($_POST['profissional_id']) ||
     output_json_error('Dados POST insuficientes ou inválidos. Necessário: profissional_id, servico_id, duracao.');
 }
 
-$profissional_id = $conn->real_escape_string($_POST['profissional_id']);
+$profissional_id = trim($_POST['profissional_id']);
 // $servico_id_param = $conn->real_escape_string($_POST['servico_id']); // Não usado diretamente no cálculo principal de slots, mas bom para log se necessário
 $duracao_servico_minutos = (int)$_POST['duracao'];
 

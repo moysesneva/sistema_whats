@@ -31,7 +31,7 @@ if (!isset($_POST['profissional_id']) || empty($_POST['profissional_id'])) {
     exit;
 }
 
-$profissional_id = $conn->real_escape_string($_POST['profissional_id']);
+$profissional_id = trim($_POST['profissional_id']);
 
 // A lógica de verificação de dia da semana ($sql_verifica_dia) foi REMOVIDA daqui,
 // pois o dia ainda não foi selecionado pelo usuário nesta etapa do novo fluxo.

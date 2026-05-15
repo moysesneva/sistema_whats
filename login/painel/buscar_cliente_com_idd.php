@@ -6,17 +6,19 @@ $login = $_SESSION['login'];
 include 'conn.php';
 
 
-$sql_busca_usuario = "SELECT * FROM login WHERE login = '$login'";
-$query_busca_usuario = mysqli_query($conn, $sql_busca_usuario);
+$stmt_busca_usuario = mysqli_prepare($conn, "SELECT * FROM login WHERE login = ?");
+mysqli_stmt_bind_param($stmt_busca_usuario, "s", $login);
+mysqli_stmt_execute($stmt_busca_usuario);
+$query_busca_usuario = mysqli_stmt_get_result($stmt_busca_usuario);
 $total_busca_usuario = mysqli_num_rows($query_busca_usuario);
 
 while($rows_usuarios = mysqli_fetch_array($query_busca_usuario)) {
 
-$usuario_api = $rows_usuarios['$usuario_api'];
+$usuario_api = $rows_usuarios['usuario_api'];
 
 }
+mysqli_stmt_close($stmt_busca_usuario);
 
-$usuario_api = isset($_GET['usuario_api']) ? trim($_GET['usuario_api']) : '';
 $nome = isset($_GET['nome']) ? trim($_GET['nome']) : '';
 $telefone = isset($_GET['telefone']) ? trim($_GET['telefone']) : '';
 
