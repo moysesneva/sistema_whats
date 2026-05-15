@@ -130,35 +130,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $types .= "s";
     }
 
-    if (!empty($hero_title)) {
-        $updates[] = "hero_title = ?";
-        $params[] = $hero_title;
-        $types .= "s";
-    }
+    $updates[] = "hero_title = ?";
+    $params[] = $hero_title;
+    $types .= "s";
 
-    if (!empty($hero_subtitle)) {
-        $updates[] = "hero_subtitle = ?";
-        $params[] = $hero_subtitle;
-        $types .= "s";
-    }
+    $updates[] = "hero_subtitle = ?";
+    $params[] = $hero_subtitle;
+    $types .= "s";
 
-    if (!empty($services_title)) {
-        $updates[] = "services_title = ?";
-        $params[] = $services_title;
-        $types .= "s";
-    }
+    $updates[] = "services_title = ?";
+    $params[] = $services_title;
+    $types .= "s";
 
-    if (!empty($services_description)) {
-        $updates[] = "services_description = ?";
-        $params[] = $services_description;
-        $types .= "s";
-    }
+    $updates[] = "services_description = ?";
+    $params[] = $services_description;
+    $types .= "s";
 
-    if (!empty($texto_vendas)) {
-        $updates[] = "texto_vendas = ?";
-        $params[] = $texto_vendas;
-        $types .= "s";
-    }
+    $updates[] = "texto_vendas = ?";
+    $params[] = $texto_vendas;
+    $types .= "s";
 
     // Para o vídeo do YouTube, tratamento especial
     if (isset($_POST['apagar_video']) && $_POST['apagar_video'] == 1) {
@@ -175,17 +165,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $types .= "s";
     }
 
-    if (!empty($card1_title)) {
-        $updates[] = "card1_title = ?";
-        $params[] = $card1_title;
-        $types .= "s";
-    }
+    $updates[] = "card1_title = ?";
+    $params[] = $card1_title;
+    $types .= "s";
 
-    if (!empty($card1_description)) {
-        $updates[] = "card1_description = ?";
-        $params[] = $card1_description;
-        $types .= "s";
-    }
+    $updates[] = "card1_description = ?";
+    $params[] = $card1_description;
+    $types .= "s";
 
     if ($card2_icon !== null) {
         $updates[] = "card2_icon = ?";
@@ -193,17 +179,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $types .= "s";
     }
 
-    if (!empty($card2_title)) {
-        $updates[] = "card2_title = ?";
-        $params[] = $card2_title;
-        $types .= "s";
-    }
+    $updates[] = "card2_title = ?";
+    $params[] = $card2_title;
+    $types .= "s";
 
-    if (!empty($card2_description)) {
-        $updates[] = "card2_description = ?";
-        $params[] = $card2_description;
-        $types .= "s";
-    }
+    $updates[] = "card2_description = ?";
+    $params[] = $card2_description;
+    $types .= "s";
 
     if ($card3_icon !== null) {
         $updates[] = "card3_icon = ?";
@@ -211,17 +193,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $types .= "s";
     }
 
-    if (!empty($card3_title)) {
-        $updates[] = "card3_title = ?";
-        $params[] = $card3_title;
-        $types .= "s";
-    }
+    $updates[] = "card3_title = ?";
+    $params[] = $card3_title;
+    $types .= "s";
 
-    if (!empty($card3_description)) {
-        $updates[] = "card3_description = ?";
-        $params[] = $card3_description;
-        $types .= "s";
-    }
+    $updates[] = "card3_description = ?";
+    $params[] = $card3_description;
+    $types .= "s";
 
     if ($feature_image !== null) {
         $updates[] = "feature_image = ?";
@@ -229,23 +207,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $types .= "s";
     }
 
-    if (!empty($feature_title)) {
-        $updates[] = "feature_title = ?";
-        $params[] = $feature_title;
-        $types .= "s";
-    }
+    $updates[] = "feature_title = ?";
+    $params[] = $feature_title;
+    $types .= "s";
 
-    if (!empty($feature_description)) {
-        $updates[] = "feature_description = ?";
-        $params[] = $feature_description;
-        $types .= "s";
-    }
+    $updates[] = "feature_description = ?";
+    $params[] = $feature_description;
+    $types .= "s";
 
-    if (!empty($feature_items)) {
-        $updates[] = "feature_items = ?";
-        $params[] = $feature_items_json;
-        $types .= "s";
-    }
+    $updates[] = "feature_items = ?";
+    $params[] = $feature_items_json;
+    $types .= "s";
 
     // Completa a consulta SQL apenas se houver campos para atualizar
     if (!empty($updates)) {
