@@ -509,6 +509,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         // Inicializar
         setupRemoveButtons();
+
+        // Aviso ao salvar com campos importantes em branco
+        var camposImportantes = [
+            { id: 'hero_title',            label: 'Título do Hero' },
+            { id: 'hero_subtitle',         label: 'Subtítulo do Hero' },
+            { id: 'services_title',        label: 'Título dos Serviços' },
+            { id: 'services_description',  label: 'Descrição dos Serviços' },
+            { id: 'card1_title',           label: 'Título do Card 1' },
+            { id: 'card1_description',     label: 'Descrição do Card 1' },
+            { id: 'card2_title',           label: 'Título do Card 2' },
+            { id: 'card2_description',     label: 'Descrição do Card 2' },
+            { id: 'card3_title',           label: 'Título do Card 3' },
+            { id: 'card3_description',     label: 'Descrição do Card 3' },
+            { id: 'feature_title',         label: 'Título do Benefício' },
+            { id: 'feature_description',   label: 'Descrição do Benefício' }
+        ];
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            var vazios = [];
+            camposImportantes.forEach(function(campo) {
+                var el = document.getElementById(campo.id);
+                if (el && el.value.trim() === '') {
+                    vazios.push(campo.label);
+                }
+            });
+
+            if (vazios.length > 0) {
+                var lista = vazios.map(function(l) { return '• ' + l; }).join('\n');
+                var confirmou = confirm(
+                    'Atenção: os seguintes campos estão em branco e ficarão vazios no site:\n\n' +
+                    lista +
+                    '\n\nDeseja salvar mesmo assim?'
+                );
+                if (!confirmou) {
+                    e.preventDefault();
+                    // Destaca os campos vazios
+                    camposImportantes.forEach(function(campo) {
+                        var el = document.getElementById(campo.id);
+                        if (el && el.value.trim() === '') {
+                            el.classList.add('is-invalid');
+                            el.addEventListener('input', function() {
+                                if (el.value.trim() !== '') {
+                                    el.classList.remove('is-invalid');
+                                }
+                            }, { once: true });
+                        }
+                    });
+                    // Rola até o primeiro campo vazio
+                    var primeiro = document.getElementById(vazios[0] ? camposImportantes.find(function(c) { return c.label === vazios[0]; }).id : null);
+                    if (primeiro) {
+                        primeiro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        primeiro.focus();
+                    }
+                }
+            }
+        });
     });
     </script>
 </body>
