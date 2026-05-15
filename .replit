@@ -52,8 +52,8 @@ run = ["bash", "start.sh"]
 [userenv]
 
 [userenv.shared]
-
-[userenv.development]
 DB_HOST = "mysql.hostinger.com"
 DB_USER = "u179310524_replit"
 DB_NAME = "u179310524_replit"
+
+[userenv.development]
