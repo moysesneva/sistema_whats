@@ -1,15 +1,12 @@
 <?php
-$host = getenv('DB_HOST') ?: 'localhost';
+$socket = '/home/runner/mysql.sock';
 
-if ($host === 'localhost') {
-    // MySQL local do Replit — sempre root + socket + banco agendamento
-    $usuario = 'root';
-    $senha   = '';
-    $banco   = 'agendamento';
-    $socket  = '/home/runner/mysql.sock';
-    $conn = mysqli_connect($host, $usuario, $senha, $banco, 3306, $socket);
+if (file_exists($socket)) {
+    // MySQL local do Replit — usa root sem senha via socket
+    $conn = mysqli_connect('localhost', 'root', '', 'agendamento', 3306, $socket);
 } else {
     // Banco externo (ex: Hostinger) — usa credenciais das variáveis de ambiente
+    $host    = getenv('DB_HOST') ?: '';
     $usuario = getenv('DB_USER') ?: '';
     $senha   = getenv('DB_PASS') ?: '';
     $banco   = getenv('DB_NAME') ?: '';
