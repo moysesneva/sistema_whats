@@ -187,6 +187,28 @@ $sz_total     = $sz_logs_dir + $sz_log_proc + $sz_log_recv + $sz_uploads;
     font-size: 14px;
     margin: 0;
 }
+#btn-limpar-agora {
+    background: #FF5500;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 9px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background .2s;
+}
+#btn-limpar-agora:hover:not(:disabled) {
+    background: #e04a00;
+}
+#btn-limpar-agora:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+}
+#cleanup-result {
+    font-size: 13px;
+    margin-top: 10px;
+}
 </style>
 
 <div class="container-fluid">
@@ -314,6 +336,76 @@ $sz_total     = $sz_logs_dir + $sz_log_proc + $sz_log_recv + $sz_uploads;
         </div>
     </div>
 
+    <!-- Limpeza manual -->
+    <div class="card stats-card">
+        <div class="card-header">
+            <i class="feather icon-trash-2"></i> Limpeza Manual
+        </div>
+        <div class="card-body">
+            <p style="font-size:14px;color:#555;margin-bottom:14px;">
+                Executa imediatamente a limpeza de logs antigos e uploads temporários expirados,
+                sem aguardar a próxima varredura automática.
+            </p>
+            <button id="btn-limpar-agora" type="button">
+                <i class="feather icon-zap" style="margin-right:6px;"></i>Limpar Agora
+            </button>
+            <div id="cleanup-result"></div>
+        </div>
+    </div>
+
 </div>
+
+<script>
+document.getElementById('btn-limpar-agora').addEventListener('click', function () {
+    var btn = this;
+    var result = document.getElementById('cleanup-result');
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="feather icon-loader" style="margin-right:6px;"></i>Limpando…';
+    result.innerHTML = '';
+
+    fetch('api/run_cleanup.php', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        credentials: 'same-origin'
+    })
+    .then(function (res) {
+        if (!res.ok) {
+            throw new Error('HTTP ' + res.status);
+        }
+        return res.json();
+    })
+    .then(function (data) {
+        if (data.ok) {
+            result.innerHTML =
+                '<span style="color:#28a745;">' +
+                '<i class="feather icon-check-circle" style="margin-right:4px;"></i>' +
+                'Limpeza concluída em ' + data.ts + '. ' +
+                'Logs removidos: <strong>' + data.logs_removidos + '</strong> &bull; ' +
+                'Truncamentos: <strong>' + data.truncamentos + '</strong> &bull; ' +
+                'Uploads removidos: <strong>' + data.uploads_removidos + '</strong>.' +
+                '</span>';
+            setTimeout(function () { location.reload(); }, 1500);
+        } else {
+            result.innerHTML =
+                '<span style="color:#dc3545;">' +
+                '<i class="feather icon-alert-circle" style="margin-right:4px;"></i>' +
+                (data.erro || 'Erro desconhecido.') +
+                '</span>';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="feather icon-zap" style="margin-right:6px;"></i>Limpar Agora';
+        }
+    })
+    .catch(function () {
+        result.innerHTML =
+            '<span style="color:#dc3545;">' +
+            '<i class="feather icon-alert-circle" style="margin-right:4px;"></i>' +
+            'Falha na comunicação com o servidor.' +
+            '</span>';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="feather icon-zap" style="margin-right:6px;"></i>Limpar Agora';
+    });
+});
+</script>
 
 <?php include 'footer.php'; ?>
