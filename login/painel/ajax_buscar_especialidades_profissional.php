@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['profissional_id'])) {
         foreach($especialidades as $esp) {
             $esp = trim($esp);
             if(!empty($esp)) {
-                echo '<span class="badge badge-primary mr-1">' . $esp . '</span>';
+                echo '<span class="badge badge-primary mr-1">' . htmlspecialchars($esp, ENT_QUOTES, 'UTF-8') . '</span>';
             }
         }
         echo '</div>';

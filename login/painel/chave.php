@@ -359,7 +359,7 @@ function truncarURL($url, $maxLength = 40) {
         if (!$temLinkConfigurado) { ?>
             <!-- Formulário para adicionar links de pagamento -->
             <form action="" method="post">
-                <input type="hidden" name="chave" value="<?= $chave; ?>">
+                <input type="hidden" name="chave" value="<?= htmlspecialchars($chave ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                 <input type="hidden" name="salvar_links" value="1">
                 
                 <div class="alert alert-info">
@@ -408,17 +408,17 @@ function truncarURL($url, $maxLength = 40) {
                         <div class="form-group">
                             <label class="font-weight-bold">Plano 1:</label>
                             <div class="input-group mb-2">
-                                <input type="text" class="form-control bg-light" id="link_plano1_display" value="<?= truncarURL($link_plano1); ?>" readonly>
+                                <input type="text" class="form-control bg-light" id="link_plano1_display" value="<?= htmlspecialchars(truncarURL($link_plano1), ENT_QUOTES, 'UTF-8'); ?>" readonly>
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-secondary" type="button" onclick="copyLink('link_plano1_full')">
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
-                                <input type="hidden" id="link_plano1_full" value="<?= $link_plano1; ?>">
+                                <input type="hidden" id="link_plano1_full" value="<?= htmlspecialchars($link_plano1, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="mt-2">
                                 <form method="post" class="d-inline mr-1 mb-1">
-                                    <input type="hidden" name="chave" value="<?= $chave; ?>">
+                                    <input type="hidden" name="chave" value="<?= htmlspecialchars($chave ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <input type="hidden" name="plano" value="plano1">
                                     <input type="hidden" name="apagar_plano" value="1">
                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja remover este link?')">
@@ -436,17 +436,17 @@ function truncarURL($url, $maxLength = 40) {
                         <div class="form-group mt-4">
                             <label class="font-weight-bold">Plano 2:</label>
                             <div class="input-group mb-2">
-                                <input type="text" class="form-control bg-light" id="link_plano2_display" value="<?= truncarURL($link_plano2); ?>" readonly>
+                                <input type="text" class="form-control bg-light" id="link_plano2_display" value="<?= htmlspecialchars(truncarURL($link_plano2), ENT_QUOTES, 'UTF-8'); ?>" readonly>
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-secondary" type="button" onclick="copyLink('link_plano2_full')">
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
-                                <input type="hidden" id="link_plano2_full" value="<?= $link_plano2; ?>">
+                                <input type="hidden" id="link_plano2_full" value="<?= htmlspecialchars($link_plano2, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="mt-2">
                                 <form method="post" class="d-inline mr-1 mb-1">
-                                    <input type="hidden" name="chave" value="<?= $chave; ?>">
+                                    <input type="hidden" name="chave" value="<?= htmlspecialchars($chave ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <input type="hidden" name="plano" value="plano2">
                                     <input type="hidden" name="apagar_plano" value="1">
                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja remover este link?')">
@@ -464,17 +464,17 @@ function truncarURL($url, $maxLength = 40) {
                         <div class="form-group mt-4">
                             <label class="font-weight-bold">Plano 3:</label>
                             <div class="input-group mb-2">
-                                <input type="text" class="form-control bg-light" id="link_plano3_display" value="<?= truncarURL($link_plano3); ?>" readonly>
+                                <input type="text" class="form-control bg-light" id="link_plano3_display" value="<?= htmlspecialchars(truncarURL($link_plano3), ENT_QUOTES, 'UTF-8'); ?>" readonly>
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-secondary" type="button" onclick="copyLink('link_plano3_full')">
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
-                                <input type="hidden" id="link_plano3_full" value="<?= $link_plano3; ?>">
+                                <input type="hidden" id="link_plano3_full" value="<?= htmlspecialchars($link_plano3, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="mt-2">
                                 <form method="post" class="d-inline mr-1 mb-1">
-                                    <input type="hidden" name="chave" value="<?= $chave; ?>">
+                                    <input type="hidden" name="chave" value="<?= htmlspecialchars($chave ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <input type="hidden" name="plano" value="plano3">
                                     <input type="hidden" name="apagar_plano" value="1">
                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja remover este link?')">
@@ -492,17 +492,17 @@ function truncarURL($url, $maxLength = 40) {
                         <div class="form-group mt-4">
                             <label class="font-weight-bold">Créditos Extras de IA:</label>
                             <div class="input-group mb-2">
-                                <input type="text" class="form-control bg-light" id="link_creditos_display" value="<?= truncarURL($link_creditos); ?>" readonly>
+                                <input type="text" class="form-control bg-light" id="link_creditos_display" value="<?= htmlspecialchars(truncarURL($link_creditos), ENT_QUOTES, 'UTF-8'); ?>" readonly>
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-secondary" type="button" onclick="copyLink('link_creditos_full')">
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
-                                <input type="hidden" id="link_creditos_full" value="<?= $link_creditos; ?>">
+                                <input type="hidden" id="link_creditos_full" value="<?= htmlspecialchars($link_creditos, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="mt-2">
                                 <form method="post" class="d-inline mr-1 mb-1">
-                                    <input type="hidden" name="chave" value="<?= $chave; ?>">
+                                    <input type="hidden" name="chave" value="<?= htmlspecialchars($chave ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <input type="hidden" name="plano" value="creditos">
                                     <input type="hidden" name="apagar_plano" value="1">
                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja remover este link?')">
@@ -557,7 +557,7 @@ function truncarURL($url, $maxLength = 40) {
             <div id="adicionarNovoLink" style="display: none;" class="mt-4">
                 <h5 class="mb-3" id="tituloAdicionarPlano"></h5>
                 <form action="" method="post">
-                    <input type="hidden" name="chave" value="<?= $chave; ?>">
+                    <input type="hidden" name="chave" value="<?= htmlspecialchars($chave ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="plano" id="planoAdicionar" value="">
                     <input type="hidden" name="adicionar_plano" value="1">
                     

@@ -119,8 +119,8 @@ if($autorizado != 2){
                                         $count = $stmt_cnt->get_result()->fetch_assoc()['total'];
                                         $stmt_cnt->close();
                                     ?>
-                                    <div class="tag-filter-pill" onclick="toggleTagFilter('<?= htmlspecialchars($tag) ?>')">
-                                        <i class="fas fa-tag"></i> <?= htmlspecialchars($tag) ?> 
+                                    <div class="tag-filter-pill" onclick="toggleTagFilter('<?= htmlspecialchars($tag, ENT_QUOTES, 'UTF-8') ?>')">
+                                        <i class="fas fa-tag"></i> <?= htmlspecialchars($tag, ENT_QUOTES, 'UTF-8') ?> 
                                         <span class="badge bg-secondary ms-1"><?= $count ?></span>
                                     </div>
                                     <?php endforeach; ?>
@@ -163,23 +163,23 @@ if($autorizado != 2){
                                 ?>
                                 <div class="cliente-item"
                                      data-id="<?= $id ?>"
-                                     data-nome="<?= htmlspecialchars($nome) ?>"
-                                     data-telefone="<?= htmlspecialchars($telefone) ?>"
-                                     data-etiquetas="<?= htmlspecialchars($etiqueta) ?>"
+                                     data-nome="<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>"
+                                     data-telefone="<?= htmlspecialchars($telefone, ENT_QUOTES, 'UTF-8') ?>"
+                                     data-etiquetas="<?= htmlspecialchars($etiqueta, ENT_QUOTES, 'UTF-8') ?>"
                                      onclick="toggleCliente(this)">
-                                    <button type="button" class="edit-tags-btn" onclick="event.stopPropagation(); openEditTagsModal(<?= $id ?>, '<?= htmlspecialchars($nome) ?>', '<?= htmlspecialchars($etiqueta) ?>')">
+                                    <button type="button" class="edit-tags-btn" onclick="event.stopPropagation(); openEditTagsModal(<?= $id ?>, '<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>', '<?= htmlspecialchars($etiqueta, ENT_QUOTES, 'UTF-8') ?>')">
                                         <i class="fas fa-tags"></i> Editar
                                     </button>
                                     <div class="cliente-info">
                                         <input type="checkbox" name="clientes[]" value="<?= $id ?>" style="display:none;">
                                         <div class="cliente-avatar"><?= $iniciais ?></div>
                                         <div class="cliente-dados">
-                                            <h6><?= htmlspecialchars($nome) ?></h6>
-                                            <small>📱 <?= htmlspecialchars($telefone) ?></small>
+                                            <h6><?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?></h6>
+                                            <small>📱 <?= htmlspecialchars($telefone, ENT_QUOTES, 'UTF-8') ?></small>
                                             <?php if (!empty($etiquetas)): ?>
                                             <div class="cliente-tags">
                                                 <?php foreach ($etiquetas as $tag): ?>
-                                                <span class="cliente-tag-mini"><?= htmlspecialchars($tag) ?></span>
+                                                <span class="cliente-tag-mini"><?= htmlspecialchars($tag, ENT_QUOTES, 'UTF-8') ?></span>
                                                 <?php endforeach; ?>
                                             </div>
                                             <?php endif; ?>

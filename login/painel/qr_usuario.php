@@ -177,7 +177,7 @@ if($situacao != 'ativado'){
                         <i class="feather icon-credit-card mr-1"></i> Créditos Atuais:
                     </span>
                     <span class="text-white font-weight-bold">
-                        <?php echo $creditos; ?> 
+                        <?php echo (int)$creditos; ?> 
                     </span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center m-b-10">
@@ -208,7 +208,7 @@ while($rows_usuarios = mysqli_fetch_array($query)) {
                 </div>
             </div>
                 <p class="m-b-0 mt-2 text-white text-center">
-                    <small>Você tem <?php echo $creditos; ?> créditos disponíveis.</small>
+                    <small>Você tem <?php echo (int)$creditos; ?> créditos disponíveis.</small>
                 </p>
                 
         <div class="text-center mt-4">
@@ -228,14 +228,14 @@ while($rows_usuarios = mysqli_fetch_array($query)) {
                     <span class="text-white">
                         <i class="feather icon-user mr-1"></i> Nome:
                     </span>
-                    <span class="text-white font-weight-bold"><?php echo $nome; ?></span>
+                    <span class="text-white font-weight-bold"><?php echo htmlspecialchars($nome, ENT_QUOTES, 'UTF-8'); ?></span>
                 </div>
                 
                 <div class="d-flex justify-content-between align-items-center m-b-10">
                     <span class="text-white">
                         <i class="feather icon-mail mr-1"></i> Email:
                     </span>
-                    <span class="text-white font-weight-bold"><?php echo $email; ?></span>
+                    <span class="text-white font-weight-bold"><?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?></span>
                 </div>
                 
                 <div class="d-flex justify-content-between align-items-center m-b-10">
@@ -266,21 +266,21 @@ while($rows_usuarios = mysqli_fetch_array($query)) {
                     <span class="text-white">
                         <i class="feather icon-send mr-1"></i> Mensagens Enviadas:
                     </span>
-                    <span class="text-white font-weight-bold"><?php echo $total_envios; ?></span>
+                    <span class="text-white font-weight-bold"><?php echo (int)$total_envios; ?></span>
                 </div>
                 
                 <div class="d-flex justify-content-between align-items-center m-b-10">
                     <span class="text-white">
                         <i class="feather icon-credit-card mr-1"></i> Saldo Total:
                     </span>
-                    <span class="text-white font-weight-bold"><?php echo $creditos; ?></span>
+                    <span class="text-white font-weight-bold"><?php echo (int)$creditos; ?></span>
                 </div>
                 
                 <div class="d-flex justify-content-between align-items-center m-b-10">
                     <span class="text-white">
                         <i class="feather icon-message-circle mr-1"></i> Mensagens Restantes:
                     </span>
-                    <span class="text-white font-weight-bold"><?php echo $creditos - $total_envios; ?></span>
+                    <span class="text-white font-weight-bold"><?php echo (int)$creditos - (int)$total_envios; ?></span>
                 </div>
                 
                 <div class="d-flex justify-content-between align-items-center m-b-10">
@@ -336,8 +336,8 @@ if ($total_plano > 0) {
                         <div class="mt-4">
                             <form action="acoes/acao.php" method="POST">
                                 <input type="hidden" name="opcao" value="criar_usuario_adm">
-                                <input type="hidden" name="usuario" value="<?=$login;?>">
-                                <input type="hidden" name="usuario_api" value="<?=$usuario_login;?>">
+                                <input type="hidden" name="usuario" value="<?= htmlspecialchars($login ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="hidden" name="usuario_api" value="<?= htmlspecialchars($usuario_login ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="feather icon-user-plus m-r-5"></i> Criar ADM
                                 </button>
@@ -369,7 +369,7 @@ if ($total_plano > 0) {
                             <div class="mt-4">
                                 <h6 class="mb-3">Controles da Instância</h6>
                                 <form method="POST" action="" class="d-flex justify-content-center">
-                                    <input type="hidden" name="status_atual" value="<?php echo $status_text; ?>">
+                                    <input type="hidden" name="status_atual" value="<?php echo htmlspecialchars($status_text ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     
                                     <!-- Botão Ativar -->
                                     <button type="submit" name="acao" value="ativar" 

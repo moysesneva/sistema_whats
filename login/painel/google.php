@@ -26,9 +26,9 @@ $auth_url = "https://accounts.google.com/o/oauth2/auth?$params";
 <head><meta charset="utf-8"><title>Autorizar Google Agenda</title></head>
 <body>
   <h2>1) Autorize o acesso ao Google Agenda</h2>
-  <p><a href="<?= htmlspecialchars($auth_url) ?>" target="_blank">
+  <p><a href="<?= htmlspecialchars($auth_url, ENT_QUOTES, 'UTF-8') ?>" target="_blank">
     Clique aqui para autorizar
   </a></p>
-  <p>Você será levado de volta a: <code><?= htmlspecialchars($redirect_uri) ?></code></p>
+  <p>Você será levado de volta a: <code><?= htmlspecialchars($redirect_uri, ENT_QUOTES, 'UTF-8') ?></code></p>
 </body>
 </html>

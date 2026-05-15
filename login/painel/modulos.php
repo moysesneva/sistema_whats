@@ -437,8 +437,8 @@ foreach($modulos_adquiridos as $mod) {
                             <?php endif; ?>
                         </div>
                         
-                        <div class="modulo-titulo"><?php echo htmlspecialchars($modulo['nome']); ?></div>
-                        <div class="modulo-descricao"><?php echo htmlspecialchars($modulo['descricao']); ?></div>
+                        <div class="modulo-titulo"><?php echo htmlspecialchars($modulo['nome'], ENT_QUOTES, 'UTF-8'); ?></div>
+                        <div class="modulo-descricao"><?php echo htmlspecialchars($modulo['descricao'], ENT_QUOTES, 'UTF-8'); ?></div>
                         
                         <?php if($modulo['tipo'] == 'pago' && !isset($modulos_adquiridos_array[$modulo['id']])): ?>
                             <div class="modulo-preco">

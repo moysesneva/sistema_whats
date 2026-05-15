@@ -250,9 +250,9 @@ VaiPara('senha.php');
                                         <div class="card-body">
                                             <div class="text-center mb-4">
                                                 <div class="avatar mb-3">
-                                                    <img src="<?php echo $img_perfil; ?>" alt="Perfil" class="img-radius" style="width: 80px; height: 80px;">
+                                                    <img src="<?php echo htmlspecialchars($img_perfil ?? '', ENT_QUOTES, 'UTF-8'); ?>" alt="Perfil" class="img-radius" style="width: 80px; height: 80px;">
                                                 </div>
-                                                <h5 class="card-title">Olá, <span class="text-primary"><?php echo htmlspecialchars($nome_usuario); ?></span>!</h5>
+                                                <h5 class="card-title">Olá, <span class="text-primary"><?php echo htmlspecialchars($nome_usuario, ENT_QUOTES, 'UTF-8'); ?></span>!</h5>
                                             </div>
                                             
                                             <div class="alert alert-light border text-center mb-4">
@@ -326,7 +326,7 @@ VaiPara('senha.php');
                                                         <?php endif; ?>
                                                         
                                                         <div class="card-header text-center py-4 <?php echo $isMiddlePlan ? 'bg-primary text-white' : ''; ?>">
-                                                            <h3 class="font-weight-bold mb-0"><?php echo htmlspecialchars($titulo_plano); ?></h3>
+                                                            <h3 class="font-weight-bold mb-0"><?php echo htmlspecialchars($titulo_plano, ENT_QUOTES, 'UTF-8'); ?></h3>
                                                         </div>
                                                         
                                                         <div class="card-body d-flex flex-column">
@@ -341,10 +341,10 @@ VaiPara('senha.php');
                                                                 <?php foreach($features as $feature): ?>
                                                                 <li>
                                                                     <i class="feather icon-check-circle mr-2"></i>
-                                                                    <?php echo htmlspecialchars($feature); ?>
+                                                                    <?php echo htmlspecialchars($feature, ENT_QUOTES, 'UTF-8'); ?>
                                                                     <li>
                                                                     <i class="feather icon-check-circle mr-2"></i>
-                                                                    <?php echo htmlspecialchars($feature); ?>
+                                                                    <?php echo htmlspecialchars($feature, ENT_QUOTES, 'UTF-8'); ?>
                                                                 </li>
                                                                 <?php endforeach; ?>
                                                             </ul>
@@ -450,7 +450,7 @@ VaiPara('senha.php');
                                                         <?php endif; ?>
                                                         
                                                         <div class="card-header text-center py-4 <?php echo $isMiddlePlan ? 'bg-primary text-white' : ''; ?>">
-                                                            <h3 class="font-weight-bold mb-0"><?php echo htmlspecialchars($titulo_plano); ?></h3>
+                                                            <h3 class="font-weight-bold mb-0"><?php echo htmlspecialchars($titulo_plano, ENT_QUOTES, 'UTF-8'); ?></h3>
                                                         </div>
                                                         
                                                         <div class="card-body d-flex flex-column">
@@ -465,10 +465,10 @@ VaiPara('senha.php');
                                                                 <?php foreach($features as $feature): ?>
                                                                 <li>
                                                                     <i class="feather icon-check-circle mr-2"></i>
-                                                                    <?php echo htmlspecialchars($feature); ?>
+                                                                    <?php echo htmlspecialchars($feature, ENT_QUOTES, 'UTF-8'); ?>
                                                                     <li>
                                                                     <i class="feather icon-check-circle mr-2"></i>
-                                                                    <?php echo htmlspecialchars($feature); ?>
+                                                                    <?php echo htmlspecialchars($feature, ENT_QUOTES, 'UTF-8'); ?>
                                                                 </li>
                                                                 <?php endforeach; ?>
                                                             </ul>

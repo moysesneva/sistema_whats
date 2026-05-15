@@ -260,12 +260,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h4>Configurações Gerais</h4>
                 <div class="form-group">
                     <label for="telefone">Telefone:</label>
-                    <input type="text" class="form-control" id="telefone" name="telefone" value="<?php echo isset($config['telefone']) ? htmlspecialchars($config['telefone']) : ''; ?>">
+                    <input type="text" class="form-control" id="telefone" name="telefone" value="<?php echo isset($config['telefone']) ? htmlspecialchars($config['telefone'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                 </div>
 
                 <div class="form-group">
                     <label for="endereco">Endereço:</label>
-                    <input type="text" class="form-control" id="endereco" name="endereco" value="<?php echo isset($config['endereco']) ? htmlspecialchars($config['endereco']) : ''; ?>">
+                    <input type="text" class="form-control" id="endereco" name="endereco" value="<?php echo isset($config['endereco']) ? htmlspecialchars($config['endereco'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                 </div>
 
                 <div class="form-group">
@@ -286,7 +286,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <small class="form-text text-muted">
                             Arquivo atual: <?php echo basename($config['caminho_modelo']); ?>
                         </small>
-                        <input type="hidden" name="caminho_modelo_atual" value="<?php echo htmlspecialchars($config['caminho_modelo']); ?>">
+                        <input type="hidden" name="caminho_modelo_atual" value="<?php echo htmlspecialchars($config['caminho_modelo'], ENT_QUOTES, 'UTF-8'); ?>">
                     <?php endif; ?>
                 </div>
             </div>
@@ -295,12 +295,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h4>Seção Hero</h4>
                 <div class="form-group">
                     <label for="hero_title">Título do Hero:</label>
-                    <input type="text" class="form-control" id="hero_title" name="hero_title" value="<?php echo isset($config['hero_title']) ? htmlspecialchars($config['hero_title']) : ''; ?>">
+                    <input type="text" class="form-control" id="hero_title" name="hero_title" value="<?php echo isset($config['hero_title']) ? htmlspecialchars($config['hero_title'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                 </div>
                 
                 <div class="form-group">
                     <label for="hero_subtitle">Subtítulo do Hero:</label>
-                    <input type="text" class="form-control" id="hero_subtitle" name="hero_subtitle" value="<?php echo isset($config['hero_subtitle']) ? htmlspecialchars($config['hero_subtitle']) : ''; ?>">
+                    <input type="text" class="form-control" id="hero_subtitle" name="hero_subtitle" value="<?php echo isset($config['hero_subtitle']) ? htmlspecialchars($config['hero_subtitle'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                 </div>
             </div>
             
@@ -308,12 +308,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h4>Seção Serviços</h4>
                 <div class="form-group">
                     <label for="services_title">Título dos Serviços:</label>
-                    <input type="text" class="form-control" id="services_title" name="services_title" value="<?php echo isset($config['services_title']) ? htmlspecialchars($config['services_title']) : ''; ?>">
+                    <input type="text" class="form-control" id="services_title" name="services_title" value="<?php echo isset($config['services_title']) ? htmlspecialchars($config['services_title'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                 </div>
                 
                 <div class="form-group">
                     <label for="services_description">Descrição dos Serviços:</label>
-                    <textarea class="form-control" id="services_description" name="services_description" rows="3"><?php echo isset($config['services_description']) ? htmlspecialchars($config['services_description']) : ''; ?></textarea>
+                    <textarea class="form-control" id="services_description" name="services_description" rows="3"><?php echo isset($config['services_description']) ? htmlspecialchars($config['services_description'], ENT_QUOTES, 'UTF-8') : ''; ?></textarea>
                 </div>
             </div>
             
@@ -326,18 +326,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <small class="form-text text-muted">
                             Arquivo atual: <?php echo basename($config['card1_icon']); ?>
                         </small>
-                        <input type="hidden" name="card1_icon_atual" value="<?php echo htmlspecialchars($config['card1_icon']); ?>">
+                        <input type="hidden" name="card1_icon_atual" value="<?php echo htmlspecialchars($config['card1_icon'], ENT_QUOTES, 'UTF-8'); ?>">
                     <?php endif; ?>
                 </div>
                 
                 <div class="form-group">
                     <label for="card1_title">Título do Card 1:</label>
-                    <input type="text" class="form-control" id="card1_title" name="card1_title" value="<?php echo isset($config['card1_title']) ? htmlspecialchars($config['card1_title']) : ''; ?>">
+                    <input type="text" class="form-control" id="card1_title" name="card1_title" value="<?php echo isset($config['card1_title']) ? htmlspecialchars($config['card1_title'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                 </div>
                 
                 <div class="form-group">
                     <label for="card1_description">Descrição do Card 1:</label>
-                    <textarea class="form-control" id="card1_description" name="card1_description" rows="3"><?php echo isset($config['card1_description']) ? htmlspecialchars($config['card1_description']) : ''; ?></textarea>
+                    <textarea class="form-control" id="card1_description" name="card1_description" rows="3"><?php echo isset($config['card1_description']) ? htmlspecialchars($config['card1_description'], ENT_QUOTES, 'UTF-8') : ''; ?></textarea>
                 </div>
             </div>
             
@@ -350,18 +350,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <small class="form-text text-muted">
                             Arquivo atual: <?php echo basename($config['card2_icon']); ?>
                         </small>
-                        <input type="hidden" name="card2_icon_atual" value="<?php echo htmlspecialchars($config['card2_icon']); ?>">
+                        <input type="hidden" name="card2_icon_atual" value="<?php echo htmlspecialchars($config['card2_icon'], ENT_QUOTES, 'UTF-8'); ?>">
                     <?php endif; ?>
                 </div>
                 
                 <div class="form-group">
                     <label for="card2_title">Título do Card 2:</label>
-                    <input type="text" class="form-control" id="card2_title" name="card2_title" value="<?php echo isset($config['card2_title']) ? htmlspecialchars($config['card2_title']) : ''; ?>">
+                    <input type="text" class="form-control" id="card2_title" name="card2_title" value="<?php echo isset($config['card2_title']) ? htmlspecialchars($config['card2_title'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                 </div>
                 
                 <div class="form-group">
                     <label for="card2_description">Descrição do Card 2:</label>
-                    <textarea class="form-control" id="card2_description" name="card2_description" rows="3"><?php echo isset($config['card2_description']) ? htmlspecialchars($config['card2_description']) : ''; ?></textarea>
+                    <textarea class="form-control" id="card2_description" name="card2_description" rows="3"><?php echo isset($config['card2_description']) ? htmlspecialchars($config['card2_description'], ENT_QUOTES, 'UTF-8') : ''; ?></textarea>
                 </div>
             </div>
             
@@ -374,18 +374,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <small class="form-text text-muted">
                             Arquivo atual: <?php echo basename($config['card3_icon']); ?>
                         </small>
-                        <input type="hidden" name="card3_icon_atual" value="<?php echo htmlspecialchars($config['card3_icon']); ?>">
+                        <input type="hidden" name="card3_icon_atual" value="<?php echo htmlspecialchars($config['card3_icon'], ENT_QUOTES, 'UTF-8'); ?>">
                     <?php endif; ?>
                 </div>
                 
                 <div class="form-group">
                     <label for="card3_title">Título do Card 3:</label>
-                    <input type="text" class="form-control" id="card3_title" name="card3_title" value="<?php echo isset($config['card3_title']) ? htmlspecialchars($config['card3_title']) : ''; ?>">
+                    <input type="text" class="form-control" id="card3_title" name="card3_title" value="<?php echo isset($config['card3_title']) ? htmlspecialchars($config['card3_title'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                 </div>
                 
                 <div class="form-group">
                     <label for="card3_description">Descrição do Card 3:</label>
-                    <textarea class="form-control" id="card3_description" name="card3_description" rows="3"><?php echo isset($config['card3_description']) ? htmlspecialchars($config['card3_description']) : ''; ?></textarea>
+                    <textarea class="form-control" id="card3_description" name="card3_description" rows="3"><?php echo isset($config['card3_description']) ? htmlspecialchars($config['card3_description'], ENT_QUOTES, 'UTF-8') : ''; ?></textarea>
                 </div>
             </div>
             
@@ -398,25 +398,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <small class="form-text text-muted">
                             Arquivo atual: <?php echo basename($config['feature_image']); ?>
                         </small>
-                        <input type="hidden" name="feature_image_atual" value="<?php echo htmlspecialchars($config['feature_image']); ?>">
+                        <input type="hidden" name="feature_image_atual" value="<?php echo htmlspecialchars($config['feature_image'], ENT_QUOTES, 'UTF-8'); ?>">
                     <?php endif; ?>
                 </div>
                 
                 <div class="form-group">
                     <label for="feature_title">Título do Benefício:</label>
-                    <input type="text" class="form-control" id="feature_title" name="feature_title" value="<?php echo isset($config['feature_title']) ? htmlspecialchars($config['feature_title']) : ''; ?>">
+                    <input type="text" class="form-control" id="feature_title" name="feature_title" value="<?php echo isset($config['feature_title']) ? htmlspecialchars($config['feature_title'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                 </div>
                 
                 <div class="form-group">
                     <label for="feature_description">Descrição do Benefício:</label>
-                    <textarea class="form-control" id="feature_description" name="feature_description" rows="3"><?php echo isset($config['feature_description']) ? htmlspecialchars($config['feature_description']) : ''; ?></textarea>
+                    <textarea class="form-control" id="feature_description" name="feature_description" rows="3"><?php echo isset($config['feature_description']) ? htmlspecialchars($config['feature_description'], ENT_QUOTES, 'UTF-8') : ''; ?></textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Itens de Benefícios:</label>
                     <?php foreach ($feature_items_array as $index => $item): ?>
                     <div class="input-group mb-2">
-                        <input type="text" class="form-control" name="feature_items[]" value="<?php echo htmlspecialchars($item); ?>" placeholder="Item de benefício <?php echo $index + 1; ?>">
+                        <input type="text" class="form-control" name="feature_items[]" value="<?php echo htmlspecialchars($item, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Item de benefício <?php echo $index + 1; ?>">
                         <?php if ($index > 2): ?>
                         <div class="input-group-append">
                             <button class="btn btn-outline-danger remove-item" type="button">Remover</button>
@@ -432,13 +432,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h4>Seção de Vendas</h4>
                 <div class="form-group">
                     <label for="texto_vendas">Texto de Vendas:</label>
-                    <textarea class="form-control" id="texto_vendas" name="texto_vendas" rows="3"><?php echo isset($config['texto_vendas']) ? htmlspecialchars($config['texto_vendas']) : ''; ?></textarea>
+                    <textarea class="form-control" id="texto_vendas" name="texto_vendas" rows="3"><?php echo isset($config['texto_vendas']) ? htmlspecialchars($config['texto_vendas'], ENT_QUOTES, 'UTF-8') : ''; ?></textarea>
                 </div>
                 
                 <div class="form-group">
                     <label for="video_youtube">Link do Vídeo (YouTube):</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" id="video_youtube" name="video_youtube" value="<?php echo isset($config['video_youtube']) ? htmlspecialchars($config['video_youtube']) : ''; ?>">
+                        <input type="text" class="form-control" id="video_youtube" name="video_youtube" value="<?php echo isset($config['video_youtube']) ? htmlspecialchars($config['video_youtube'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <div class="custom-control custom-checkbox">

@@ -17,7 +17,7 @@ if (!isset($conn)) {
     exit;
 }
 if ($conn->connect_error) {
-    echo '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erro de conexão com o banco: ' . htmlspecialchars($conn->connect_error) . '</p></div>';
+    echo '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erro de conexão com o banco: ' . htmlspecialchars($conn->connect_error, ENT_QUOTES, 'UTF-8') . '</p></div>';
     exit;
 }
 
@@ -48,7 +48,7 @@ $sql_servicos = "SELECT
 
 $stmt_servicos = $conn->prepare($sql_servicos);
 if (!$stmt_servicos) {
-    echo '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erro ao preparar consulta de serviços: ' . htmlspecialchars($conn->error) . '</p></div>';
+    echo '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Erro ao preparar consulta de serviços: ' . htmlspecialchars($conn->error, ENT_QUOTES, 'UTF-8') . '</p></div>';
     if (isset($conn) && $conn instanceof mysqli) { $conn->close(); }
     exit;
 }
@@ -59,9 +59,9 @@ $result_servicos = $stmt_servicos->get_result();
 $output_html = '';
 if ($result_servicos->num_rows > 0) {
     while ($servico = $result_servicos->fetch_assoc()) {
-        $servico_id_val = htmlspecialchars($servico['servico_id']);
-        $servico_nome_val = htmlspecialchars($servico['servico_nome']);
-        $servico_descricao_val = !empty($servico['servico_descricao']) ? htmlspecialchars($servico['servico_descricao']) : 'Sem descrição adicional.';
+        $servico_id_val = htmlspecialchars($servico['servico_id'], ENT_QUOTES, 'UTF-8');
+        $servico_nome_val = htmlspecialchars($servico['servico_nome'], ENT_QUOTES, 'UTF-8');
+        $servico_descricao_val = !empty($servico['servico_descricao']) ? htmlspecialchars($servico['servico_descricao'], ENT_QUOTES, 'UTF-8') : 'Sem descrição adicional.';
         $duracao_val = (int)$servico['duracao_final'];
         $valor_val = (float)$servico['valor_final'];
         $valor_formatado = number_format($valor_val, 2, ',', '.');

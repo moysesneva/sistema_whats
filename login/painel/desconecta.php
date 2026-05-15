@@ -86,7 +86,7 @@ if($situacao == 'ativado'){
                     <!-- Botão "Sim" envia o POST para rest.php -->
                     <form action="desconecta_confirma.php" method="POST">
                         <input type="hidden" name="acao" value="desconectar_chatbot">
-                        <input type="hidden" name="usuario_api" value="<?=$usuario_api;?>">
+                        <input type="hidden" name="usuario_api" value="<?= htmlspecialchars($usuario_api ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         <button type="submit" class="btn btn-danger btn-lg">Sim</button>
                     </form>
                 </div>
@@ -132,7 +132,7 @@ if($situacao == 'desativado'){
                     <!-- Botão "Sim" envia o POST para ativar_chatbot.php -->
                     <form action="ativar_chatbot.php" method="POST">
                         <input type="hidden" name="acao" value="ativar_chatbot">
-                        <input type="hidden" name="usuario_api" value="<?=$usuario_api;?>">
+                        <input type="hidden" name="usuario_api" value="<?= htmlspecialchars($usuario_api ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         <button type="submit" class="btn btn-success btn-lg">Sim</button>
                     </form>
                 </div>

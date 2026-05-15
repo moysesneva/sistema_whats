@@ -319,17 +319,17 @@ $api_python = "https://editacodigo.com.br/api2/";
     const loading = document.getElementById('loading');
 
     // Variáveis vindas do PHP
-    const webhookNode = "<?php echo $webhook_node; ?>";
-    const webhookMensagens = "<?php echo $webhook_mensagens; ?>";
-    const webhookValidate = "<?php echo $webhook_validate; ?>";
-    const tokenNode = "<?php echo $token_node; ?>";
-    const portaNode = "<?php echo $porta_node; ?>";
+    const webhookNode = <?php echo json_encode($webhook_node ?? ''); ?>;
+    const webhookMensagens = <?php echo json_encode($webhook_mensagens ?? ''); ?>;
+    const webhookValidate = <?php echo json_encode($webhook_validate ?? ''); ?>;
+    const tokenNode = <?php echo json_encode($token_node ?? ''); ?>;
+    const portaNode = <?php echo json_encode($porta_node ?? ''); ?>;
 
-    const webhookPython = "<?php echo $webhook_python; ?>";
-    const tokenPython = "<?php echo $token_python; ?>";
-    const portaPython = "<?php echo $porta_python; ?>";
-    const sitePython = "<?php echo $site_python; ?>";
-    const apiPython = "<?php echo $api_python; ?>";
+    const webhookPython = <?php echo json_encode($webhook_python ?? ''); ?>;
+    const tokenPython = <?php echo json_encode($token_python ?? ''); ?>;
+    const portaPython = <?php echo json_encode($porta_python ?? ''); ?>;
+    const sitePython = <?php echo json_encode($site_python ?? ''); ?>;
+    const apiPython = <?php echo json_encode($api_python ?? ''); ?>;
 
     function gerarComando(tipoAPI) {
         if (tipoAPI === 'Node') {
@@ -556,10 +556,10 @@ if($tipo == 4){
     <div class="row">
         <div class="col-md-6">
             <form action="finalizar_instalacao.php" method="POST">
-                <input type="hidden" name="ip_vps" value="<?= $ip_vps; ?>">
-                <input type="hidden" name="porta" value="<?= $porta ? $porta : '2222'; ?>">
-                <input type="hidden" name="chave" value="<?= $chave; ?>">
-                <input type="hidden" name="webhook" value="<?= $webhook; ?>">
+                <input type="hidden" name="ip_vps" value="<?= htmlspecialchars($ip_vps ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="porta" value="<?= htmlspecialchars($porta ? $porta : '2222', ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="chave" value="<?= htmlspecialchars($chave ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="webhook" value="<?= htmlspecialchars($webhook ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                 <button type="submit" class="btn btn-success btn-lg btn-block mb-3">
                     <i class="feather icon-check-circle"></i> Finalizar Instalação
                 </button>
@@ -662,7 +662,7 @@ if (empty($chave) || empty($webhook) || isset($_GET['modo']) && $_GET['modo'] ==
                         <span class="input-group-text"><i class="feather icon-server"></i></span>
                     </div>
                     <input type="text" class="form-control" id="ip_vps" name="ip_vps" 
-                           value="<?php if(isset($ip_vps)) { echo $ip_vps; } ?>" 
+                           value="<?php if(isset($ip_vps)) { echo htmlspecialchars($ip_vps, ENT_QUOTES, 'UTF-8'); } ?>" 
                            placeholder="Digite o IP da VPS (ex: 192.168.1.1)" required>
                 </div>
                 <small class="form-text text-muted">Digite o endereço IP da sua VPS onde o banco de dados está hospedado.</small>
@@ -675,7 +675,7 @@ if (empty($chave) || empty($webhook) || isset($_GET['modo']) && $_GET['modo'] ==
                         <span class="input-group-text"><i class="feather icon-hash"></i></span>
                     </div>
                     <input type="text" class="form-control" id="porta" name="porta" 
-                           value="<?php if(isset($porta)) { echo $porta; } else { echo '2222'; } ?>" 
+                           value="<?php if(isset($porta)) { echo htmlspecialchars($porta, ENT_QUOTES, 'UTF-8'); } else { echo '2222'; } ?>" 
                            placeholder="Digite a porta (ex: 2222)" required>
                 </div>
                 <small class="form-text text-muted">Digite a porta utilizada para conexão com o servidor.</small>
@@ -688,7 +688,7 @@ if (empty($chave) || empty($webhook) || isset($_GET['modo']) && $_GET['modo'] ==
                         <span class="input-group-text"><i class="feather icon-globe"></i></span>
                     </div>
                     <input type="url" class="form-control" id="webhook" name="webhook"
-                           value="<?php if(isset($webhook)) { echo $webhook; } ?>" 
+                           value="<?php if(isset($webhook)) { echo htmlspecialchars($webhook, ENT_QUOTES, 'UTF-8'); } ?>" 
                            placeholder="Digite o URL do Webhook (ex: https://seusite.com/webhook)" required>
                 </div>
                 <small class="form-text text-muted">Insira o URL completo do seu site ou webhook.</small>
@@ -701,7 +701,7 @@ if (empty($chave) || empty($webhook) || isset($_GET['modo']) && $_GET['modo'] ==
                         <span class="input-group-text"><i class="feather icon-key"></i></span>
                     </div>
                     <input type="text" class="form-control" id="chave" name="chave"  
-                           value="<?php if(isset($chave)) { echo $chave; } ?>" 
+                           value="<?php if(isset($chave)) { echo htmlspecialchars($chave, ENT_QUOTES, 'UTF-8'); } ?>" 
                            placeholder="Digite a chave da API" required>
                 </div>
                 <small class="form-text text-muted">

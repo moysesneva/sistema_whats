@@ -227,16 +227,16 @@ if($autorizado != 2){
                     ?>
                         <tr>
                             <td>
-                                <div class="contact-name"><?php echo htmlspecialchars($nome); ?></div>
+                                <div class="contact-name"><?php echo htmlspecialchars($nome, ENT_QUOTES, 'UTF-8'); ?></div>
                                 <?php if($tentativas_contato > 0) { ?>
                                 <small style="color: #ff6b6b;"><?php echo $tentativas_contato; ?> tentativa(s) após bloqueio</small>
                                 <?php } ?>
                             </td>
                             <td>
-                                <div class="contact-phone"><?php echo htmlspecialchars($telefone_exibicao); ?></div>
+                                <div class="contact-phone"><?php echo htmlspecialchars($telefone_exibicao, ENT_QUOTES, 'UTF-8'); ?></div>
                             </td>
                             <td>
-                                <span class="motivo-badge"><?php echo htmlspecialchars($motivo_bloqueio); ?></span>
+                                <span class="motivo-badge"><?php echo htmlspecialchars($motivo_bloqueio, ENT_QUOTES, 'UTF-8'); ?></span>
                             </td>
                             <td>
                                 <div style="color: #aaa;"><?php echo $data_bloqueio; ?></div>
@@ -251,7 +251,7 @@ if($autorizado != 2){
                                     <?php } ?>
                                   
                                     <button type="button" class="btn btn-sm btn-delete" 
-                                            onclick="confirmarRemocao(<?php echo $id_contato; ?>, '<?php echo addslashes($nome); ?>')" 
+                                            onclick="confirmarRemocao(<?php echo (int)$id_contato; ?>, '<?php echo htmlspecialchars(addslashes($nome), ENT_QUOTES, 'UTF-8'); ?>')" 
                                             title="Remover da Lista">
                                         <i class="material-icons">delete</i>
                                     </button>
@@ -288,7 +288,7 @@ if($autorizado != 2){
             <form id="formAddContato" action="processa_lista_negra.php" method="POST">
                 <div class="modal-body">
                     <input type="hidden" name="acao" value="adicionar">
-                    <input type="hidden" name="usuario_api" value="<?php echo htmlspecialchars($usuario_api); ?>">
+                    <input type="hidden" name="usuario_api" value="<?php echo htmlspecialchars($usuario_api, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="form-group">
                         <label for="nome">Nome/Identificação do Contato</label>
@@ -345,7 +345,7 @@ if($autorizado != 2){
                 <div class="modal-body">
                     <input type="hidden" name="acao" value="editar">
                     <input type="hidden" name="id_contato" id="edit_id_contato">
-                    <input type="hidden" name="usuario_api" value="<?php echo htmlspecialchars($usuario_api); ?>">
+                    <input type="hidden" name="usuario_api" value="<?php echo htmlspecialchars($usuario_api, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="form-group">
                         <label for="edit_nome">Nome/Identificação do Contato</label>
@@ -406,7 +406,7 @@ if($autorizado != 2){
                 <form id="deleteForm" action="processa_lista_negra.php" method="POST" style="display: inline;">
                     <input type="hidden" name="acao" value="excluir">
                     <input type="hidden" id="deleteContatoId" name="id_contato" value="">
-                    <input type="hidden" name="usuario_api" value="<?php echo htmlspecialchars($usuario_api); ?>">
+                    <input type="hidden" name="usuario_api" value="<?php echo htmlspecialchars($usuario_api, ENT_QUOTES, 'UTF-8'); ?>">
                     <button type="submit" class="btn btn-delete">
                         <i class="material-icons">delete_forever</i>
                         Confirmar Remoção

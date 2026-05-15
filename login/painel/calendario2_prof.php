@@ -107,7 +107,7 @@ mysqli_close($conn);
             
             <form method="GET" action="" class="date-filter">
                 <label for="data">Selecione uma data:</label>
-                <input type="date" name="data" id="data" class="date-input" value="<?= htmlspecialchars($_GET['data'] ?? date('Y-m-d')) ?>">
+                <input type="date" name="data" id="data" class="date-input" value="<?= htmlspecialchars($_GET['data'] ?? date('Y-m-d', ENT_QUOTES, 'UTF-8')) ?>">
                 <button type="submit" class="btn-search">
                     <span class="material-icons">search</span>
                     Buscar
@@ -169,19 +169,19 @@ mysqli_close($conn);
                         
                         echo '<div class="appointment-header">';
                         echo '<div class="client-info">';
-                        echo '<div class="client-name">' . htmlspecialchars($cliente_nome) . '</div>';
-                        echo '<div class="service-name">' . htmlspecialchars($servico) . '</div>';
+                        echo '<div class="client-name">' . htmlspecialchars($cliente_nome, ENT_QUOTES, 'UTF-8') . '</div>';
+                        echo '<div class="service-name">' . htmlspecialchars($servico, ENT_QUOTES, 'UTF-8') . '</div>';
                         echo '</div>';
                         echo '<div class="appointment-time">';
                         echo '<span class="material-icons">schedule</span>';
-                        echo htmlspecialchars($horario);
+                        echo htmlspecialchars($horario, ENT_QUOTES, 'UTF-8');
                         echo '</div>';
                         echo '</div>';
 
                         echo '<div class="appointment-details">';
                         echo '<div class="detail-item">';
                         echo '<span class="material-icons detail-icon">person</span>';
-                        echo '<span class="detail-text">Profissional: ' . htmlspecialchars($profissional_nome) . '</span>';
+                        echo '<span class="detail-text">Profissional: ' . htmlspecialchars($profissional_nome, ENT_QUOTES, 'UTF-8') . '</span>';
                         echo '</div>';
                         echo '<div class="detail-item">';
                         echo '<span class="material-icons detail-icon">event</span>';
@@ -196,7 +196,7 @@ mysqli_close($conn);
                         echo '</div>';
                         
                         echo '<div class="action-buttons">';
-                        echo '<a href="' . htmlspecialchars($whatsapp_link) . '" target="_blank" class="btn-whatsapp">';
+                        echo '<a href="' . htmlspecialchars($whatsapp_link, ENT_QUOTES, 'UTF-8') . '" target="_blank" class="btn-whatsapp">';
                         echo '<span class="material-icons">chat</span>';
                         echo 'WhatsApp';
                         echo '</a>';

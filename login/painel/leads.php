@@ -302,11 +302,11 @@ $totalPaginas = ceil($totalRegistros / $registrosPorPagina);
         }
   ?>
     <div class="lead-row">
-      <div><?= htmlspecialchars($row['nome']) ?></div>
-      <div><?= htmlspecialchars($row['email']) ?></div>
+      <div><?= htmlspecialchars($row['nome'], ENT_QUOTES, 'UTF-8') ?></div>
+      <div><?= htmlspecialchars($row['email'], ENT_QUOTES, 'UTF-8') ?></div>
       <div>
         <a href="https://wa.me/<?= $whatsClean ?>" target="_blank" class="whatsapp-link">
-          <?= htmlspecialchars($row['whats']) ?>
+          <?= htmlspecialchars($row['whats'], ENT_QUOTES, 'UTF-8') ?>
         </a>
       </div>
       <div><?= $dataBR ?></div>

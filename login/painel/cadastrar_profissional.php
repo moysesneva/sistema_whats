@@ -505,7 +505,7 @@ if($autorizado != 2){
                     $query_esp = $stmt_esp->get_result();
                     $stmt_esp->close();
                     while($row_esp = $query_esp->fetch_array()) {
-                        $especialidade = htmlspecialchars($row_esp['especialidades']);
+                        $especialidade = htmlspecialchars($row_esp['especialidades'], ENT_QUOTES, 'UTF-8');
                         echo '<option value="'.$especialidade.'">'.$especialidade.'</option>';
                     }
                     ?>
@@ -555,9 +555,9 @@ if($autorizado != 2){
                 if($query_busca_profissional->num_rows > 0){
                     while($rows_profissional = $query_busca_profissional->fetch_assoc()) {
                         $profissional_id = $rows_profissional['id'];
-                        $profissional_nome = htmlspecialchars($rows_profissional['profissional_nome']);
-                        $profissional_cargo = htmlspecialchars($rows_profissional['profissional_cargo']);
-                        $telefone = htmlspecialchars($rows_profissional['telefone']);
+                        $profissional_nome = htmlspecialchars($rows_profissional['profissional_nome'], ENT_QUOTES, 'UTF-8');
+                        $profissional_cargo = htmlspecialchars($rows_profissional['profissional_cargo'], ENT_QUOTES, 'UTF-8');
+                        $telefone = htmlspecialchars($rows_profissional['telefone'], ENT_QUOTES, 'UTF-8');
                 ?>
                 <tr>
                     <td>
@@ -592,7 +592,7 @@ if($autorizado != 2){
                     </td>
                     <td class="text-center">
                         <form action="deletar_profissional.php" method="post" class="d-inline">
-                            <input type="hidden" name="id" value="<?= $profissional_id ?>">
+                            <input type="hidden" name="id" value="<?= (int)$profissional_id ?>">
                             <button type="submit" class="btn btn-danger-action btn-action" onclick="return confirm('Tem certeza que deseja excluir este profissional?')" title="Deletar Profissional">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
@@ -678,7 +678,7 @@ if($autorizado != 2){
                             $query_esp_modal = $stmt_epm->get_result();
                             $stmt_epm->close();
                             while($row_esp = $query_esp_modal->fetch_array()) {
-                                $especialidade = htmlspecialchars($row_esp['especialidades']);
+                                $especialidade = htmlspecialchars($row_esp['especialidades'], ENT_QUOTES, 'UTF-8');
                                 echo '<option value="'.$especialidade.'">'.$especialidade.'</option>';
                             }
                             ?>

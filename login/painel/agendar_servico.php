@@ -215,7 +215,7 @@ mysqli_stmt_close($stmt_busca_config);
                                                 
                                                 <div class="section-title">
                                                     <i class="fas fa-calendar-plus"></i>
-                                                    Olá <?= htmlspecialchars(explode(' ', $nome_cliente)[0]); ?>! Vamos agendar seu atendimento.
+                                                    Olá <?= htmlspecialchars(explode(' ', $nome_cliente)[0], ENT_QUOTES, 'UTF-8'); ?>! Vamos agendar seu atendimento.
                                                 </div>
                                                 
                                                 <form action="processar_agendamento_servico.php" method="POST" id="formAgendamento">
@@ -232,7 +232,7 @@ mysqli_stmt_close($stmt_busca_config);
                                                                     $result_prof = mysqli_stmt_get_result($stmt_prof);
                                                                     if ($result_prof) {
                                                                         while ($row_prof = mysqli_fetch_assoc($result_prof)) {
-                                                                            echo '<option value="'. htmlspecialchars($row_prof['id']).'">'.htmlspecialchars($row_prof['profissional_nome']) .' - '. htmlspecialchars($row_prof['profissional_cargo']) .'</option>';
+                                                                            echo '<option value="'. htmlspecialchars($row_prof['id'], ENT_QUOTES, 'UTF-8').'">'.htmlspecialchars($row_prof['profissional_nome'], ENT_QUOTES, 'UTF-8') .' - '. htmlspecialchars($row_prof['profissional_cargo'], ENT_QUOTES, 'UTF-8') .'</option>';
                                                                         }
                                                                     }
                                                                     mysqli_stmt_close($stmt_prof);
@@ -254,8 +254,8 @@ mysqli_stmt_close($stmt_busca_config);
                                                     
                                                     <div class="booking-summary" id="resumo-agendamento" style="display: none;">
                                                         <h4><i class="fas fa-receipt"></i> Resumo do Agendamento</h4>
-                                                        <div class="summary-item"><span>Cliente:</span><span><?= htmlspecialchars($nome_cliente); ?></span></div>
-                                                        <div class="summary-item"><span>Telefone:</span><span><?= htmlspecialchars($telefone_cliente); ?></span></div>
+                                                        <div class="summary-item"><span>Cliente:</span><span><?= htmlspecialchars($nome_cliente, ENT_QUOTES, 'UTF-8'); ?></span></div>
+                                                        <div class="summary-item"><span>Telefone:</span><span><?= htmlspecialchars($telefone_cliente, ENT_QUOTES, 'UTF-8'); ?></span></div>
                                                         <div class="summary-item"><span>Profissional:</span><span id="resumo-profissional">-</span></div>
                                                         <div class="summary-item"><span>Serviço:</span><span id="resumo-servico">-</span></div>
                                                         <div class="summary-item"><span>Data:</span><span id="resumo-data">-</span></div>
@@ -264,10 +264,10 @@ mysqli_stmt_close($stmt_busca_config);
                                                         <div class="summary-item"><span>Valor Total:</span><span id="resumo-valor">R$ 0,00</span></div>
                                                     </div>
                                                     
-                                                    <input type="hidden" name="usuario_api" value="<?= htmlspecialchars($usuario_api ?? ''); ?>">
-                                                    <input type="hidden" name="idd" value="<?= htmlspecialchars($idd_agendamento); ?>">
-                                                    <input type="hidden" name="cliente_nome" value="<?= htmlspecialchars($nome_cliente); ?>">
-                                                    <input type="hidden" name="cliente_telefone" value="<?= htmlspecialchars($telefone_cliente); ?>">
+                                                    <input type="hidden" name="usuario_api" value="<?= htmlspecialchars($usuario_api ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                                    <input type="hidden" name="idd" value="<?= htmlspecialchars($idd_agendamento, ENT_QUOTES, 'UTF-8'); ?>">
+                                                    <input type="hidden" name="cliente_nome" value="<?= htmlspecialchars($nome_cliente, ENT_QUOTES, 'UTF-8'); ?>">
+                                                    <input type="hidden" name="cliente_telefone" value="<?= htmlspecialchars($telefone_cliente, ENT_QUOTES, 'UTF-8'); ?>">
                                                     <input type="hidden" id="servico_selecionado" name="servico_id" required>
                                                     <input type="hidden" id="duracao_servico" name="duracao_servico">
                                                     <input type="hidden" id="valor_servico" name="valor_servico">

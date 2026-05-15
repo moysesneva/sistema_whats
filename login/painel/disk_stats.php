@@ -235,7 +235,7 @@ $sz_total     = $sz_logs_dir + $sz_log_proc + $sz_log_recv + $sz_uploads;
                     <div class="sweep-info">
                         <div class="stat-row">
                             <span class="stat-label"><i class="feather icon-clock"></i> Última limpeza</span>
-                            <strong><?= htmlspecialchars($status_logs['ultima_varredura']) ?></strong>
+                            <strong><?= htmlspecialchars($status_logs['ultima_varredura'], ENT_QUOTES, 'UTF-8') ?></strong>
                         </div>
                         <div class="stat-row">
                             <span class="stat-label"><i class="feather icon-trash-2"></i> Arquivos removidos</span>
@@ -282,7 +282,7 @@ $sz_total     = $sz_logs_dir + $sz_log_proc + $sz_log_recv + $sz_uploads;
                     <div class="sweep-info">
                         <div class="stat-row">
                             <span class="stat-label"><i class="feather icon-clock"></i> Última limpeza</span>
-                            <strong><?= htmlspecialchars($status_uploads['ultima_varredura']) ?></strong>
+                            <strong><?= htmlspecialchars($status_uploads['ultima_varredura'], ENT_QUOTES, 'UTF-8') ?></strong>
                         </div>
                         <div class="stat-row">
                             <span class="stat-label"><i class="feather icon-trash-2"></i> Arquivos removidos</span>

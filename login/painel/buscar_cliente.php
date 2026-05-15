@@ -54,7 +54,7 @@ if (mysqli_num_rows($query_busca_clientes) > 0) {
         $nome_cliente = htmlspecialchars($cliente['nome'], ENT_QUOTES);
         $telefone_cliente = htmlspecialchars($cliente['telefone'], ENT_QUOTES);
         echo "<li class='list-group-item' onclick=\"preencherCampos('$nome_cliente', '$telefone_cliente')\">";
-        echo "Nome: " . htmlspecialchars($cliente['nome']) . " - Telefone: " . htmlspecialchars($cliente['telefone']);
+        echo "Nome: " . htmlspecialchars($cliente['nome'], ENT_QUOTES, 'UTF-8') . " - Telefone: " . htmlspecialchars($cliente['telefone'], ENT_QUOTES, 'UTF-8');
         echo "</li>";
     }
     echo "</ul>";

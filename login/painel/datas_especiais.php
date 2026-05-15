@@ -249,12 +249,12 @@ if (isset($_POST['deletar'])) {
                                 $data_excluida = !empty($row['data_excluida']) ? date('d/m/Y', strtotime($row['data_excluida'])) : '';
 
                                 echo '<tr>';
-                                echo '<td><strong>' . htmlspecialchars($data_excluida) . '</strong></td>';
-                                echo '<td>' . htmlspecialchars($row['profissional']) . '</td>';
-                                echo '<td>' . htmlspecialchars($row['motivo']) . '</td>';
+                                echo '<td><strong>' . htmlspecialchars($data_excluida, ENT_QUOTES, 'UTF-8') . '</strong></td>';
+                                echo '<td>' . htmlspecialchars($row['profissional'], ENT_QUOTES, 'UTF-8') . '</td>';
+                                echo '<td>' . htmlspecialchars($row['motivo'], ENT_QUOTES, 'UTF-8') . '</td>';
                                 echo '<td>';
                                 echo '<form method="post" action="" style="display:inline;">';
-                                echo '<input type="hidden" name="id" value="' . htmlspecialchars($row['id']) . '">';
+                                echo '<input type="hidden" name="id" value="' . htmlspecialchars($row['id'], ENT_QUOTES, 'UTF-8') . '">';
                                 echo '<button type="submit" name="deletar" class="btn btn-modern btn-danger-modern" onclick="return confirm(\'Tem certeza que deseja excluir esta data especial?\')">';
                                 echo '<i class="fas fa-trash"></i> Excluir';
                                 echo '</button>';

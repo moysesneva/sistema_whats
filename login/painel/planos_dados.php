@@ -141,7 +141,7 @@ $res_plans = mysqli_query($conn, "SELECT * FROM planos_online ORDER BY id");
                       <input type="hidden" name="feature_id" value="<?= $feat['id']; ?>">
                       <td>
                         <input type="text" name="feature" class="form-control"
-                               value="<?= htmlspecialchars($feat['feature']); ?>" required>
+                               value="<?= htmlspecialchars($feat['feature'], ENT_QUOTES, 'UTF-8'); ?>" required>
                       </td>
                       <td>
                         <button type="submit" name="update_feature" value="<?= $feat['id']; ?>" class="btn btn-sm btn-primary">

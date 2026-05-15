@@ -157,10 +157,10 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
                     ?>
                         <tr>
                             <td>
-                                <div class="client-name"><?php echo htmlspecialchars($nome); ?></div>
+                                <div class="client-name"><?php echo htmlspecialchars($nome, ENT_QUOTES, 'UTF-8'); ?></div>
                             </td>
                             <td>
-                                <div class="client-phone"><?php echo htmlspecialchars($telefone_limpo); ?></div>
+                                <div class="client-phone"><?php echo htmlspecialchars($telefone_limpo, ENT_QUOTES, 'UTF-8'); ?></div>
                             </td>
                             <td>
                                 <div class="action-buttons">
@@ -169,12 +169,12 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
                                         <i class="fab fa-whatsapp"></i>
                                     </a>
                                     <button type="button" class="btn btn-sm btn-edit" 
-                                            onclick="editarCliente(<?php echo $id_cliente; ?>, '<?php echo addslashes($nome); ?>', '<?php echo addslashes($telefone); ?>', '<?php echo addslashes($endereco); ?>')" 
+                                            onclick="editarCliente(<?php echo (int)$id_cliente; ?>, '<?php echo htmlspecialchars(addslashes($nome), ENT_QUOTES, 'UTF-8'); ?>', '<?php echo htmlspecialchars(addslashes($telefone), ENT_QUOTES, 'UTF-8'); ?>', '<?php echo htmlspecialchars(addslashes($endereco), ENT_QUOTES, 'UTF-8'); ?>')" 
                                             title="Editar Cliente">
                                         <i class="material-icons">edit</i>
                                     </button>
                                     <button type="button" class="btn btn-sm btn-delete" 
-                                            onclick="confirmarExclusao(<?php echo $id_cliente; ?>, '<?php echo addslashes($nome); ?>')" 
+                                            onclick="confirmarExclusao(<?php echo (int)$id_cliente; ?>, '<?php echo htmlspecialchars(addslashes($nome), ENT_QUOTES, 'UTF-8'); ?>')" 
                                             title="Excluir Cliente">
                                         <i class="material-icons">delete</i>
                                     </button>
@@ -211,8 +211,8 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
             <form id="formAddCliente" action="processa_cliente.php" method="POST">
                 <div class="modal-body">
                     <input type="hidden" name="acao" value="adicionar">
-                    <input type="hidden" name="usuario_api" value="<?php echo $usuario_api; ?>">
-                    <input type="hidden" name="id_cliente" value="<?php echo $id_cliente; ?>">
+                    <input type="hidden" name="usuario_api" value="<?php echo htmlspecialchars($usuario_api, ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="id_cliente" value="<?php echo (int)$id_cliente; ?>">
                     
                     <div class="form-group">
                         <label for="nome">Nome do Cliente</label>
@@ -249,7 +249,7 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
                 <div class="modal-body">
                     <input type="hidden" name="acao" value="editar">
                     <input type="hidden" name="id_cliente" id="edit_id_cliente">
-                    <input type="hidden" name="usuario_api" value="<?php echo $usuario_api; ?>">
+                    <input type="hidden" name="usuario_api" value="<?php echo htmlspecialchars($usuario_api, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="form-group">
                         <label for="edit_nome">Nome do Cliente</label>
@@ -293,7 +293,7 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
                 <form id="deleteForm" action="processa_cliente.php" method="POST" style="display: inline;">
                     <input type="hidden" name="acao" value="excluir">
                     <input type="hidden" id="deleteClienteId" name="id_cliente" value="">
-                    <input type="hidden" name="usuario_api" value="<?php echo $usuario_api; ?>">
+                    <input type="hidden" name="usuario_api" value="<?php echo htmlspecialchars($usuario_api, ENT_QUOTES, 'UTF-8'); ?>">
                     <button type="submit" class="btn btn-delete">
                         <i class="material-icons">delete_forever</i>
                         Confirmar Exclusão

@@ -479,7 +479,7 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                     <i class="feather icon-trending-up f-left"></i>
                     <span><?=$servico_mais_vendido['vendas']?></span>
                 </h2>
-                <p class="m-b-0"><?=htmlspecialchars($servico_mais_vendido['nome'])?></p>
+                <p class="m-b-0"><?=htmlspecialchars($servico_mais_vendido['nome'], ENT_QUOTES, 'UTF-8')?></p>
             </div>
         </div>
     </div>
@@ -505,7 +505,7 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                     <i class="feather icon-trending-down f-left"></i>
                     <span><?=$servico_menos_vendido['vendas']?></span>
                 </h2>
-                <p class="m-b-0"><?=htmlspecialchars($servico_menos_vendido['nome'])?></p>
+                <p class="m-b-0"><?=htmlspecialchars($servico_menos_vendido['nome'], ENT_QUOTES, 'UTF-8')?></p>
             </div>
         </div>
     </div>
@@ -590,8 +590,8 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                                         mysqli_data_seek($query_profissionais, 0);
                                         while($prof = mysqli_fetch_array($query_profissionais)): 
                                     ?>
-                                        <option value="<?=htmlspecialchars($prof['profissional_nome'])?>" <?=($prof['profissional_nome'] == $profissional_filtro) ? 'selected' : ''?>>
-                                            <?=htmlspecialchars($prof['profissional_nome'])?>
+                                        <option value="<?=htmlspecialchars($prof['profissional_nome'], ENT_QUOTES, 'UTF-8')?>" <?=($prof['profissional_nome'] == $profissional_filtro) ? 'selected' : ''?>>
+                                            <?=htmlspecialchars($prof['profissional_nome'], ENT_QUOTES, 'UTF-8')?>
                                         </option>
                                     <?php 
                                         endwhile; 
@@ -811,7 +811,7 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
             <div class="card-block text-center">
                 <?php if($melhor_profissional['valor'] > 0): ?>
                     <h3 class="text-c-blue">R$ <?=number_format($melhor_profissional['valor'], 2, ',', '.')?></h3>
-                    <p class="text-muted"><strong><?=htmlspecialchars($melhor_profissional['nome'])?></strong></p>
+                    <p class="text-muted"><strong><?=htmlspecialchars($melhor_profissional['nome'], ENT_QUOTES, 'UTF-8')?></strong></p>
                     <?php 
                     $perc_melhor_prof = $total_geral > 0 ? ($melhor_profissional['valor'] / $total_geral) * 100 : 0;
                     ?>
@@ -922,14 +922,14 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                             <tr class="<?=$classe_linha?>" data-vendas="<?=$servico['total_vendas']?>" data-faturamento="<?=$servico['faturamento_total']?>" data-ticket="<?=$servico['ticket_medio']?>">
                                 <td class="text-center"><?=$icone_ranking?></td>
                                 <td>
-                                    <strong><?=htmlspecialchars($servico['nome'])?></strong>
+                                    <strong><?=htmlspecialchars($servico['nome'], ENT_QUOTES, 'UTF-8')?></strong>
                                     <?php if (!empty($servico['descricao'])): ?>
-                                        <br><small class="text-muted"><?=htmlspecialchars($servico['descricao'])?></small>
+                                        <br><small class="text-muted"><?=htmlspecialchars($servico['descricao'], ENT_QUOTES, 'UTF-8')?></small>
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php if (!empty($servico['categoria'])): ?>
-                                        <span class="badge badge-light"><?=htmlspecialchars($servico['categoria'])?></span>
+                                        <span class="badge badge-light"><?=htmlspecialchars($servico['categoria'], ENT_QUOTES, 'UTF-8')?></span>
                                     <?php else: ?>
                                         <span class="text-muted">-</span>
                                     <?php endif; ?>
@@ -1016,7 +1016,7 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                             ?>
                             <tr>
                                 <td class="text-center"><?=$icone_ranking?></td>
-                                <td><strong><?=htmlspecialchars($nome)?></strong></td>
+                                <td><strong><?=htmlspecialchars($nome, ENT_QUOTES, 'UTF-8')?></strong></td>
                                 <td class="text-c-green font-weight-bold">R$ <?=number_format($dados['total'], 2, ',', '.')?></td>
                                 <td><span class="badge badge-primary"><?=$dados['quantidade']?></span></td>
                                 <td>R$ <?=number_format($ticket_medio, 2, ',', '.')?></td>
@@ -1104,9 +1104,9 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                             ?>
                             <tr class="linha-status" data-status="<?=$status_class?>">
                                 <td><?=date('d/m/Y', strtotime($row['data']))?></td>
-                                <td><?=htmlspecialchars($row['cliente_nome'])?></td>
-                                <td><?=htmlspecialchars($row['profissional_nome'])?></td>
-                                <td><?=$row['duracao_minutos']?>min</td>
+                                <td><?=htmlspecialchars($row['cliente_nome'], ENT_QUOTES, 'UTF-8')?></td>
+                                <td><?=htmlspecialchars($row['profissional_nome'], ENT_QUOTES, 'UTF-8')?></td>
+                                <td><?=(int)$row['duracao_minutos']?>min</td>
                                 <td class="text-c-green font-weight-bold">R$ <?=number_format($row['valor_servico'], 2, ',', '.')?></td>
                                 <td><?=$status_badge?></td>
                               
@@ -1626,16 +1626,16 @@ function exportarPDF() {
     doc.setFontSize(14);
     doc.text('Análise de Serviços:', 20, 128);
     doc.setFontSize(10);
-    doc.text('• Serviço Mais Vendido: <?=htmlspecialchars($servico_mais_vendido["nome"])?> (<?=$servico_mais_vendido["vendas"]?> vendas)', 25, 138);
+    doc.text('• Serviço Mais Vendido: <?=htmlspecialchars($servico_mais_vendido["nome"], ENT_QUOTES, 'UTF-8')?> (<?=$servico_mais_vendido["vendas"]?> vendas)', 25, 138);
     doc.text('• Faturamento do Top Serviço: R$ <?=number_format($servico_mais_vendido["faturamento"], 2, ",", ".")?>', 25, 145);
-    doc.text('• Serviço Menos Vendido: <?=htmlspecialchars($servico_menos_vendido["nome"])?> (<?=$servico_menos_vendido["vendas"]?> vendas)', 25, 152);
+    doc.text('• Serviço Menos Vendido: <?=htmlspecialchars($servico_menos_vendido["nome"], ENT_QUOTES, 'UTF-8')?> (<?=$servico_menos_vendido["vendas"]?> vendas)', 25, 152);
     doc.text('• Total de Serviços Ativos: <?=count($servicos_vendidos)?>', 25, 159);
     
     // Melhor Profissional
     doc.setFontSize(14);
     doc.text('Melhor Profissional:', 20, 173);
     doc.setFontSize(10);
-    doc.text('• Nome: <?=htmlspecialchars($melhor_profissional["nome"])?>', 25, 183);
+    doc.text('• Nome: <?=htmlspecialchars($melhor_profissional["nome"], ENT_QUOTES, 'UTF-8')?>', 25, 183);
     doc.text('• Faturamento: R$ <?=number_format($melhor_profissional["valor"], 2, ",", ".")?>', 25, 190);
     
     // Rodapé

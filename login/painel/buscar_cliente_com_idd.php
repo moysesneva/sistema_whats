@@ -69,21 +69,21 @@ if (strlen($nome) >= 2 || strlen($telefone) >= 2) {
                 
                 echo '<div class="cliente-resultado" onclick="selecionarCliente(' . 
                      $row['id'] . ', \'' . 
-                     htmlspecialchars($row['nome']) . '\', \'' . 
-                     htmlspecialchars($row['telefone']) . '\')">';
+                     htmlspecialchars($row['nome'], ENT_QUOTES, 'UTF-8') . '\', \'' . 
+                     htmlspecialchars($row['telefone'], ENT_QUOTES, 'UTF-8') . '\')">';
                 
                 echo '<div class="d-flex justify-content-between align-items-start">';
                 echo '<div>';
-                echo '<h6 class="mb-1"><i class="fas fa-user me-2"></i>' . htmlspecialchars($row['nome']) . '</h6>';
-                echo '<p class="mb-1"><i class="fas fa-phone me-2"></i>' . htmlspecialchars($row['telefone']) . '</p>';
+                echo '<h6 class="mb-1"><i class="fas fa-user me-2"></i>' . htmlspecialchars($row['nome'], ENT_QUOTES, 'UTF-8') . '</h6>';
+                echo '<p class="mb-1"><i class="fas fa-phone me-2"></i>' . htmlspecialchars($row['telefone'], ENT_QUOTES, 'UTF-8') . '</p>';
                 if ($row['usuario_api']) {
-                    echo '<small class="text-muted"><i class="fas fa-key me-1"></i>API: ' . htmlspecialchars($row['usuario_api']) . '</small>';
+                    echo '<small class="text-muted"><i class="fas fa-key me-1"></i>API: ' . htmlspecialchars($row['usuario_api'], ENT_QUOTES, 'UTF-8') . '</small>';
                 }
                 echo '</div>';
                 echo '<div class="text-end">';
                 echo '<i class="' . $iconClass . '" title="' . $statusCliente . '"></i>';
                 if (!empty($idAgendamento)) {
-                    echo '<br><small class="text-muted">ID: ' . htmlspecialchars($idAgendamento) . '</small>';
+                    echo '<br><small class="text-muted">ID: ' . htmlspecialchars($idAgendamento, ENT_QUOTES, 'UTF-8') . '</small>';
                 }
                 echo '</div>';
                 echo '</div>';
@@ -99,7 +99,7 @@ if (strlen($nome) >= 2 || strlen($telefone) >= 2) {
             
             // Botão para criar novo cliente (opcional)
             echo '<div class="text-center mt-3">';
-            echo '<button class="btn btn-primary" onclick="criarNovoCliente(\'' . htmlspecialchars($nome) . '\', \'' . htmlspecialchars($telefone) . '\')">';
+            echo '<button class="btn btn-primary" onclick="criarNovoCliente(\'' . htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') . '\', \'' . htmlspecialchars($telefone, ENT_QUOTES, 'UTF-8') . '\')">';
             echo '<i class="fas fa-user-plus"></i> Cadastrar Novo Cliente';
             echo '</button>';
             echo '</div>';

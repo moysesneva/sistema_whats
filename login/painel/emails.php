@@ -181,7 +181,7 @@ $config = mysqli_fetch_assoc($result_config);
 
                                                         <form method="post" class="form-material">
                                                             <div class="form-group form-default">
-                                                                <input type="email" name="email" class="form-control" required value="<?php echo $config['email'] ?? ''; ?>">
+                                                                <input type="email" name="email" class="form-control" required value="<?php echo htmlspecialchars($config['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                                                 <span class="form-bar"></span>
                                                                 <label class="float-label">Email</label>
                                                                 <small class="text-muted">Use seu email do Gmail</small>
@@ -200,7 +200,7 @@ $config = mysqli_fetch_assoc($result_config);
                                                             </div>
 
                                                             <div class="form-group form-default">
-                                                                <input type="text" name="smtp_host" class="form-control" required value="<?php echo $config['smtp_host'] ?? 'smtp.gmail.com'; ?>">
+                                                                <input type="text" name="smtp_host" class="form-control" required value="<?php echo htmlspecialchars($config['smtp_host'] ?? 'smtp.gmail.com', ENT_QUOTES, 'UTF-8'); ?>">
                                                                 <span class="form-bar"></span>
                                                                 <label class="float-label">Servidor SMTP</label>
                                                             </div>
@@ -209,7 +209,7 @@ $config = mysqli_fetch_assoc($result_config);
     <div class="col-sm-6">
         <div class="form-group form-default">
             <input type="number" name="smtp_port" class="form-control" required 
-                   value="<?php echo $config['smtp_port'] ?? '587'; ?>">
+                   value="<?php echo (int)($config['smtp_port'] ?? 587); ?>">
             <span class="form-bar"></span>
             <label class="float-label">Porta SMTP</label>
         </div>

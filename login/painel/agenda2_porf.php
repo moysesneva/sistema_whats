@@ -108,7 +108,7 @@ while ($row = $result->fetch_assoc()) {
     }
     
     // Adicionar o serviço ao array da data
-    $eventos[$data][] = htmlspecialchars($horario." - ".$servico); // Usar htmlspecialchars para segurança
+    $eventos[$data][] = $horario." - ".$servico;
 }
 
 /***********************************************
@@ -212,7 +212,7 @@ function obterCorEvento($index) {
                             $eventCount = 0;
                             foreach ($eventosDoMes[$dataAtual] as $evento) {
                                 if ($eventCount < 3) {
-                                    echo "<div class='event' title='" . htmlspecialchars($evento) . "'>$evento</div>";
+                                    echo "<div class='event' title='" . htmlspecialchars($evento, ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars($evento, ENT_QUOTES, 'UTF-8') . "</div>";
                                     $eventCount++;
                                 }
                             }

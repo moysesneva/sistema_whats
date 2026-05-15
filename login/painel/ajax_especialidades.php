@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo '<div class="list-group">';
                 while ($row = mysqli_fetch_array($query)) {
                     echo '<div class="list-group-item d-flex justify-content-between align-items-center">';
-                    echo htmlspecialchars($row['especialidade']);
+                    echo htmlspecialchars($row['especialidade'], ENT_QUOTES, 'UTF-8');
                     echo '<button class="btn btn-danger btn-sm" onclick="removerEspecialidade(' . $row['id'] . ')">Remover</button>';
                     echo '</div>';
                 }

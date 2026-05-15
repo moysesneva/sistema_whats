@@ -199,7 +199,7 @@ mysqli_close($conn);
                         Nome Completo *
                     </label>
                     <input type="text" class="form-control" id="nome" name="nome" 
-                           value="<?= htmlspecialchars($nome_pre); ?>" 
+                           value="<?= htmlspecialchars($nome_pre, ENT_QUOTES, 'UTF-8'); ?>" 
                            placeholder="Digite o nome completo" required>
                     <div class="help-text">
                         <i class="fas fa-info-circle"></i>
@@ -213,7 +213,7 @@ mysqli_close($conn);
                         Telefone *
                     </label>
                     <input type="text" class="form-control" id="telefone" name="telefone" 
-                           value="<?= htmlspecialchars($telefone_pre); ?>" 
+                           value="<?= htmlspecialchars($telefone_pre, ENT_QUOTES, 'UTF-8'); ?>" 
                            placeholder="(11) 99999-9999" required>
                     <div class="help-text">
                         <i class="fas fa-info-circle"></i>

@@ -396,7 +396,7 @@ $stmt->close();
                                 </div>
                             </div>
 
-                            <textarea class="form-control form-control-modern" id="mensagemEnquete" name="mensagemEnquete" placeholder="Digite a mensagem que será enviada junto com a enquete" rows="4"><?=$agendaVerifica;?></textarea>
+                            <textarea class="form-control form-control-modern" id="mensagemEnquete" name="mensagemEnquete" placeholder="Digite a mensagem que será enviada junto com a enquete" rows="4"><?= htmlspecialchars($agendaVerifica, ENT_QUOTES, 'UTF-8') ?></textarea>
                         </div>
 
                         <div class="whatsapp-preview">
@@ -439,7 +439,7 @@ $stmt->close();
                         
                         <div class="form-group mb-3">
                             <label for="tempoAntesAgendamento" class="form-label-modern">⏰ Tempo antes do agendamento (minutos)</label>
-                            <input type="number" class="form-control input-number-modern" id="tempoAntesAgendamento" name="tempoAntesAgendamento" placeholder="Ex: 60 minutos" min="0" value="<?=$tempoVerifica;?>">
+                            <input type="number" class="form-control input-number-modern" id="tempoAntesAgendamento" name="tempoAntesAgendamento" placeholder="Ex: 60 minutos" min="0" value="<?= (int)$tempoVerifica ?>">
                         </div>
                     </div>
 
@@ -478,7 +478,7 @@ $stmt->close();
                                 </div>
                             </div>
 
-                            <textarea class="form-control form-control-modern" id="mensagemEnquete" name="mensagemEnquete" placeholder="Digite a mensagem que será enviada junto com a enquete" rows="4"><?=$agendaVerifica;?></textarea>
+                            <textarea class="form-control form-control-modern" id="mensagemEnquete" name="mensagemEnquete" placeholder="Digite a mensagem que será enviada junto com a enquete" rows="4"><?= htmlspecialchars($agendaVerifica, ENT_QUOTES, 'UTF-8') ?></textarea>
                         </div>
 
                         <div class="whatsapp-preview">
@@ -521,7 +521,7 @@ $stmt->close();
                         
                         <div class="form-group mb-3">
                             <label for="tempoAntesAgendamento" class="form-label-modern">⏰ Tempo antes do agendamento (minutos)</label>
-                            <input type="number" class="form-control input-number-modern" id="tempoAntesAgendamento" name="tempoAntesAgendamento" placeholder="Ex: 60 minutos" min="0" value="<?=$tempoVerifica;?>">
+                            <input type="number" class="form-control input-number-modern" id="tempoAntesAgendamento" name="tempoAntesAgendamento" placeholder="Ex: 60 minutos" min="0" value="<?= (int)$tempoVerifica ?>">
                         </div>
                     </div>
 
@@ -567,7 +567,7 @@ $stmt->close();
                             </div>
                         </div>
 
-                        <textarea class="form-control form-control-modern" id="mensagemConfirmacao" name="mensagemConfirmacao" placeholder="Digite a mensagem de confirmação" rows="4"><?=$mensagemConfirmacao;?></textarea>
+                        <textarea class="form-control form-control-modern" id="mensagemConfirmacao" name="mensagemConfirmacao" placeholder="Digite a mensagem de confirmação" rows="4"><?= htmlspecialchars($mensagemConfirmacao, ENT_QUOTES, 'UTF-8') ?></textarea>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="btn btn-modern btn-save">💾 Salvar Mensagem</button>
@@ -605,7 +605,7 @@ $stmt->close();
                             </div>
                         </div>
 
-                        <textarea class="form-control form-control-modern" id="mensagemCancelamento" name="mensagemCancelamento" placeholder="Digite a mensagem de cancelamento" rows="4"><?=$mensagemCancelamento;?></textarea>
+                        <textarea class="form-control form-control-modern" id="mensagemCancelamento" name="mensagemCancelamento" placeholder="Digite a mensagem de cancelamento" rows="4"><?= htmlspecialchars($mensagemCancelamento, ENT_QUOTES, 'UTF-8') ?></textarea>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="btn btn-modern btn-cancel">💾 Salvar Mensagem</button>
@@ -643,7 +643,7 @@ $stmt->close();
                             </div>
                         </div>
 
-                        <textarea class="form-control form-control-modern" id="mensagemConfirmacaoProfissional" name="mensagemConfirmacaoProfissional" placeholder="Digite a mensagem de confirmação que será enviada ao profissional" rows="4"><?=$mensagemConfirmacaoProfissional;?></textarea>
+                        <textarea class="form-control form-control-modern" id="mensagemConfirmacaoProfissional" name="mensagemConfirmacaoProfissional" placeholder="Digite a mensagem de confirmação que será enviada ao profissional" rows="4"><?= htmlspecialchars($mensagemConfirmacaoProfissional, ENT_QUOTES, 'UTF-8') ?></textarea>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="btn btn-modern btn-save">💾 Salvar Mensagem</button>
@@ -681,7 +681,7 @@ $stmt->close();
                             </div>
                         </div>
 
-                        <textarea class="form-control form-control-modern" id="mensagemCancelamentoProfissional" name="mensagemCancelamentoProfissional" placeholder="Digite a mensagem de cancelamento que será enviada ao profissional" rows="5"><?=$mensagemCancelamentoProfissional;?></textarea>
+                        <textarea class="form-control form-control-modern" id="mensagemCancelamentoProfissional" name="mensagemCancelamentoProfissional" placeholder="Digite a mensagem de cancelamento que será enviada ao profissional" rows="5"><?= htmlspecialchars($mensagemCancelamentoProfissional, ENT_QUOTES, 'UTF-8') ?></textarea>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="btn btn-modern btn-cancel">💾 Salvar Mensagem</button>

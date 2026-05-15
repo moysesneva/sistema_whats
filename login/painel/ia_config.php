@@ -64,7 +64,7 @@ if (isset($_POST['salvar_openai']) && !empty($_POST['valor_chave_openai']) && !e
 
     if ($res_conflito && mysqli_num_rows($res_conflito) > 0) {
         $empresa_conflito = mysqli_fetch_assoc($res_conflito)['nome'];
-        echo '<div class="alert alert-danger">Erro: Já existe uma chave da ' . ucfirst($empresa_conflito) . ' no ' . htmlspecialchars($plano_selecionado) . '. Não é possível ter chaves de empresas diferentes no mesmo plano!</div>';
+        echo '<div class="alert alert-danger">Erro: Já existe uma chave da ' . ucfirst($empresa_conflito) . ' no ' . htmlspecialchars($plano_selecionado, ENT_QUOTES, 'UTF-8') . '. Não é possível ter chaves de empresas diferentes no mesmo plano!</div>';
     } else {
         $stmt_verifica = mysqli_prepare($conn,
             "SELECT id FROM chave_ia_geral WHERE chave = ? AND nome = 'openai' AND plano = ? LIMIT 1");
@@ -73,13 +73,13 @@ if (isset($_POST['salvar_openai']) && !empty($_POST['valor_chave_openai']) && !e
         $res_verifica_openai = mysqli_stmt_get_result($stmt_verifica);
 
         if ($res_verifica_openai && mysqli_num_rows($res_verifica_openai) > 0) {
-            echo '<div class="alert alert-warning">Esta chave da OpenAI já está cadastrada no ' . htmlspecialchars($plano_selecionado) . '!</div>';
+            echo '<div class="alert alert-warning">Esta chave da OpenAI já está cadastrada no ' . htmlspecialchars($plano_selecionado, ENT_QUOTES, 'UTF-8') . '!</div>';
         } else {
             $stmt_insere = mysqli_prepare($conn,
                 "INSERT INTO chave_ia_geral (chave, nome, plano, date) VALUES (?, 'openai', ?, NOW())");
             mysqli_stmt_bind_param($stmt_insere, "ss", $chave_openai, $plano_selecionado);
             if (mysqli_stmt_execute($stmt_insere)) {
-                echo '<div class="alert alert-success">Chave da OpenAI salva com sucesso no ' . htmlspecialchars($plano_selecionado) . '!</div>';
+                echo '<div class="alert alert-success">Chave da OpenAI salva com sucesso no ' . htmlspecialchars($plano_selecionado, ENT_QUOTES, 'UTF-8') . '!</div>';
             } else {
                 echo '<div class="alert alert-danger">Erro ao salvar chave da OpenAI: ' . mysqli_error($conn) . '</div>';
             }
@@ -100,7 +100,7 @@ if (isset($_POST['salvar_gemini']) && !empty($_POST['valor_chave_gemini']) && !e
 
     if ($res_conflito && mysqli_num_rows($res_conflito) > 0) {
         $empresa_conflito = mysqli_fetch_assoc($res_conflito)['nome'];
-        echo '<div class="alert alert-danger">Erro: Já existe uma chave da ' . ucfirst($empresa_conflito) . ' no ' . htmlspecialchars($plano_selecionado) . '. Não é possível ter chaves de empresas diferentes no mesmo plano!</div>';
+        echo '<div class="alert alert-danger">Erro: Já existe uma chave da ' . ucfirst($empresa_conflito) . ' no ' . htmlspecialchars($plano_selecionado, ENT_QUOTES, 'UTF-8') . '. Não é possível ter chaves de empresas diferentes no mesmo plano!</div>';
     } else {
         $stmt_verifica = mysqli_prepare($conn,
             "SELECT id FROM chave_ia_geral WHERE chave = ? AND nome = 'gemini' AND plano = ? LIMIT 1");
@@ -109,13 +109,13 @@ if (isset($_POST['salvar_gemini']) && !empty($_POST['valor_chave_gemini']) && !e
         $res_verifica_gemini = mysqli_stmt_get_result($stmt_verifica);
 
         if ($res_verifica_gemini && mysqli_num_rows($res_verifica_gemini) > 0) {
-            echo '<div class="alert alert-warning">Esta chave da Gemini já está cadastrada no ' . htmlspecialchars($plano_selecionado) . '!</div>';
+            echo '<div class="alert alert-warning">Esta chave da Gemini já está cadastrada no ' . htmlspecialchars($plano_selecionado, ENT_QUOTES, 'UTF-8') . '!</div>';
         } else {
             $stmt_insere = mysqli_prepare($conn,
                 "INSERT INTO chave_ia_geral (chave, nome, plano, date) VALUES (?, 'gemini', ?, NOW())");
             mysqli_stmt_bind_param($stmt_insere, "ss", $chave_gemini, $plano_selecionado);
             if (mysqli_stmt_execute($stmt_insere)) {
-                echo '<div class="alert alert-success">Chave da Gemini salva com sucesso no ' . htmlspecialchars($plano_selecionado) . '!</div>';
+                echo '<div class="alert alert-success">Chave da Gemini salva com sucesso no ' . htmlspecialchars($plano_selecionado, ENT_QUOTES, 'UTF-8') . '!</div>';
             } else {
                 echo '<div class="alert alert-danger">Erro ao salvar chave da Gemini: ' . mysqli_error($conn) . '</div>';
             }

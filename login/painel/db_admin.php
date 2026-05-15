@@ -164,7 +164,7 @@ td.editing input.edit-input { display: block; }
         <h3>Tabelas</h3>
         <?php foreach ($tabelas as $t): ?>
             <a href="?tabela=<?= urlencode($t) ?>" class="<?= ($tabela_sel === $t ? 'ativo' : '') ?>">
-                <?= htmlspecialchars($t) ?>
+                <?= htmlspecialchars($t, ENT_QUOTES, 'UTF-8') ?>
             </a>
         <?php endforeach; ?>
     </div>
@@ -172,44 +172,44 @@ td.editing input.edit-input { display: block; }
         <div class="box">
             <h2>&#9998; Executar SQL</h2>
             <form method="POST">
-                <textarea name="query" rows="4" placeholder="SELECT * FROM login LIMIT 10;"><?= htmlspecialchars($query_exec) ?></textarea>
+                <textarea name="query" rows="4" placeholder="SELECT * FROM login LIMIT 10;"><?= htmlspecialchars($query_exec, ENT_QUOTES, 'UTF-8') ?></textarea>
                 <button class="btn" type="submit">Executar</button>
             </form>
         </div>
 
         <?php if ($msg): ?>
-            <div class="msg <?= str_starts_with($msg, 'ERRO') ? 'err' : 'ok' ?>"><?= htmlspecialchars($msg) ?></div>
+            <div class="msg <?= str_starts_with($msg, 'ERRO') ? 'err' : 'ok' ?>"><?= htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') ?></div>
         <?php endif; ?>
 
         <?php if (count($linhas) > 0): ?>
             <div class="box">
                 <h2>
                     <?php if ($tabela_sel): ?>
-                        Tabela: <span class="badge"><?= htmlspecialchars($tabela_sel) ?></span>
-                        <?php if ($pk_col): ?><span style="font-size:11px;color:#888;margin-left:8px">PK: <b style="color:#FF5500"><?= htmlspecialchars($pk_col) ?></b> — clique numa célula para editar</span><?php endif; ?>
+                        Tabela: <span class="badge"><?= htmlspecialchars($tabela_sel, ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php if ($pk_col): ?><span style="font-size:11px;color:#888;margin-left:8px">PK: <b style="color:#FF5500"><?= htmlspecialchars($pk_col, ENT_QUOTES, 'UTF-8') ?></b> — clique numa célula para editar</span><?php endif; ?>
                     <?php else: ?>
                         Resultado da query
                     <?php endif; ?>
                 </h2>
                 <div class="tbl-wrap">
                     <table id="tabela-dados"
-                        data-tabela="<?= htmlspecialchars($tabela_sel) ?>"
-                        data-pk="<?= htmlspecialchars($pk_col) ?>">
+                        data-tabela="<?= htmlspecialchars($tabela_sel, ENT_QUOTES, 'UTF-8') ?>"
+                        data-pk="<?= htmlspecialchars($pk_col, ENT_QUOTES, 'UTF-8') ?>">
                         <thead>
                             <tr>
                                 <?php foreach ($colunas as $c): ?>
-                                    <th><?= htmlspecialchars($c) ?><?= ($c === $pk_col) ? '<span class="pk-badge">PK</span>' : '' ?></th>
+                                    <th><?= htmlspecialchars($c, ENT_QUOTES, 'UTF-8') ?><?= ($c === $pk_col) ? '<span class="pk-badge">PK</span>' : '' ?></th>
                                 <?php endforeach; ?>
                                 <?php if ($tabela_sel && $pk_col): ?><th style="width:36px"></th><?php endif; ?>
                             </tr>
                         </thead>
                         <tbody>
                         <?php foreach ($linhas as $row): ?>
-                            <tr data-pk-val="<?= htmlspecialchars((string)($row[$pk_col] ?? '')) ?>">
+                            <tr data-pk-val="<?= htmlspecialchars((string, ENT_QUOTES, 'UTF-8')($row[$pk_col] ?? '')) ?>">
                                 <?php foreach ($colunas as $c): ?>
-                                    <td data-col="<?= htmlspecialchars($c) ?>" data-orig="<?= htmlspecialchars((string)$row[$c]) ?>">
-                                        <span class="cell-inner" title="<?= htmlspecialchars((string)$row[$c]) ?>"><?= htmlspecialchars((string)$row[$c]) ?></span>
-                                        <input class="edit-input" type="text" value="<?= htmlspecialchars((string)$row[$c]) ?>">
+                                    <td data-col="<?= htmlspecialchars($c, ENT_QUOTES, 'UTF-8') ?>" data-orig="<?= htmlspecialchars((string, ENT_QUOTES, 'UTF-8')$row[$c]) ?>">
+                                        <span class="cell-inner" title="<?= htmlspecialchars((string, ENT_QUOTES, 'UTF-8')$row[$c]) ?>"><?= htmlspecialchars((string, ENT_QUOTES, 'UTF-8')$row[$c]) ?></span>
+                                        <input class="edit-input" type="text" value="<?= htmlspecialchars((string, ENT_QUOTES, 'UTF-8')$row[$c]) ?>">
                                     </td>
                                 <?php endforeach; ?>
                                 <?php if ($tabela_sel && $pk_col): ?>

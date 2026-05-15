@@ -158,7 +158,7 @@ while ($row = $result->fetch_assoc()) {
                     <div class="card-header-simple <?php echo $status_class; ?>">
                         <h2 class="campaign-title">
                             <i class="<?php echo $media_icon; ?>"></i>
-                            <?php echo htmlspecialchars($campanha['campaign_name'] ?: 'Campanha sem nome'); ?>
+                            <?php echo htmlspecialchars($campanha['campaign_name'] ?: 'Campanha sem nome', ENT_QUOTES, 'UTF-8'); ?>
                         </h2>
                         <div class="campaign-date">
                             <i class="fas fa-calendar-alt"></i>

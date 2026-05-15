@@ -210,11 +210,11 @@ if($situacao != 'ativado'){
                                                         <h6 class="m-b-20">Informações do Cliente</h6>
                                                         <h2 class="text-right">
                                                             <i class="feather icon-user f-left"></i>
-                                                            <span class="text-white"><?php echo $nome; ?></span>
+                                                            <span class="text-white"><?php echo htmlspecialchars($nome, ENT_QUOTES, 'UTF-8'); ?></span>
                                                         </h2>
                                                         <p class="m-b-0 text-white">
                                                             <span class="m-r-10">
-                                                                <i class="feather icon-mail"></i> <?php echo $email; ?>
+                                                                <i class="feather icon-mail"></i> <?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>
                                                             </span>
                                                         </p>
                                                     </div>
@@ -265,8 +265,8 @@ if($situacao != 'ativado'){
                         <div class="mt-4">
                             <form action="acoes/acao.php" method="POST">
                                 <input type="hidden" name="opcao" value="criar_usuario_adm">
-                                <input type="hidden" name="usuario" value="<?=$login;?>">
-                                <input type="hidden" name="usuario_api" value="<?=$usuario_login;?>">
+                                <input type="hidden" name="usuario" value="<?= htmlspecialchars($login ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="hidden" name="usuario_api" value="<?= htmlspecialchars($usuario_login ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="feather icon-user-plus m-r-5"></i> Criar ADM
                                 </button>
@@ -298,7 +298,7 @@ if($situacao != 'ativado'){
                             <div class="mt-4">
                                 <h6 class="mb-3">Controles da Instância</h6>
                                 <form method="POST" action="" class="d-flex justify-content-center">
-                                    <input type="hidden" name="status_atual" value="<?php echo $status_text; ?>">
+                                    <input type="hidden" name="status_atual" value="<?php echo htmlspecialchars($status_text ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     
                                     <!-- Botão Ativar -->
                                     <button type="submit" name="acao" value="ativar" 

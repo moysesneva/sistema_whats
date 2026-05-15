@@ -99,7 +99,7 @@ $sql_agendamentos = $sql_agendamentos_base;
                                                     Filtros de Pesquisa
                                                 </h6>
                                                 <form method="GET">
-                                                    <input type="hidden" name="pagina_nome" value="<?= $pagina_nome_recebe ?>">
+                                                    <input type="hidden" name="pagina_nome" value="<?= htmlspecialchars($pagina_nome_recebe, ENT_QUOTES, 'UTF-8') ?>">
                                                     <div class="row">
                                                         <div class="col-lg-3 col-md-6">
                                                             <div class="form-group">
@@ -216,11 +216,11 @@ $sql_agendamentos = $sql_agendamentos_base;
                                                             ?>
                                                                 <tr>
                                                                     <td><strong><?= date('d/m/Y', strtotime($row['data'])) ?></strong></td>
-                                                                    <td><?= $row['horario'] ?></td>
-                                                                    <td><?= $row['cliente_nome'] ?></td>
-                                                                    <td><?= $row['cliente_telefone'] ?></td>
-                                                                    <td><?= $row['profissional_nome'] ?></td>
-                                                                    <td><?= $row['profissional_cargo'] ?></td>
+                                                                    <td><?= htmlspecialchars($row['horario'], ENT_QUOTES, 'UTF-8') ?></td>
+                                                                    <td><?= htmlspecialchars($row['cliente_nome'], ENT_QUOTES, 'UTF-8') ?></td>
+                                                                    <td><?= htmlspecialchars($row['cliente_telefone'], ENT_QUOTES, 'UTF-8') ?></td>
+                                                                    <td><?= htmlspecialchars($row['profissional_nome'], ENT_QUOTES, 'UTF-8') ?></td>
+                                                                    <td><?= htmlspecialchars($row['profissional_cargo'], ENT_QUOTES, 'UTF-8') ?></td>
                                                                     <td>
                                                                         <?php if ($row['confirmacao'] == 1) { ?>
                                                                             <span class="badge badge-success">

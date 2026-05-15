@@ -52,7 +52,7 @@ function calcularTempoAtraso($data_agendada) {
         <div class="info-header">
             <h1>Verificador de Envios Imediatos</h1>
             <p>
-                <strong>Usuário API:</strong> <?php echo htmlspecialchars($usuario_api); ?><br>
+                <strong>Usuário API:</strong> <?php echo htmlspecialchars($usuario_api, ENT_QUOTES, 'UTF-8'); ?><br>
                 <strong>Consulta realizada em:</strong> <?php echo date('d/m/Y H:i:s'); ?> (Horário de Brasília)
             </p>
         </div>
@@ -87,7 +87,7 @@ function calcularTempoAtraso($data_agendada) {
             // Para cada campanha ativa, busca o próximo cliente na fila
             while($campanha = $result_campanhas->fetch_assoc()) {
                 echo "<div class='campanha'>";
-                echo "<h3>Campanha: '" . htmlspecialchars($campanha['campaign_name']) . "' (ID: " . $campanha['id'] . ")</h3>";
+                echo "<h3>Campanha: '" . htmlspecialchars($campanha['campaign_name'], ENT_QUOTES, 'UTF-8') . "' (ID: " . $campanha['id'] . ")</h3>";
                 echo "<p><strong>Atraso no processamento da fila:</strong> <span class='atraso'>" . calcularTempoAtraso($campanha['proximo_envio']) . "</span></p>";
 
                 // Query para buscar o próximo envio PENDENTE para esta campanha
@@ -112,10 +112,10 @@ function calcularTempoAtraso($data_agendada) {
                     $envio = $result_proximo->fetch_assoc();
                     echo "<div class='envio-item'>";
                     echo "<h4>&#128233; Próximo Envio a ser Realizado:</h4>";
-                    echo "<strong>ID do Envio:</strong> " . htmlspecialchars($envio['id']) . "<br>";
-                    echo "<strong>Cliente:</strong> " . htmlspecialchars($envio['cliente_nome']) . " (ID: " . htmlspecialchars($envio['cliente_id']) . ")<br>";
-                    echo "<strong>Telefone:</strong> " . htmlspecialchars($envio['cliente_telefone']) . "<br>";
-                    echo "<strong>Mensagem (modelo):</strong> <code>" . htmlspecialchars($campanha['message_text']) . "</code><br>";
+                    echo "<strong>ID do Envio:</strong> " . htmlspecialchars($envio['id'], ENT_QUOTES, 'UTF-8') . "<br>";
+                    echo "<strong>Cliente:</strong> " . htmlspecialchars($envio['cliente_nome'], ENT_QUOTES, 'UTF-8') . " (ID: " . htmlspecialchars($envio['cliente_id'], ENT_QUOTES, 'UTF-8') . ")<br>";
+                    echo "<strong>Telefone:</strong> " . htmlspecialchars($envio['cliente_telefone'], ENT_QUOTES, 'UTF-8') . "<br>";
+                    echo "<strong>Mensagem (modelo):</strong> <code>" . htmlspecialchars($campanha['message_text'], ENT_QUOTES, 'UTF-8') . "</code><br>";
                     echo "<strong>Aguardando na fila há:</strong> " . calcularTempoDecorrido($envio['created_at']) . "";
                     echo "</div>";
                 } else {

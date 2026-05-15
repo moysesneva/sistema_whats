@@ -29,7 +29,7 @@ if (!isset($conn)) {
     output_json_error('Erro: Variável de conexão ($conn) não definida após include de conn.php.');
 }
 if ($conn->connect_error) {
-    output_json_error('Erro de conexão com o banco de dados: ' . htmlspecialchars($conn->connect_error));
+    output_json_error('Erro de conexão com o banco de dados: ' . htmlspecialchars($conn->connect_error, ENT_QUOTES, 'UTF-8'));
 }
 $conn->set_charset("utf8mb4");
 
@@ -62,7 +62,7 @@ $sql_horarios = "SELECT dia_semana, hora_entrada, hora_saida, almoco_inicio, alm
                  WHERE profissional_id = ? AND ativo = 1";
 $stmt_horarios = $conn->prepare($sql_horarios);
 if (!$stmt_horarios) {
-    output_json_error("Erro ao preparar consulta de horários do profissional: " . htmlspecialchars($conn->error));
+    output_json_error("Erro ao preparar consulta de horários do profissional: " . htmlspecialchars($conn->error, ENT_QUOTES, 'UTF-8'));
 }
 $stmt_horarios->bind_param("s", $profissional_id);
 $stmt_horarios->execute();
@@ -114,7 +114,7 @@ if ($stmt_intervalos) {
     }
     $stmt_intervalos->close();
 } else {
-    // error_log("Aviso: Erro ao preparar consulta de intervalos adicionais: " . htmlspecialchars($conn->error));
+    // error_log("Aviso: Erro ao preparar consulta de intervalos adicionais: " . htmlspecialchars($conn->error, ENT_QUOTES, 'UTF-8'));
 }
 
 // --- 3. Buscar datas excluídas (folgas, feriados específicos do profissional) ---
@@ -131,7 +131,7 @@ if ($stmt_excluidas) {
     }
     $stmt_excluidas->close();
 } else {
-    // error_log("Aviso: Erro ao preparar consulta de datas excluídas: " . htmlspecialchars($conn->error));
+    // error_log("Aviso: Erro ao preparar consulta de datas excluídas: " . htmlspecialchars($conn->error, ENT_QUOTES, 'UTF-8'));
 }
 
 // --- 4. Buscar agendamentos existentes para calcular períodos ocupados ---
@@ -146,7 +146,7 @@ $sql_agendamentos_corrigido = "SELECT data, horario, duracao_minutos AS duracao_
 
 $stmt_agendamentos = $conn->prepare($sql_agendamentos_corrigido);
 if (!$stmt_agendamentos) {
-    output_json_error("Erro ao preparar consulta de agendamentos existentes: " . htmlspecialchars($conn->error));
+    output_json_error("Erro ao preparar consulta de agendamentos existentes: " . htmlspecialchars($conn->error, ENT_QUOTES, 'UTF-8'));
 }
 $stmt_agendamentos->bind_param("s", $profissional_id); // Assumindo que id_profissional é string no bind; se for int, use "i"
 $stmt_agendamentos->execute();
