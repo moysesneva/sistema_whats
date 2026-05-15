@@ -58,6 +58,9 @@ ln -sf /home/runner/workspace/login/files /home/runner/workspace/files 2>/dev/nu
 echo "=== Iniciando varredura periódica de uploads antigos ==="
 bash /home/runner/workspace/scripts/limpar_uploads.sh &
 
+echo "=== Iniciando varredura periódica de logs antigos ==="
+bash /home/runner/workspace/scripts/limpar_logs.sh &
+
 echo "=== Iniciando PHP na porta 5000 ==="
 cd /home/runner/workspace
 php -S 0.0.0.0:5000 -t /home/runner/workspace router.php
