@@ -11,7 +11,7 @@ else
     MYSQL_SOCKET=/home/runner/mysql.sock
     MYSQL_DATADIR=/home/runner/mysql_data
     MYSQL_PID=/home/runner/mysql.pid
-    LOCAL_DB_NAME=${DB_NAME:-agendamento}
+    LOCAL_DB_NAME=agendamento
 
     echo "=== Iniciando MySQL local ==="
     rm -f $MYSQL_SOCKET $MYSQL_PID
