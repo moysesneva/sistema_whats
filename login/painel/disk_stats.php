@@ -85,6 +85,7 @@ $logs_dir    = $base . '/logs';
 $log_proc    = $base . '/log_processamento.txt';
 $log_recv    = $base . '/log_recebidos.txt';
 $uploads_dir = $base . '/img';
+$db_failures = __DIR__ . '/logs/db_failures.log';
 
 $status_logs    = ler_status($base . '/status_limpar_logs.json');
 $status_uploads = ler_status($base . '/status_limpar_uploads.json');
@@ -93,11 +94,12 @@ $status_uploads = ler_status($base . '/status_limpar_uploads.json');
 // Tamanhos
 // -----------------------------------------------------------------------
 
-$sz_logs_dir  = tamanho_dir($logs_dir);
-$sz_log_proc  = tamanho_arquivo($log_proc);
-$sz_log_recv  = tamanho_arquivo($log_recv);
-$sz_uploads   = tamanho_dir($uploads_dir);
-$sz_total     = $sz_logs_dir + $sz_log_proc + $sz_log_recv + $sz_uploads;
+$sz_logs_dir    = tamanho_dir($logs_dir);
+$sz_log_proc    = tamanho_arquivo($log_proc);
+$sz_log_recv    = tamanho_arquivo($log_recv);
+$sz_uploads     = tamanho_dir($uploads_dir);
+$sz_db_failures = tamanho_arquivo($db_failures);
+$sz_total       = $sz_logs_dir + $sz_log_proc + $sz_log_recv + $sz_uploads + $sz_db_failures;
 ?>
 <?php include 'header.php'; ?>
 
@@ -250,6 +252,14 @@ $sz_total     = $sz_logs_dir + $sz_log_proc + $sz_log_recv + $sz_uploads;
                             </span>
                         </span>
                     </div>
+                    <div class="stat-row">
+                        <span class="stat-label"><i class="feather icon-alert-triangle"></i> db_failures.log</span>
+                        <span class="stat-value">
+                            <span class="badge badge-<?= badge_tamanho($sz_db_failures, 1, 5) ?>">
+                                <?= formatar_tamanho($sz_db_failures) ?>
+                            </span>
+                        </span>
+                    </div>
 
                     <hr style="margin:16px 0 12px;">
 
@@ -268,12 +278,24 @@ $sz_total     = $sz_logs_dir + $sz_log_proc + $sz_log_recv + $sz_uploads;
                             <strong><?= (int) $status_logs['truncamentos'] ?></strong>
                         </div>
                         <div class="stat-row">
-                            <span class="stat-label"><i class="feather icon-sliders"></i> Configuração</span>
+                            <span class="stat-label"><i class="feather icon-sliders"></i> Configuração (logs)</span>
                             <span class="sweep-info">
                                 Máx. <?= (int) $status_logs['max_age_dias'] ?> dias &bull;
                                 Máx. <?= (int) $status_logs['max_size_mb'] ?> MB por arquivo
                             </span>
                         </div>
+                        <?php if (isset($status_logs['db_failures_max_size_mb'])): ?>
+                        <div class="stat-row">
+                            <span class="stat-label"><i class="feather icon-sliders"></i> Configuração (db_failures)</span>
+                            <span class="sweep-info">
+                                Máx. <?= (int) $status_logs['db_failures_max_age_dias'] ?> dias &bull;
+                                Máx. <?= (int) $status_logs['db_failures_max_size_mb'] ?> MB
+                                <?php if (!empty($status_logs['db_failures_action']) && $status_logs['db_failures_action'] !== 'none'): ?>
+                                &bull; Última ação: <strong><?= htmlspecialchars($status_logs['db_failures_action'], ENT_QUOTES, 'UTF-8') ?></strong>
+                                <?php endif; ?>
+                            </span>
+                        </div>
+                        <?php endif; ?>
                     </div>
                     <?php else: ?>
                     <span class="never-ran"><i class="feather icon-info"></i> Limpeza ainda não executada neste ciclo.</span>

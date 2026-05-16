@@ -47,11 +47,16 @@ $maxBytes = $maxMb * 1024 * 1024;
 
 $uploadsMaxAge = max(1, (int) (getenv('UPLOADS_MAX_AGE_SECONDS') ?: 3600));
 
+$dbFailuresMaxMb   = max(1, (int) (getenv('DB_FAILURES_MAX_SIZE_MB')  ?: 1));
+$dbFailuresMaxBytes = $dbFailuresMaxMb * 1024 * 1024;
+$dbFailuresMaxAge  = max(1, (int) (getenv('DB_FAILURES_MAX_AGE_DAYS') ?: 30));
+
 $base      = __DIR__;
 $logsDir   = $base . '/logs';
 $logProc   = $base . '/log_processamento.txt';
 $logRecv   = $base . '/log_recebidos.txt';
 $uploadsDir = $base . '/img';
+$dbFailuresLog = dirname($base) . '/logs/db_failures.log';
 
 $ts = date('Y-m-d H:i:s');
 
@@ -80,12 +85,43 @@ foreach ([$logProc, $logRecv] as $arquivo) {
     }
 }
 
+// -----------------------------------------------------------------------
+// Rotação de db_failures.log
+// -----------------------------------------------------------------------
+
+$dbFailuresAction = 'none';
+
+if (is_file($dbFailuresLog)) {
+    if (filesize($dbFailuresLog) > $dbFailuresMaxBytes) {
+        file_put_contents($dbFailuresLog, '');
+        $truncamentos++;
+        $dbFailuresAction = 'truncado';
+    } else {
+        $cutoff  = time() - ($dbFailuresMaxAge * 86400);
+        $linhas  = file($dbFailuresLog, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if ($linhas !== false) {
+            $filtradas = array_filter($linhas, function (string $linha) use ($cutoff): bool {
+                if (preg_match('/"ts":"(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})"/', $linha, $m)) {
+                    $epoch = mktime((int)$m[4], (int)$m[5], (int)$m[6], (int)$m[2], (int)$m[3], (int)$m[1]);
+                    return $epoch >= $cutoff;
+                }
+                return true;
+            });
+            file_put_contents($dbFailuresLog, implode("\n", $filtradas) . (count($filtradas) > 0 ? "\n" : ''));
+            $dbFailuresAction = 'filtrado';
+        }
+    }
+}
+
 $statusLogs = json_encode([
-    'ultima_varredura'  => $ts,
-    'arquivos_removidos' => $removidosLogs,
-    'truncamentos'       => $truncamentos,
-    'max_age_dias'       => $maxDias,
-    'max_size_mb'        => $maxMb,
+    'ultima_varredura'         => $ts,
+    'arquivos_removidos'       => $removidosLogs,
+    'truncamentos'             => $truncamentos,
+    'max_age_dias'             => $maxDias,
+    'max_size_mb'              => $maxMb,
+    'db_failures_action'       => $dbFailuresAction,
+    'db_failures_max_size_mb'  => $dbFailuresMaxMb,
+    'db_failures_max_age_dias' => $dbFailuresMaxAge,
 ], JSON_UNESCAPED_UNICODE);
 
 file_put_contents($base . '/status_limpar_logs.json', $statusLogs);
