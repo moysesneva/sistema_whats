@@ -32,7 +32,7 @@ while ($rows_usuarios = mysqli_fetch_array($query)) {
 ?>
 <!-- Tema Enam Dark Navy + Orange — MoysesNet -->
 <link href="../files/assets/vendor/fonts/montserrat/montserrat.css" rel="stylesheet">
-<link rel="stylesheet" href="enam-panel.css">
+<link rel="stylesheet" href="/login/painel/enam-panel.css">
 <style>
     body { background: #000d1a !important; }
 </style>
