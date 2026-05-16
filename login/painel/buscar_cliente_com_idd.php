@@ -68,9 +68,9 @@ if (strlen($nome) >= 2 || strlen($telefone) >= 2) {
                 $iconClass = !empty($idAgendamento) ? 'fas fa-user-check text-success' : 'fas fa-user-times text-warning';
                 
                 echo '<div class="cliente-resultado" onclick="selecionarCliente(' . 
-                     $row['id'] . ', \'' . 
-                     htmlspecialchars($row['nome'], ENT_QUOTES, 'UTF-8') . '\', \'' . 
-                     htmlspecialchars($row['telefone'], ENT_QUOTES, 'UTF-8') . '\')">';
+                     (int)$row['id'] . ', ' . 
+                     json_encode($row['nome'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ', ' . 
+                     json_encode($row['telefone'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ')">';
                 
                 echo '<div class="d-flex justify-content-between align-items-start">';
                 echo '<div>';
@@ -99,7 +99,7 @@ if (strlen($nome) >= 2 || strlen($telefone) >= 2) {
             
             // Botão para criar novo cliente (opcional)
             echo '<div class="text-center mt-3">';
-            echo '<button class="btn btn-primary" onclick="criarNovoCliente(\'' . htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') . '\', \'' . htmlspecialchars($telefone, ENT_QUOTES, 'UTF-8') . '\')">';
+            echo '<button class="btn btn-primary" onclick="criarNovoCliente(' . json_encode($nome, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ', ' . json_encode($telefone, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ')">';
             echo '<i class="fas fa-user-plus"></i> Cadastrar Novo Cliente';
             echo '</button>';
             echo '</div>';

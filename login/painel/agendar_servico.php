@@ -301,7 +301,7 @@ mysqli_stmt_close($stmt_busca_config);
                    data: { 
         nome: nome, 
         telefone: telefone,
-        usuario_api: '<?=$usuario_api?>' // ou outra variável JS
+        usuario_api: <?= json_encode($usuario_api ?? '', JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>
     },
                 success: function(response) {
                     $('#resultadoBusca').html(response);

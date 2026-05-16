@@ -254,11 +254,11 @@ if ($res && $row = mysqli_fetch_assoc($res)) {
                                     <p>If you have any further suggestions, questions or comments, here are the best ways to connect with us!</p>
                                     <br>
                                     <p class="list-info">
-                                        <i class="icon ion-ios-telephone"></i> Phone : <?php echo htmlspecialchars($cs_telefone); ?>
+                                        <i class="icon ion-ios-telephone"></i> Phone : <?php echo htmlspecialchars($cs_telefone, ENT_QUOTES, 'UTF-8'); ?>
                                         <br>
                                         <i class="icon ion-ios-email"></i> Email : <a href="mailto:contato@moysesnet.com" class="phone-mail-link">contato@moysesnet.com</a>
                                         <br>
-                                        <i class="icon ion-ios-location"></i> Location : <?php echo htmlspecialchars($cs_endereco); ?>
+                                        <i class="icon ion-ios-location"></i> Location : <?php echo htmlspecialchars($cs_endereco, ENT_QUOTES, 'UTF-8'); ?>
                                     </p>
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-lg-offset-1">
