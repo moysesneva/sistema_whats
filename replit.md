@@ -81,11 +81,20 @@ Consumidas por `login/painel/api/run_cleanup.php` e `login/painel/api/limpar_upl
 | Variável                    | Obrig.? | Secret? | Padrão | Consumido por                                                         | Descrição                                                                 |
 |-----------------------------|---------|---------|--------|-----------------------------------------------------------------------|---------------------------------------------------------------------------|
 | `LOG_MAX_AGE_DAYS`          | Não     | Não     | `7`    | `login/painel/api/run_cleanup.php`                                    | Idade máxima (em dias) dos arquivos de log antes de serem removidos.      |
-| `LOG_MAX_SIZE_MB`           | Não     | Não     | `10`   | `login/painel/api/run_cleanup.php`, `login/painel/auth_guard.php`     | Tamanho máximo (em MB) do log de erros PHP antes de acionar limpeza.      |
+| `LOG_MAX_SIZE_MB`           | Não     | Não     | `10`   | `login/painel/api/run_cleanup.php`, `login/painel/auth_guard.php`, `login/painel/error_config.php` | Tamanho máximo (em MB) do log de erros PHP (e demais logs) antes de acionar limpeza/truncagem. |
 | `CLEANUP_COOLDOWN_SECONDS`  | Não     | Não     | `30`   | `login/painel/api/run_cleanup.php`                                    | Intervalo mínimo (em segundos) entre execuções consecutivas da limpeza.   |
 | `UPLOADS_MAX_AGE_SECONDS`   | Não     | Não     | `3600` | `login/painel/api/run_cleanup.php`, `login/painel/api/limpar_uploads.php` | Idade máxima (em segundos) de arquivos temporários em uploads/.       |
 | `DB_FAILURES_MAX_SIZE_MB`   | Não     | Não     | `1`    | `login/painel/api/run_cleanup.php`                                    | Tamanho máximo (em MB) do log `logs/db_failures.log`.                     |
 | `DB_FAILURES_MAX_AGE_DAYS`  | Não     | Não     | `30`   | `login/painel/api/run_cleanup.php`                                    | Idade máxima (em dias) das entradas do log `logs/db_failures.log`.        |
+
+#### Rotação automática do log de erros PHP
+
+O arquivo de log definido em `PHP_ERROR_LOG` (padrão: `/tmp/php_errors.log`) é rotacionado **automaticamente** para evitar crescimento ilimitado:
+
+- **Por requisição** (`error_config.php`): em produção, ~1% das requisições dispara uma verificação de tamanho. Se o arquivo ultrapassar `LOG_MAX_SIZE_MB`, ele é truncado imediatamente com `flock` para evitar condições de corrida.
+- **Limpeza manual** (`run_cleanup.php`): o botão "Limpar Agora" no painel também verifica e trunca o log PHP se ele exceder `LOG_MAX_SIZE_MB`. A ação aparece no campo `php_error_log_action` do JSON de status.
+
+O threshold compartilhado é `LOG_MAX_SIZE_MB` (padrão: 10 MB). Em modo de desenvolvimento (`APP_ENV=dev`), o log vai para `stderr` e a rotação automática não é aplicada.
 
 ## Admin
 

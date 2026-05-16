@@ -101,6 +101,7 @@ $logProc   = $base . '/log_processamento.txt';
 $logRecv   = $base . '/log_recebidos.txt';
 $uploadsDir = $base . '/img';
 $dbFailuresLog = dirname($base) . '/logs/db_failures.log';
+$phpErrorLog   = getenv('PHP_ERROR_LOG') ?: '/tmp/php_errors.log';
 
 $ts = date('Y-m-d H:i:s');
 
@@ -129,6 +130,25 @@ foreach ([$logProc, $logRecv] as $arquivo) {
     if (is_file($arquivo) && filesize($arquivo) > $maxBytes) {
         file_put_contents($arquivo, '');
         $truncamentos++;
+    }
+}
+
+// -----------------------------------------------------------------------
+// Rotação do log de erros PHP (/tmp/php_errors.log ou PHP_ERROR_LOG)
+// -----------------------------------------------------------------------
+
+$phpErrorLogAction = 'none';
+
+if (is_file($phpErrorLog) && filesize($phpErrorLog) > $maxBytes) {
+    $fp = fopen($phpErrorLog, 'a');
+    if ($fp !== false) {
+        if (flock($fp, LOCK_EX)) {
+            ftruncate($fp, 0);
+            flock($fp, LOCK_UN);
+            $truncamentos++;
+            $phpErrorLogAction = 'truncado';
+        }
+        fclose($fp);
     }
 }
 
@@ -166,6 +186,7 @@ $statusLogs = json_encode([
     'truncamentos'             => $truncamentos,
     'max_age_dias'             => $maxDias,
     'max_size_mb'              => $maxMb,
+    'php_error_log_action'     => $phpErrorLogAction,
     'db_failures_action'       => $dbFailuresAction,
     'db_failures_max_size_mb'  => $dbFailuresMaxMb,
     'db_failures_max_age_dias' => $dbFailuresMaxAge,
@@ -222,9 +243,10 @@ file_put_contents($adminActionsLog, $auditEntry . "\n", FILE_APPEND | LOCK_EX);
 // -----------------------------------------------------------------------
 
 echo json_encode([
-    'ok'               => true,
-    'ts'               => $ts,
-    'logs_removidos'   => $removidosLogs,
-    'truncamentos'     => $truncamentos,
-    'uploads_removidos' => $removidosUploads,
+    'ok'                   => true,
+    'ts'                   => $ts,
+    'logs_removidos'       => $removidosLogs,
+    'truncamentos'         => $truncamentos,
+    'uploads_removidos'    => $removidosUploads,
+    'php_error_log_action' => $phpErrorLogAction,
 ], JSON_UNESCAPED_UNICODE);

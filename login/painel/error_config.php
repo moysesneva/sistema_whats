@@ -37,6 +37,30 @@ if (!defined('APP_ERROR_CONFIG_LOADED')) {
         ini_set('log_errors', 1);
         $_log_file = getenv('PHP_ERROR_LOG') ?: '/tmp/php_errors.log';
         ini_set('error_log', $_log_file);
+
+        /**
+         * Rotação automática do log de erros PHP.
+         *
+         * Executada em ~1% das requisições para manter overhead mínimo.
+         * Trunca o arquivo quando ultrapassa LOG_MAX_SIZE_MB (padrão: 10 MB).
+         * Usa flock para evitar condições de corrida em requisições concorrentes.
+         */
+        if (is_file($_log_file) && mt_rand(1, 100) === 1) {
+            $_log_max_mb    = max(1, (int) (getenv('LOG_MAX_SIZE_MB') ?: 10));
+            $_log_max_bytes = $_log_max_mb * 1024 * 1024;
+            if (filesize($_log_file) > $_log_max_bytes) {
+                $_log_fp = fopen($_log_file, 'a');
+                if ($_log_fp !== false) {
+                    if (flock($_log_fp, LOCK_EX | LOCK_NB)) {
+                        ftruncate($_log_fp, 0);
+                        flock($_log_fp, LOCK_UN);
+                    }
+                    fclose($_log_fp);
+                }
+            }
+            unset($_log_max_mb, $_log_max_bytes, $_log_fp);
+        }
+
         unset($_log_file);
 
         /**
