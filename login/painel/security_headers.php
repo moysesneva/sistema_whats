@@ -6,10 +6,11 @@
  * e auth_guard.php), cobrindo assim todas as páginas do painel.
  *
  * Cabeçalhos aplicados:
- *   X-Frame-Options        — Previne clickjacking (só permite embedding do próprio domínio)
- *   X-Content-Type-Options — Previne MIME-sniffing pelo navegador
- *   Referrer-Policy        — Limita informações de referrer enviadas a terceiros
- *   Content-Security-Policy — Bloqueia scripts/recursos externos não autorizados
+ *   X-Frame-Options             — Previne clickjacking (só permite embedding do próprio domínio)
+ *   X-Content-Type-Options      — Previne MIME-sniffing pelo navegador
+ *   Referrer-Policy             — Limita informações de referrer enviadas a terceiros
+ *   Content-Security-Policy     — Bloqueia scripts/recursos externos não autorizados
+ *   Strict-Transport-Security   — Força HTTPS por 1 ano (apenas em produção; omitido em dev)
  */
 if (defined('SECURITY_HEADERS_SENT')) {
     return;
@@ -23,6 +24,11 @@ if (headers_sent()) {
 header('X-Frame-Options: SAMEORIGIN');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
+
+$app_env = strtolower(trim(getenv('APP_ENV') ?: ''));
+if ($app_env !== 'dev' && $app_env !== 'development') {
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+}
 
 /**
  * Nonce criptograficamente aleatório por requisição.
