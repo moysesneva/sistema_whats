@@ -1,5 +1,6 @@
 <?php
-if (isset($conn)) { return; }
+if (defined('CONN_LOADED')) { return; }
+define('CONN_LOADED', true);
 require_once __DIR__ . '/error_config.php';
 
 /**
