@@ -32,6 +32,19 @@ if (!in_array($tipo, [1, 4])) {
 include 'menu.php';
 include 'bloqueio.php';
 
+// Lê o tempo de expiração de sessão configurado
+$session_timeout_min = 30;
+$r_cfg = $conn->query("SELECT session_timeout_min FROM config LIMIT 1");
+if ($r_cfg) {
+    $row_cfg = $r_cfg->fetch_assoc();
+    if ($row_cfg && isset($row_cfg['session_timeout_min'])) {
+        $v = (int) $row_cfg['session_timeout_min'];
+        if ($v >= 5 && $v <= 480) {
+            $session_timeout_min = $v;
+        }
+    }
+}
+
 // -----------------------------------------------------------------------
 // Helpers
 // -----------------------------------------------------------------------
@@ -444,7 +457,86 @@ $sz_total       = $sz_logs_dir + $sz_log_proc + $sz_log_recv + $sz_uploads + $sz
 
 </div>
 
+    <!-- Card: Tempo de Expiração de Sessão -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card stats-card">
+                <div class="card-header">
+                    <i class="feather icon-clock"></i> Tempo de Expiração de Sessão
+                </div>
+                <div class="card-body">
+                    <p style="color:#555;font-size:14px;margin-bottom:16px;">
+                        Defina quantos minutos de inatividade são necessários para encerrar a sessão automaticamente.
+                        Mínimo: <strong>5 min</strong> &bull; Máximo: <strong>480 min (8 h)</strong>.
+                        O novo valor passa a valer a partir do próximo login.
+                    </p>
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                        <label for="session-timeout-input" style="font-weight:600;color:#001f3f;font-size:14px;white-space:nowrap;">
+                            Inatividade (minutos):
+                        </label>
+                        <input
+                            type="number"
+                            id="session-timeout-input"
+                            value="<?= (int) $session_timeout_min ?>"
+                            min="5"
+                            max="480"
+                            step="1"
+                            style="width:100px;padding:7px 12px;border:2px solid #e1e5e9;border-radius:6px;font-size:14px;text-align:center;"
+                        >
+                        <button id="btn-salvar-timeout" style="background:#FF5500;border:none;color:#fff;font-weight:600;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px;transition:background .2s;">
+                            <i class="feather icon-save" style="margin-right:6px;"></i>Salvar
+                        </button>
+                    </div>
+                    <div id="timeout-result" style="margin-top:10px;font-size:13px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
 <script>
+document.getElementById('btn-salvar-timeout').addEventListener('click', function () {
+    var btn   = this;
+    var input = document.getElementById('session-timeout-input');
+    var result = document.getElementById('timeout-result');
+    var val = parseInt(input.value, 10);
+
+    if (isNaN(val) || val < 5 || val > 480) {
+        result.innerHTML = '<span style="color:#dc3545;"><i class="feather icon-alert-circle" style="margin-right:4px;"></i>Valor inválido. Informe um número entre 5 e 480.</span>';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="feather icon-loader" style="margin-right:6px;"></i>Salvando…';
+    result.innerHTML = '';
+
+    fetch('api/salvar_session_timeout.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ session_timeout_min: val })
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+        if (data.ok) {
+            result.innerHTML = '<span style="color:#28a745;"><i class="feather icon-check-circle" style="margin-right:4px;"></i>' + (data.mensagem || 'Salvo com sucesso.') + '</span>';
+        } else {
+            result.innerHTML = '<span style="color:#dc3545;"><i class="feather icon-alert-circle" style="margin-right:4px;"></i>' + (data.erro || 'Erro ao salvar.') + '</span>';
+        }
+    })
+    .catch(function () {
+        result.innerHTML = '<span style="color:#dc3545;"><i class="feather icon-alert-circle" style="margin-right:4px;"></i>Falha na comunicação com o servidor.</span>';
+    })
+    .finally(function () {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="feather icon-save" style="margin-right:6px;"></i>Salvar';
+    });
+});
+
 document.getElementById('btn-limpar-agora').addEventListener('click', function () {
     var btn = this;
     var result = document.getElementById('cleanup-result');

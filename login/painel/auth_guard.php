@@ -12,7 +12,25 @@ require_once __DIR__ . '/error_config.php';
  *   require_once __DIR__ . '/auth_guard.php';
  */
 
-define('SESSION_TIMEOUT', 30 * 60);
+// Lê o tempo de inatividade da tabela config (com fallback para 30 min)
+$_auth_timeout_sec = 30 * 60;
+if (!isset($conn)) {
+    require_once __DIR__ . '/conn.php';
+}
+if (isset($conn)) {
+    $r = @$conn->query("SELECT session_timeout_min FROM config LIMIT 1");
+    if ($r) {
+        $row = $r->fetch_assoc();
+        if ($row && isset($row['session_timeout_min'])) {
+            $v = (int) $row['session_timeout_min'];
+            if ($v >= 5 && $v <= 480) {
+                $_auth_timeout_sec = $v * 60;
+            }
+        }
+    }
+}
+define('SESSION_TIMEOUT', $_auth_timeout_sec);
+unset($_auth_timeout_sec);
 
 /**
  * Registra uma tentativa de acesso bloqueado (sem sessão válida) em logs/auth_blocked.log.

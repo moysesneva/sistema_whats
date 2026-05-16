@@ -1,4 +1,5 @@
 <?php
+if (isset($conn)) { return; }
 require_once __DIR__ . '/error_config.php';
 
 /**

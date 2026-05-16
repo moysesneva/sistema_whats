@@ -183,6 +183,22 @@ INSERT IGNORE INTO `login` (`id`, `login`, `senha`, `tipo`, `usuario_api`, `nome
 -- Adicionar coluna endereco na tabela config (idempotente)
 ALTER TABLE `config` ADD COLUMN IF NOT EXISTS `endereco` VARCHAR(255) DEFAULT NULL;
 
+-- Tempo de expiração de sessão configurável pelo painel (idempotente via prepared statement)
+-- MySQL não suporta ADD COLUMN IF NOT EXISTS, então usamos information_schema para verificar
+SET @__col_exists = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'config'
+      AND COLUMN_NAME  = 'session_timeout_min'
+);
+SET @__sql = IF(@__col_exists = 0,
+    'ALTER TABLE `config` ADD COLUMN `session_timeout_min` INT(11) NOT NULL DEFAULT 30',
+    'SELECT 1'
+);
+PREPARE __stmt FROM @__sql;
+EXECUTE __stmt;
+DEALLOCATE PREPARE __stmt;
+
 -- Diagnóstico do banco de dados no menu admin (idempotente via INSERT IGNORE)
 INSERT IGNORE INTO `menu` (`id`, `menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`) VALUES (50, 'Diagnóstico BD', 'db_diagnostics.php', '1', '8.5', 'fa fa-database', 'adm,adm_install');
 
