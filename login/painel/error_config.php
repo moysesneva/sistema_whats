@@ -64,10 +64,38 @@ if (!defined('APP_ERROR_CONFIG_LOADED')) {
         unset($_log_file);
 
         /**
+         * Detecta se a requisição atual espera uma resposta JSON.
+         *
+         * Retorna true quando:
+         * - A URI começa com o prefixo base da API (/login/painel/api/)
+         * - Ou o cabeçalho Accept contém um tipo JSON (application/json, application/*+json),
+         *   verificado de forma case-insensitive
+         */
+        function _app_requisicao_espera_json(): bool
+        {
+            $uri = $_SERVER['REQUEST_URI'] ?? '';
+
+            $path = parse_url($uri, PHP_URL_PATH) ?? $uri;
+            if (str_starts_with($path, '/login/painel/api/')) {
+                return true;
+            }
+
+            $accept = strtolower($_SERVER['HTTP_ACCEPT'] ?? '');
+            if (str_contains($accept, 'application/json') || str_contains($accept, '+json')) {
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
          * Exibe a página de erro genérica ao usuário sem expor detalhes técnicos.
-         * Usa APP_ERRO_EXIBIDO para garantir que a página seja renderizada apenas uma vez,
+         * Usa APP_ERRO_EXIBIDO para garantir que a resposta seja enviada apenas uma vez,
          * mesmo que múltiplos handlers (set_error_handler + register_shutdown_function)
          * sejam acionados pelo mesmo erro fatal.
+         *
+         * Para requisições que esperam JSON (endpoints de API ou Accept: application/json),
+         * retorna {"erro": "Erro interno"} com HTTP 500 em vez de HTML.
          */
         function _app_mostrar_erro_generico(): void
         {
@@ -75,6 +103,15 @@ if (!defined('APP_ERROR_CONFIG_LOADED')) {
                 return;
             }
             define('APP_ERRO_EXIBIDO', true);
+
+            if (_app_requisicao_espera_json()) {
+                if (!headers_sent()) {
+                    http_response_code(500);
+                    header('Content-Type: application/json; charset=UTF-8');
+                }
+                echo json_encode(['erro' => 'Erro interno']);
+                return;
+            }
 
             if (!headers_sent()) {
                 http_response_code(500);
