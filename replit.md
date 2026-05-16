@@ -37,13 +37,37 @@ O `conn.php` lê as credenciais de variáveis de ambiente:
 
 ## Variáveis de Ambiente — Aplicação
 
-| Variável  | Valores aceitos              | Descrição                                                  |
-|-----------|------------------------------|------------------------------------------------------------|
-| `APP_ENV` | `dev`, `development`, omitida | Controla o modo de depuração PHP (ver `login/painel/error_config.php`) |
+| Variável             | Valores aceitos               | Descrição                                                                                    |
+|----------------------|-------------------------------|----------------------------------------------------------------------------------------------|
+| `APP_ENV`            | `dev`, `development`, omitida | Controla o modo de depuração PHP (ver `login/painel/error_config.php`)                       |
+| `API_WEBHOOK_TOKEN`  | string aleatória segura       | Token secreto que protege os endpoints de `login/painel/api/` (webhooks WhatsApp, cron jobs) |
 
 **Desenvolvimento** (`APP_ENV=dev` ou `APP_ENV=development`): todos os erros PHP são exibidos na tela (`display_errors=1`, `error_reporting=E_ALL`). Útil para depurar localmente no Replit.
 
 **Produção** (variável omitida ou qualquer outro valor): erros são suprimidos da saída (`display_errors=0`). **Nunca defina `APP_ENV=dev` em produção** — isso exibiria detalhes internos do sistema para os usuários finais.
+
+### API_WEBHOOK_TOKEN — Configuração e uso
+
+Gere um token forte (exemplo):
+
+```bash
+openssl rand -hex 32
+```
+
+Defina o valor gerado como secret `API_WEBHOOK_TOKEN` no painel de Secrets do Replit.
+
+**Envio pelo provedor WhatsApp / cron job:**
+
+- Cabeçalho HTTP (recomendado):
+  ```
+  Authorization: Bearer <token>
+  ```
+- Parâmetro de query (fallback, quando o provedor não suporta cabeçalhos customizados):
+  ```
+  https://seu-dominio/login/painel/api/recebe.php?token=<token>
+  ```
+
+Se `API_WEBHOOK_TOKEN` não estiver definido, **todos** os acessos à API retornam `500` para forçar a configuração correta antes do uso em produção. Requisições com token errado ou ausente retornam `401 JSON`.
 
 ## Admin
 

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/api_auth.php';
 include '../conn.php';
 include '../funcoes.php'; // onde está a função enviarMensagem()
 include 'editacodigo.php';
