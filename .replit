@@ -49,6 +49,7 @@ timeoutMs = 60000
 [deployment]
 deploymentTarget = "vm"
 run = ["bash", "start.sh"]
+build = ["composer", "install", "--no-dev", "--optimize-autoloader", "--no-scripts"]
 
 [userenv]
 
