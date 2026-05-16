@@ -35,6 +35,16 @@ O `conn.php` lê as credenciais de variáveis de ambiente:
 **MySQL local**: usado automaticamente quando `DB_HOST=localhost` (padrão no Replit).
 **MySQL externo (Hostinger)**: basta definir `DB_HOST` com o host remoto — o `start.sh` pula o MySQL local automaticamente.
 
+## Variáveis de Ambiente — Aplicação
+
+| Variável  | Valores aceitos              | Descrição                                                  |
+|-----------|------------------------------|------------------------------------------------------------|
+| `APP_ENV` | `dev`, `development`, omitida | Controla o modo de depuração PHP (ver `login/painel/error_config.php`) |
+
+**Desenvolvimento** (`APP_ENV=dev` ou `APP_ENV=development`): todos os erros PHP são exibidos na tela (`display_errors=1`, `error_reporting=E_ALL`). Útil para depurar localmente no Replit.
+
+**Produção** (variável omitida ou qualquer outro valor): erros são suprimidos da saída (`display_errors=0`). **Nunca defina `APP_ENV=dev` em produção** — isso exibiria detalhes internos do sistema para os usuários finais.
+
 ## Admin
 
 - URL: `/login/painel/login_adm.php`
