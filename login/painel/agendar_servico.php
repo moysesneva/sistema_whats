@@ -405,6 +405,15 @@ mysqli_stmt_close($stmt_busca_config);
         carregarDiasHorariosDisponiveis();
     });
 
+    function escHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
     function carregarDiasHorariosDisponiveis() {
         const profissionalId = $('#profissional').val();
         const servicoId = $('#servico_selecionado').val();
@@ -426,13 +435,18 @@ mysqli_stmt_close($stmt_busca_config);
                     if (Array.isArray(dataSlots) && dataSlots.length > 0) {
                         dataSlots.forEach(function(slot) {
                             if (slot.horarios.length > 0) {
-                                let horariosHtml = slot.horarios.map(h => `<div class="time-slot" data-horario="${h}" data-data="${slot.data}">${h}</div>`).join('');
-                                
-                                const [y, m, d] = slot.data.split('-');
-                                const dateObj = new Date(y, m - 1, d);
-                                const dataFormatada = dateObj.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+                                let horariosHtml = slot.horarios.map(function(h) {
+                                    const safeH = escHtml(h);
+                                    const safeData = escHtml(slot.data);
+                                    return '<div class="time-slot" data-horario="' + safeH + '" data-data="' + safeData + '">' + safeH + '</div>';
+                                }).join('');
 
-                                $('#dias-horarios-lista').append(`<h6 class="mt-4"><i class="fas fa-calendar-day"></i> ${dataFormatada}</h6><div class="time-slots-grid">${horariosHtml}</div>`);
+                                const safeData = escHtml(slot.data);
+                                const [y, m, d] = safeData.split('-');
+                                const dateObj = new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(d, 10));
+                                const dataFormatada = escHtml(dateObj.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' }));
+
+                                $('#dias-horarios-lista').append('<h6 class="mt-4"><i class="fas fa-calendar-day"></i> ' + dataFormatada + '</h6><div class="time-slots-grid">' + horariosHtml + '</div>');
                             }
                         });
                     } else {

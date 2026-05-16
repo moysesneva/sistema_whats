@@ -16,6 +16,10 @@ function VaiPara($pagina) {
 }
 
 
+function esc($value, $flags = ENT_QUOTES, $encoding = 'UTF-8') {
+    return htmlspecialchars((string)$value, $flags, $encoding);
+}
+
 function Priletra($string) {
     // Transforma toda a string em minúscula, exceto a primeira letra
     $string = strtolower($string);

@@ -19,7 +19,8 @@ if (isset($_POST['profissional_id']) && isset($_POST['dia'])) {
     echo '<option value="">Escolha um horário</option>';
 
     while ($row = $result->fetch_assoc()) {
-        echo "<option value='{$row['horario']}'>{$row['horario']}</option>";
+        $horario_safe = htmlspecialchars($row['horario'], ENT_QUOTES, 'UTF-8');
+        echo "<option value='{$horario_safe}'>{$horario_safe}</option>";
     }
 }
 ?>

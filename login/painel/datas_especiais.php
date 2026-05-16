@@ -109,7 +109,7 @@ if (isset($_POST['deletar'])) {
                                     $stmt_de1->close();
 
                                     while ($row = $result->fetch_assoc()) {
-                                        echo '<option value="' . $row['id'] . '">' . $row['profissional_nome'] . ' - ' . $row['profissional_cargo'] . '</option>';
+                                        echo '<option value="' . (int)$row['id'] . '">' . htmlspecialchars($row['profissional_nome'], ENT_QUOTES, 'UTF-8') . ' - ' . htmlspecialchars($row['profissional_cargo'], ENT_QUOTES, 'UTF-8') . '</option>';
                                     }
 
                                     // Fechar a conexão
