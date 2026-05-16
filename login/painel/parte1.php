@@ -247,6 +247,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             padding-bottom: 10px;
             border-bottom: 1px solid #dee2e6;
         }
+        .campo-vazio-destaque {
+            border-color: #ffc107 !important;
+            box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25) !important;
+        }
+        .campo-vazio-badge {
+            display: inline-block;
+            margin-top: 4px;
+            padding: 1px 7px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #856404;
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -525,6 +540,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             { id: 'feature_title',         label: 'Título do Benefício' },
             { id: 'feature_description',   label: 'Descrição do Benefício' }
         ];
+
+        // Destaca campos importantes que já estão em branco ao carregar a página
+        camposImportantes.forEach(function(campo) {
+            var el = document.getElementById(campo.id);
+            if (!el || el.value.trim() !== '') return;
+            el.classList.add('campo-vazio-destaque');
+            var badge = document.createElement('span');
+            badge.className = 'campo-vazio-badge';
+            badge.textContent = 'Campo vazio';
+            el.insertAdjacentElement('afterend', badge);
+            el.addEventListener('input', function limpar() {
+                if (el.value.trim() !== '') {
+                    el.classList.remove('campo-vazio-destaque');
+                    if (badge.parentNode) badge.parentNode.removeChild(badge);
+                    el.removeEventListener('input', limpar);
+                }
+            });
+        });
 
         document.querySelector('form').addEventListener('submit', function(e) {
             var vazios = [];
