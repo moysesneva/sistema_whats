@@ -48,8 +48,44 @@ if ($_disk_total_mb >= DISK_WARN_THRESHOLD_MB):
         <a href="disk_stats.php" style="color:#001f3f;font-weight:600;margin-left:6px;">Ver detalhes &rsaquo;</a>
     </span>
     <button type="button"
-            onclick="document.getElementById('disk-warning-banner').style.display='none';"
+            onclick="_diskWarnDismiss();"
             style="background:none;border:none;font-size:20px;line-height:1;color:#888;cursor:pointer;padding:0 4px;flex-shrink:0;"
             aria-label="Fechar aviso">&times;</button>
 </div>
+<script>
+(function () {
+    var KEY = 'disk_warn_dismissed_until';
+
+    function _diskWarnDismissed() {
+        try {
+            var until = parseInt(localStorage.getItem(KEY), 10);
+            if (isNaN(until)) return false;
+            if (Date.now() >= until) {
+                localStorage.removeItem(KEY);
+                return false;
+            }
+            return true;
+        } catch (e) { return false; }
+    }
+
+    function _endOfDay() {
+        var d = new Date();
+        d.setHours(23, 59, 59, 999);
+        return d.getTime();
+    }
+
+    window._diskWarnDismiss = function () {
+        try {
+            localStorage.setItem(KEY, _endOfDay());
+        } catch (e) {}
+        var el = document.getElementById('disk-warning-banner');
+        if (el) el.style.display = 'none';
+    };
+
+    if (_diskWarnDismissed()) {
+        var el = document.getElementById('disk-warning-banner');
+        if (el) el.style.display = 'none';
+    }
+})();
+</script>
 <?php endif; ?>
