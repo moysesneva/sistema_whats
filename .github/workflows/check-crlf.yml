@@ -1,0 +1,54 @@
+name: Check CRLF line endings
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  crlf-check:
+    name: Detect CRLF in committed files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for CRLF line endings
+        run: |
+          echo "Scanning repository for files with CRLF line endings..."
+
+          CRLF_FILES=()
+
+          while IFS= read -r -d '' file; do
+            [ -f "$file" ] || continue
+
+            mime_encoding=$(file --mime-encoding -b "$file" 2>/dev/null || true)
+            case "$mime_encoding" in
+              binary|"") continue ;;
+            esac
+
+            if grep -qU $'\r' "$file" 2>/dev/null; then
+              CRLF_FILES+=("$file")
+            fi
+          done < <(git ls-files -z)
+
+          if [ ${#CRLF_FILES[@]} -gt 0 ]; then
+            echo ""
+            echo "ERROR: The following files contain CRLF line endings:"
+            for f in "${CRLF_FILES[@]}"; do
+              echo "  - $f"
+            done
+            echo ""
+            echo "Fix with:  perl -pi -e 's/\\r$//' <file>"
+            echo "Or run:    git ls-files -z | xargs -0 perl -pi -e 's/\\r$//'"
+            echo ""
+            echo "The pre-commit hook normally prevents this automatically."
+            echo "Make sure you haven't bypassed hooks (git commit --no-verify)."
+            exit 1
+          fi
+
+          echo "All files use LF line endings. OK."
