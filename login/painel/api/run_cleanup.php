@@ -96,11 +96,12 @@ $dbFailuresMaxMb   = max(1, (int) (getenv('DB_FAILURES_MAX_SIZE_MB')  ?: 1));
 $dbFailuresMaxBytes = $dbFailuresMaxMb * 1024 * 1024;
 $dbFailuresMaxAge  = max(1, (int) (getenv('DB_FAILURES_MAX_AGE_DAYS') ?: 30));
 
-$logsDir   = $base . '/logs';
-$logProc   = $base . '/log_processamento.txt';
-$logRecv   = $base . '/log_recebidos.txt';
-$uploadsDir = $base . '/img';
-$dbFailuresLog = dirname($base) . '/logs/db_failures.log';
+$logsDir      = $base . '/logs';
+$painelLogsDir = dirname($base) . '/logs';
+$logProc      = $base . '/log_processamento.txt';
+$logRecv      = $base . '/log_recebidos.txt';
+$uploadsDir   = $base . '/img';
+$dbFailuresLog = $painelLogsDir . '/db_failures.log';
 $phpErrorLog   = getenv('PHP_ERROR_LOG') ?: '/tmp/php_errors.log';
 
 $ts = date('Y-m-d H:i:s');
@@ -109,11 +110,13 @@ $ts = date('Y-m-d H:i:s');
 // Limpeza de logs
 // -----------------------------------------------------------------------
 
-$removidosLogs  = 0;
-$truncamentos   = 0;
+$removidosLogs       = 0;
+$removidosPainelLogs = 0;
+$truncamentos        = 0;
+
+$limiteModif = time() - ($maxDias * 86400);
 
 if (is_dir($logsDir)) {
-    $limiteModif = time() - ($maxDias * 86400);
     foreach (glob($logsDir . '/*.{log,txt}', GLOB_BRACE) as $arquivo) {
         if (basename($arquivo) === 'admin_actions.log') {
             continue;
@@ -121,6 +124,21 @@ if (is_dir($logsDir)) {
         if (is_file($arquivo) && filemtime($arquivo) < $limiteModif) {
             if (unlink($arquivo)) {
                 $removidosLogs++;
+            }
+        }
+    }
+}
+
+// Varredura de login/painel/logs/ (auth_blocked.log e demais logs).
+// db_failures.log é excluído pois tem rotação própria (por tamanho e por idade).
+if (is_dir($painelLogsDir)) {
+    foreach (glob($painelLogsDir . '/*.{log,txt}', GLOB_BRACE) as $arquivo) {
+        if (basename($arquivo) === 'db_failures.log') {
+            continue;
+        }
+        if (is_file($arquivo) && filemtime($arquivo) < $limiteModif) {
+            if (unlink($arquivo)) {
+                $removidosPainelLogs++;
             }
         }
     }
@@ -181,15 +199,16 @@ if (is_file($dbFailuresLog)) {
 }
 
 $statusLogs = json_encode([
-    'ultima_varredura'         => $ts,
-    'arquivos_removidos'       => $removidosLogs,
-    'truncamentos'             => $truncamentos,
-    'max_age_dias'             => $maxDias,
-    'max_size_mb'              => $maxMb,
-    'php_error_log_action'     => $phpErrorLogAction,
-    'db_failures_action'       => $dbFailuresAction,
-    'db_failures_max_size_mb'  => $dbFailuresMaxMb,
-    'db_failures_max_age_dias' => $dbFailuresMaxAge,
+    'ultima_varredura'              => $ts,
+    'arquivos_removidos'            => $removidosLogs,
+    'painel_logs_removidos'         => $removidosPainelLogs,
+    'truncamentos'                  => $truncamentos,
+    'max_age_dias'                  => $maxDias,
+    'max_size_mb'                   => $maxMb,
+    'php_error_log_action'          => $phpErrorLogAction,
+    'db_failures_action'            => $dbFailuresAction,
+    'db_failures_max_size_mb'       => $dbFailuresMaxMb,
+    'db_failures_max_age_dias'      => $dbFailuresMaxAge,
 ], JSON_UNESCAPED_UNICODE);
 
 file_put_contents($base . '/status_limpar_logs.json', $statusLogs);
@@ -229,11 +248,12 @@ if (!is_dir($logsDir)) {
 }
 
 $auditEntry = json_encode([
-    'ts'               => $ts,
-    'admin'            => $login,
-    'logs_removidos'   => $removidosLogs,
-    'truncamentos'     => $truncamentos,
-    'uploads_removidos' => $removidosUploads,
+    'ts'                    => $ts,
+    'admin'                 => $login,
+    'logs_removidos'        => $removidosLogs,
+    'painel_logs_removidos' => $removidosPainelLogs,
+    'truncamentos'          => $truncamentos,
+    'uploads_removidos'     => $removidosUploads,
 ], JSON_UNESCAPED_UNICODE);
 
 file_put_contents($adminActionsLog, $auditEntry . "\n", FILE_APPEND | LOCK_EX);
@@ -243,10 +263,11 @@ file_put_contents($adminActionsLog, $auditEntry . "\n", FILE_APPEND | LOCK_EX);
 // -----------------------------------------------------------------------
 
 echo json_encode([
-    'ok'                   => true,
-    'ts'                   => $ts,
-    'logs_removidos'       => $removidosLogs,
-    'truncamentos'         => $truncamentos,
-    'uploads_removidos'    => $removidosUploads,
-    'php_error_log_action' => $phpErrorLogAction,
+    'ok'                    => true,
+    'ts'                    => $ts,
+    'logs_removidos'        => $removidosLogs,
+    'painel_logs_removidos' => $removidosPainelLogs,
+    'truncamentos'          => $truncamentos,
+    'uploads_removidos'     => $removidosUploads,
+    'php_error_log_action'  => $phpErrorLogAction,
 ], JSON_UNESCAPED_UNICODE);
