@@ -178,3 +178,51 @@ if (isset($tipo) && in_array($tipo, [1, 4])) {
 }
 ?>
 <?php if (isset($tipo) && in_array($tipo, [1, 4])) include __DIR__ . '/disk_warning_banner.php'; ?>
+<?php
+if (isset($tipo) && in_array($tipo, [1, 4]) && empty(getenv('API_WEBHOOK_TOKEN'))):
+?>
+<div id="api-token-warning-banner"
+     style="margin:16px 16px 0;padding:14px 18px;background:#fff3cd;border:1px solid #ffc107;border-left:5px solid #FF5500;border-radius:6px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+    <span style="color:#333;font-size:14px;line-height:1.6;">
+        <i class="feather icon-alert-triangle" style="color:#FF5500;margin-right:8px;"></i>
+        <strong>API_WEBHOOK_TOKEN não configurado.</strong>
+        Todos os endpoints de API (<code style="background:#f0f0f0;padding:1px 4px;border-radius:3px;">/login/painel/api/</code>) estão bloqueados com erro 500 até que esse segredo seja definido.<br>
+        <span style="margin-left:22px;">
+            Para corrigir: gere um token com
+            <code style="background:#f0f0f0;padding:1px 4px;border-radius:3px;">openssl rand -hex 32</code>
+            e salve o valor como Secret <strong>API_WEBHOOK_TOKEN</strong> no painel do Replit.
+        </span>
+    </span>
+    <button type="button"
+            onclick="_apiTokenWarnDismiss();"
+            style="background:none;border:none;font-size:20px;line-height:1;color:#888;cursor:pointer;padding:0 4px;flex-shrink:0;"
+            aria-label="Fechar aviso">&times;</button>
+</div>
+<script>
+(function(){
+    var KEY = 'api_token_warn_dismissed_until';
+    function _dismissed(){
+        try{
+            var until = parseInt(localStorage.getItem(KEY), 10);
+            if(isNaN(until)) return false;
+            if(Date.now() >= until){ localStorage.removeItem(KEY); return false; }
+            return true;
+        }catch(e){ return false; }
+    }
+    function _endOfDay(){
+        var d = new Date();
+        d.setHours(23,59,59,999);
+        return d.getTime();
+    }
+    window._apiTokenWarnDismiss = function(){
+        try{ localStorage.setItem(KEY, _endOfDay()); }catch(e){}
+        var el = document.getElementById('api-token-warning-banner');
+        if(el) el.style.display = 'none';
+    };
+    if(_dismissed()){
+        var el = document.getElementById('api-token-warning-banner');
+        if(el) el.style.display = 'none';
+    }
+})();
+</script>
+<?php endif; ?>
