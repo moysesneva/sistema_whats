@@ -86,6 +86,24 @@ include 'bloqueio.php';
     <hr>
 
     <!-- Formulário para a Cor do Menu -->
+    <form action="upload.php" method="POST">
+        <div class="form-group">
+            <label for="cor_menu">Cor do Menu Lateral:</label>
+            <select class="form-control" id="cor_menu" name="cor_menu">
+                <option value="" selected>Selecione a opção</option>
+                <option value="navbar-dark">Escuro</option>
+                <option value="navbar-blue">Azul</option>
+                <option value="navbar-red">Vermelho</option>
+                <option value="navbar-purple">Roxo</option>
+                <option value="navbar-lightblue">Azul Claro</option>
+                <option value="navbar-navy">Azul Marinho</option>
+                <option value="navbar-teal">Verde Teal</option>
+                <option value="navbar-light">Claro</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Atualizar Cor do Menu</button>
+    </form>
+    <hr>
 
     <!-- Formulário para a Seleção do Menu -->
     <form action="upload.php" method="POST">

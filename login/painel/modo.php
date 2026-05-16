@@ -31,7 +31,7 @@ while($rows_usuarios = $query_busca_usuario->fetch_array()) {
     $autorizado   = $rows_usuarios['autorizado'];
     $tipo         = $rows_usuarios['tipo'];
     $funcao       = $rows_usuarios['funcao'];
-    $usuario_api  = $rows_usuarios['$usuario_api'];
+    $usuario_api  = $rows_usuarios['usuario_api'];
     $plano        = $rows_usuarios['plano'];
     $modo_atuante = $rows_usuarios['modo_atuante'];
 }
@@ -120,10 +120,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             if ($resultado_funcao) {
-                VaiPara('modo.php');
-                echo '<div class="alert alert-success" role="alert">
-                        <i class="feather icon-check-circle"></i> Função ' . $acao_realizada . ' com sucesso! Tipo: <strong>' . htmlspecialchars($nome_modulo, ENT_QUOTES) . '</strong>
-                      </div>';
+                VaiPara('modo.php?msg=Função+' . urlencode($acao_realizada) . '+com+sucesso');
+                exit;
             } else {
                 echo '<div class="alert alert-danger" role="alert">
                         <i class="feather icon-x-circle"></i> Erro ao processar função: ' . mysqli_error($conn) . '

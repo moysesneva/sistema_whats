@@ -47,7 +47,41 @@ if($autorizado != 2){
 }
 
 ?>
-<?php include 'header.php'; ?>
+<?php
+
+// --- Ação: exportar CSV ---
+if (isset($_GET['exportar']) && $_GET['exportar'] === 'csv') {
+    header('Content-Type: text/csv; charset=UTF-8');
+    header('Content-Disposition: attachment; filename="leads_' . date('Y-m-d') . '.csv"');
+    $out = fopen('php://output', 'w');
+    fprintf($out, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM UTF-8
+    fputcsv($out, ['Nome', 'Email', 'WhatsApp', 'Data']);
+    $res_exp = mysqli_query($conn, "SELECT nome, email, whats, data FROM leads ORDER BY data DESC");
+    while ($r = mysqli_fetch_assoc($res_exp)) {
+        fputcsv($out, [$r['nome'], $r['email'], $r['whats'], $r['data']]);
+    }
+    fclose($out);
+    exit;
+}
+
+// --- Ação: deletar lead individual ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deletar_lead'])) {
+    $lead_id = (int)$_POST['deletar_lead'];
+    $stmt_del = $conn->prepare("DELETE FROM leads WHERE id = ?");
+    $stmt_del->bind_param("i", $lead_id);
+    $stmt_del->execute();
+    $stmt_del->close();
+    VaiPara('leads.php?msg=Lead+deletado');
+}
+
+// --- Ação: limpar todos os leads ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['limpar_todos'])) {
+    mysqli_query($conn, "DELETE FROM leads");
+    VaiPara('leads.php?msg=Leads+apagados');
+}
+
+include 'header.php';
+?>
 
 <?php
 // Configuração da paginação
@@ -274,15 +308,25 @@ $totalPaginas = ceil($totalRegistros / $registrosPorPagina);
 </style>
 
 <div class="leads-wrapper">
+  <div style="padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; border-bottom: 1px solid #e8e8e8;">
+    <h5 style="margin:0; color:#001f3f; font-weight:600;"><i class="feather icon-users"></i> Leads Capturados</h5>
+    <div style="display:flex; gap:10px;">
+      <a href="?exportar=csv" class="btn btn-sm btn-success"><i class="feather icon-download"></i> Exportar CSV</a>
+      <form method="POST" style="margin:0;" id="formLimparLeads">
+        <input type="hidden" name="limpar_todos" value="1">
+        <button type="submit" class="btn btn-sm btn-danger" data-fn="__confirm" data-args="Apagar todos os leads? Esta ação não pode ser desfeita."><i class="feather icon-trash-2"></i> Limpar Tudo</button>
+      </form>
+    </div>
+  </div>
   <div class="leads-header">
     <div>Nome</div>
     <div>Email</div>
     <div>WhatsApp</div>
-    <div>Data</div>
+    <div>Data / Ações</div>
   </div>
   <?php
   // Busca os leads com paginação
-  $stmt_leads = $conn->prepare("SELECT nome, email, whats, data FROM leads ORDER BY data DESC LIMIT ? OFFSET ?");
+  $stmt_leads = $conn->prepare("SELECT id, nome, email, whats, data FROM leads ORDER BY data DESC LIMIT ? OFFSET ?");
   $stmt_leads->bind_param("ii", $registrosPorPagina, $offset);
   $stmt_leads->execute();
   $result = $stmt_leads->get_result();
@@ -309,7 +353,13 @@ $totalPaginas = ceil($totalRegistros / $registrosPorPagina);
           <?= htmlspecialchars($row['whats'], ENT_QUOTES, 'UTF-8') ?>
         </a>
       </div>
-      <div><?= $dataBR ?></div>
+      <div>
+        <?= $dataBR ?>
+        <form method="POST" style="display:inline; margin-left:6px;">
+          <input type="hidden" name="deletar_lead" value="<?= (int)$row['id'] ?>">
+          <button type="submit" class="btn btn-xs btn-danger" title="Deletar" data-fn="__confirm" data-args="Deletar este lead?"><i class="feather icon-trash-2"></i></button>
+        </form>
+      </div>
     </div>
   <?php 
     endwhile;
@@ -360,5 +410,8 @@ $totalPaginas = ceil($totalRegistros / $registrosPorPagina);
     
     <div class="info-pagination">
       Mostrando <?= ($offset + 1) ?> a <?= min($offset + $registrosPorPagina, $totalRegistros) ?> de <?= $totalRegistros ?> leads
+    </div>
+  </div>
+</div>
 
 <?php include 'footer.php'; ?>

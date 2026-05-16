@@ -96,9 +96,7 @@ while ($rows_usuarios = mysqli_fetch_array($query)) {
     <div class="col-md-12 col-xl-6">
         <div class="card">
             <div class="card-header">
-                  <h2 class="text-primary">Precisa de Ajuda?</h2>
-    <p class="text-muted mb-0">Se tiver dúvidas, solicite um suporte.</p>
-    <a href="contato.php"target='blank' class="btn btn-success mt-3">Solicitar Suporte</a>
+                <h5>Estatísticas</h5>
                 <div class="card-header-right">
                     <ul class="list-unstyled card-option">
                         <li><i class="feather icon-maximize full-card"></i></li>
@@ -107,14 +105,24 @@ while ($rows_usuarios = mysqli_fetch_array($query)) {
                     </ul>
                 </div>
             </div>
-                <div class="card-block">
-                    <div class="row align-items-center">
-                       
+            <div class="card-block">
+                <?php
+                $total_modulos  = mysqli_num_rows(mysqli_query($conn, "SELECT id FROM modulos_lista"));
+                $total_baixados = mysqli_num_rows(mysqli_query($conn, "SELECT id FROM modulos_baixados"));
+                ?>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h3 class="text-primary"><?= $total_modulos ?></h3>
+                        <p class="text-muted mb-0">Módulos na lista</p>
                     </div>
-                    <div class="row align-items-center mt-3">
-                      
+                    <div class="col-6">
+                        <h3 class="text-success"><?= $total_baixados ?></h3>
+                        <p class="text-muted mb-0">Módulos baixados</p>
                     </div>
                 </div>
+                <hr>
+                <p class="text-muted mb-1"><i class="feather icon-help-circle"></i> Precisa de ajuda?</p>
+                <a href="contato.php" target="_blank" class="btn btn-success btn-sm">Solicitar Suporte</a>
             </div>
         </div>
     </div>

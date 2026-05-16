@@ -269,7 +269,7 @@ function substituirBarrasDuplas($texto) {
     return str_replace('//', '/', $texto);
 }   
    
-$webhook_node = "https://agenda.tasmota.com.br/agenda/login/painel/api/teste/api.php";
+$webhook_node = substituirBarrasDuplas($webhook.'/login/painel/api/teste/api.php');
 $webhook_mensagens = substituirBarrasDuplas($webhook.'/login/painel/api/recebe.php');
 
 $webhook_validate = substituirBarrasDuplas($webhook.'/login/painel/api/cron.php');
