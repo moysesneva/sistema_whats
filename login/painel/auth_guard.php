@@ -12,6 +12,50 @@
 
 define('SESSION_TIMEOUT', 30 * 60);
 
+/**
+ * Registra uma tentativa de acesso bloqueado (sem sessão válida) em logs/auth_blocked.log.
+ *
+ * Cada entrada é uma linha JSON (JSONL) com: ts, ip, url, method.
+ * Quando o arquivo ultrapassa LOG_MAX_SIZE_MB (padrão: 10 MB) ele é truncado
+ * — mesmo comportamento de rotação dos outros logs do projeto.
+ *
+ * @param bool $expired true quando a sessão expirou, false quando nunca houve sessão
+ */
+function registrar_acesso_bloqueado(bool $expired): void
+{
+    $log_file = __DIR__ . '/logs/auth_blocked.log';
+
+    $logs_dir = dirname($log_file);
+    if (!is_dir($logs_dir)) {
+        @mkdir($logs_dir, 0755, true);
+    }
+
+    $max_mb    = max(1, (int) (getenv('LOG_MAX_SIZE_MB') ?: 10));
+    $max_bytes = $max_mb * 1024 * 1024;
+    if (is_file($log_file) && filesize($log_file) > $max_bytes) {
+        @file_put_contents($log_file, '');
+    }
+
+    $forwarded = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
+    $ip = $forwarded !== ''
+        ? trim(explode(',', $forwarded)[0])
+        : ($_SERVER['REMOTE_ADDR'] ?? 'desconhecido');
+
+    $url = ($_SERVER['REQUEST_SCHEME'] ?? 'http') . '://'
+         . ($_SERVER['HTTP_HOST'] ?? 'localhost')
+         . ($_SERVER['REQUEST_URI'] ?? '/');
+
+    $entrada = json_encode([
+        'ts'      => date('Y-m-d H:i:s'),
+        'ip'      => $ip,
+        'url'     => $url,
+        'method'  => $_SERVER['REQUEST_METHOD'] ?? 'GET',
+        'motivo'  => $expired ? 'sessao_expirada' : 'sem_sessao',
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+    @file_put_contents($log_file, $entrada . "\n", FILE_APPEND | LOCK_EX);
+}
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -33,6 +77,8 @@ if (isset($_SESSION['login'])) {
 }
 
 if ($_session_expired || !isset($_SESSION['login'])) {
+    registrar_acesso_bloqueado($_session_expired);
+
     // Calcula o caminho absoluto até login_adm.php (sempre no mesmo dir que auth_guard.php)
     $doc_root  = rtrim(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? ''), '/');
     $guard_dir = rtrim(str_replace('\\', '/', __DIR__), '/');
