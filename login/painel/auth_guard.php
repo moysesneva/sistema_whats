@@ -10,11 +10,29 @@
  *   require_once __DIR__ . '/auth_guard.php';
  */
 
+define('SESSION_TIMEOUT', 30 * 60);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if (!isset($_SESSION['login'])) {
+$_session_expired = false;
+
+if (isset($_SESSION['login'])) {
+    if (!isset($_SESSION['last_activity'])) {
+        session_unset();
+        session_destroy();
+        $_session_expired = true;
+    } elseif ((time() - $_SESSION['last_activity']) > SESSION_TIMEOUT) {
+        session_unset();
+        session_destroy();
+        $_session_expired = true;
+    } else {
+        $_SESSION['last_activity'] = time();
+    }
+}
+
+if ($_session_expired || !isset($_SESSION['login'])) {
     // Calcula o caminho absoluto até login_adm.php (sempre no mesmo dir que auth_guard.php)
     $doc_root  = rtrim(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? ''), '/');
     $guard_dir = rtrim(str_replace('\\', '/', __DIR__), '/');
@@ -22,6 +40,7 @@ if (!isset($_SESSION['login'])) {
         ? substr($guard_dir, strlen($doc_root))
         : '/login/painel';
     $login_url = rtrim($base_url, '/') . '/login_adm.php';
+    $redirect_url = $_session_expired ? $login_url . '?expirado=1' : $login_url;
 
     $is_ajax = (isset($auth_ajax_mode) && $auth_ajax_mode === true)
         || (!empty($_SERVER['HTTP_X_REQUESTED_WITH'])
@@ -32,11 +51,11 @@ if (!isset($_SESSION['login'])) {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             'erro'     => 'Sessão expirada. Faça login novamente.',
-            'redirect' => $login_url,
+            'redirect' => $redirect_url,
         ]);
         exit;
     }
 
-    header('Location: ' . $login_url);
+    header('Location: ' . $redirect_url);
     exit;
 }

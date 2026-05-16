@@ -32,12 +32,14 @@ $stmt->close();
 if(isset($autorizado)){
 if($autorizado == 1){   
 $_SESSION['login'] = $login;
+$_SESSION['last_activity'] = time();
 Vaipara('desbloquear.php');
 }}
 
 if($total_busca_usuario  == 1){
 
 $_SESSION['login'] = $login;
+$_SESSION['last_activity'] = time();
 VaiPara($pagina);
 
 }#if($total_busca_usuario  == 1){

@@ -200,6 +200,10 @@ include 'funcoes.php';
                 <div class="error-msg">Usuário ou senha incorretos. Tente novamente.</div>
                 <?php endif; ?>
 
+                <?php if(isset($_GET['expirado']) && $_GET['expirado'] == '1'): ?>
+                <div class="error-msg">Sua sessão expirou por inatividade. Faça login novamente.</div>
+                <?php endif; ?>
+
                 <div class="form-group">
                     <label class="form-label">Usuário</label>
                     <input type="text" name="telefone" class="form-control"
