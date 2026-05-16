@@ -21,32 +21,37 @@ Sistema PHP + MySQL para agendamento de serviços e atendimento via WhatsApp, co
 - `start.sh` — script de inicialização
 - `router.php` — roteador PHP
 
-## Banco de Dados
+## Variáveis de Ambiente
 
-O `conn.php` lê as credenciais de variáveis de ambiente:
+Todas as variáveis de ambiente do projeto estão listadas abaixo. As marcadas como **secret** devem ser configuradas como Secrets no painel do Replit (nunca em texto plano). As demais podem ser definidas como variáveis comuns ou deixadas com o valor padrão indicado.
 
-| Variável  | Padrão        | Descrição                    |
-|-----------|---------------|------------------------------|
-| `DB_HOST` | `localhost`   | Host do MySQL                |
-| `DB_USER` | `root`        | Usuário do banco             |
-| `DB_PASS` | *(secret)*    | Senha do banco               |
-| `DB_NAME` | `agendamento` | Nome do banco de dados       |
+### Banco de Dados
+
+Consumidas por `login/painel/conn.php`.
+
+| Variável  | Obrig.? | Secret? | Padrão        | Consumido por                   | Descrição                                                |
+|-----------|---------|---------|---------------|---------------------------------|----------------------------------------------------------|
+| `DB_HOST` | Não     | Não     | `localhost`   | `login/painel/conn.php`         | Host do MySQL. Omita (ou use `localhost`) para banco local. Defina com o host remoto (ex: Hostinger) para banco externo. |
+| `DB_USER` | Condicional | Não | `root`       | `login/painel/conn.php`         | Usuário do banco. Obrigatório quando `DB_HOST` é remoto. |
+| `DB_PASS` | Condicional | **Sim** | *(vazio)*   | `login/painel/conn.php`         | Senha do banco. Obrigatória quando `DB_HOST` é remoto.   |
+| `DB_NAME` | Condicional | Não | `agendamento` | `login/painel/conn.php`         | Nome do banco. Obrigatório quando `DB_HOST` é remoto.    |
 
 **MySQL local**: usado automaticamente quando `DB_HOST=localhost` (padrão no Replit).
 **MySQL externo (Hostinger)**: basta definir `DB_HOST` com o host remoto — o `start.sh` pula o MySQL local automaticamente.
 
-## Variáveis de Ambiente — Aplicação
+### Aplicação
 
-| Variável             | Valores aceitos               | Descrição                                                                                    |
-|----------------------|-------------------------------|----------------------------------------------------------------------------------------------|
-| `APP_ENV`            | `dev`, `development`, omitida | Controla o modo de depuração PHP (ver `login/painel/error_config.php`)                       |
-| `API_WEBHOOK_TOKEN`  | string aleatória segura       | Token secreto que protege os endpoints de `login/painel/api/` (webhooks WhatsApp, cron jobs) |
+| Variável            | Obrig.? | Secret? | Padrão        | Consumido por                          | Descrição                                                                                          |
+|---------------------|---------|---------|---------------|----------------------------------------|----------------------------------------------------------------------------------------------------|
+| `APP_ENV`           | Não     | Não     | *(omitida)*   | `login/painel/error_config.php`        | `dev` ou `development` ativa modo de depuração (erros na tela). Qualquer outro valor = produção.  |
+| `PHP_ERROR_LOG`     | Não     | Não     | `/tmp/php_errors.log` | `login/painel/error_config.php` | Caminho do arquivo de log de erros PHP em produção. Ignorado em modo dev (usa stderr).           |
+| `API_WEBHOOK_TOKEN` | **Sim** | **Sim** | *(sem padrão)* | `login/painel/api/api_auth.php`       | Token secreto que protege todos os endpoints de `login/painel/api/`. Ausente = API retorna `500`. |
 
 **Desenvolvimento** (`APP_ENV=dev` ou `APP_ENV=development`): todos os erros PHP são exibidos na tela (`display_errors=1`, `error_reporting=E_ALL`). Útil para depurar localmente no Replit.
 
 **Produção** (variável omitida ou qualquer outro valor): erros são suprimidos da saída (`display_errors=0`). **Nunca defina `APP_ENV=dev` em produção** — isso exibiria detalhes internos do sistema para os usuários finais.
 
-### API_WEBHOOK_TOKEN — Configuração e uso
+#### API_WEBHOOK_TOKEN — Configuração e uso
 
 Gere um token forte (exemplo):
 
@@ -67,7 +72,20 @@ Defina o valor gerado como secret `API_WEBHOOK_TOKEN` no painel de Secrets do Re
   https://seu-dominio/login/painel/api/recebe.php?token=<token>
   ```
 
-Se `API_WEBHOOK_TOKEN` não estiver definido, **todos** os acessos à API retornam `500` para forçar a configuração correta antes do uso em produção. Requisições com token errado ou ausente retornam `401 JSON`.
+Requisições com token errado ou ausente retornam `401 JSON`.
+
+### Limpeza de Logs e Uploads
+
+Consumidas por `login/painel/api/run_cleanup.php` e `login/painel/api/limpar_uploads.php`. Todas são opcionais; os valores padrão são seguros para uso imediato.
+
+| Variável                    | Obrig.? | Secret? | Padrão | Consumido por                                                         | Descrição                                                                 |
+|-----------------------------|---------|---------|--------|-----------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `LOG_MAX_AGE_DAYS`          | Não     | Não     | `7`    | `login/painel/api/run_cleanup.php`                                    | Idade máxima (em dias) dos arquivos de log antes de serem removidos.      |
+| `LOG_MAX_SIZE_MB`           | Não     | Não     | `10`   | `login/painel/api/run_cleanup.php`, `login/painel/auth_guard.php`     | Tamanho máximo (em MB) do log de erros PHP antes de acionar limpeza.      |
+| `CLEANUP_COOLDOWN_SECONDS`  | Não     | Não     | `30`   | `login/painel/api/run_cleanup.php`                                    | Intervalo mínimo (em segundos) entre execuções consecutivas da limpeza.   |
+| `UPLOADS_MAX_AGE_SECONDS`   | Não     | Não     | `3600` | `login/painel/api/run_cleanup.php`, `login/painel/api/limpar_uploads.php` | Idade máxima (em segundos) de arquivos temporários em uploads/.       |
+| `DB_FAILURES_MAX_SIZE_MB`   | Não     | Não     | `1`    | `login/painel/api/run_cleanup.php`                                    | Tamanho máximo (em MB) do log `logs/db_failures.log`.                     |
+| `DB_FAILURES_MAX_AGE_DAYS`  | Não     | Não     | `30`   | `login/painel/api/run_cleanup.php`                                    | Idade máxima (em dias) das entradas do log `logs/db_failures.log`.        |
 
 ## Admin
 
