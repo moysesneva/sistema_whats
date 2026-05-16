@@ -42,12 +42,22 @@ if (strpos($uri, '/__mockup/') === 0) {
 // Cabeçalhos de segurança HTTP para todas as rotas públicas
 require_once __DIR__ . '/login/painel/security_headers.php';
 
+// Configuração de relatório de erros e handlers de erro 500
+require_once __DIR__ . '/login/painel/error_config.php';
+
 // Roteamento normal da aplicação PHP
 $path = parse_url($uri, PHP_URL_PATH);
 $file = __DIR__ . $path;
 
 if ($path !== '/' && file_exists($file) && !is_dir($file)) {
     return false;
+}
+
+// Página não encontrada (404) para caminhos inexistentes
+if ($path !== '/' && !file_exists($file)) {
+    http_response_code(404);
+    require __DIR__ . '/login/painel/erro_404.php';
+    exit;
 }
 
 require __DIR__ . '/index.php';
