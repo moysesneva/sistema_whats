@@ -1,26 +1,30 @@
 <?php
-if (defined('CONN_LOADED')) { return; }
-define('CONN_LOADED', true);
 require_once __DIR__ . '/error_config.php';
 
-/**
- * Registra uma falha de conexão ao banco em logs/db_failures.log (JSONL).
- *
- * @param string $tipo      Identificador do tipo de falha (e.g. 'banco_externo', 'local', 'vars_ausentes', 'sem_conexao')
- * @param string $ambiente  'externo' ou 'local'
- * @param string $mensagem  Mensagem de erro detalhada
- */
-function registrar_falha_banco(string $tipo, string $ambiente, string $mensagem): void
-{
-    $log_file = __DIR__ . '/logs/db_failures.log';
-    $entrada = json_encode([
-        'ts'        => date('Y-m-d H:i:s'),
-        'tipo'      => $tipo,
-        'ambiente'  => $ambiente,
-        'mensagem'  => $mensagem,
-    ], JSON_UNESCAPED_UNICODE);
-    @file_put_contents($log_file, $entrada . "\n", FILE_APPEND | LOCK_EX);
-    error_log($mensagem);
+if (!function_exists('registrar_falha_banco')) {
+    /**
+     * Registra uma falha de conexão ao banco em logs/db_failures.log (JSONL).
+     *
+     * @param string $tipo      Identificador do tipo de falha (e.g. 'banco_externo', 'local', 'vars_ausentes', 'sem_conexao')
+     * @param string $ambiente  'externo' ou 'local'
+     * @param string $mensagem  Mensagem de erro detalhada
+     */
+    function registrar_falha_banco(string $tipo, string $ambiente, string $mensagem): void
+    {
+        $log_file = __DIR__ . '/logs/db_failures.log';
+        $entrada = json_encode([
+            'ts'        => date('Y-m-d H:i:s'),
+            'tipo'      => $tipo,
+            'ambiente'  => $ambiente,
+            'mensagem'  => $mensagem,
+        ], JSON_UNESCAPED_UNICODE);
+        @file_put_contents($log_file, $entrada . "\n", FILE_APPEND | LOCK_EX);
+        error_log($mensagem);
+    }
+}
+
+if (isset($conn)) {
+    return;
 }
 
 $ext_host = getenv('DB_HOST');
@@ -92,4 +96,3 @@ if (file_exists($socket)) {
 }
 
 mysqli_set_charset($conn, 'utf8mb4');
-?>
