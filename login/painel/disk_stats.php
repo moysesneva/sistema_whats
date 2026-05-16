@@ -90,6 +90,21 @@ $db_failures = __DIR__ . '/logs/db_failures.log';
 $status_logs    = ler_status($base . '/status_limpar_logs.json');
 $status_uploads = ler_status($base . '/status_limpar_uploads.json');
 
+$admin_actions_log = $base . '/logs/admin_actions.log';
+$admin_actions = [];
+if (is_file($admin_actions_log)) {
+    $linhas = file($admin_actions_log, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($linhas !== false) {
+        $linhas = array_reverse(array_slice($linhas, -20));
+        foreach ($linhas as $linha) {
+            $entry = json_decode($linha, true);
+            if (is_array($entry)) {
+                $admin_actions[] = $entry;
+            }
+        }
+    }
+}
+
 // -----------------------------------------------------------------------
 // Tamanhos
 // -----------------------------------------------------------------------
@@ -372,6 +387,58 @@ $sz_total       = $sz_logs_dir + $sz_log_proc + $sz_log_recv + $sz_uploads + $sz
                 <i class="feather icon-zap" style="margin-right:6px;"></i>Limpar Agora
             </button>
             <div id="cleanup-result"></div>
+        </div>
+    </div>
+
+    <!-- Histórico de limpezas manuais -->
+    <div class="card stats-card">
+        <div class="card-header">
+            <i class="feather icon-list"></i> Histórico de Limpezas Manuais
+        </div>
+        <div class="card-body">
+            <?php if (empty($admin_actions)): ?>
+                <span class="never-ran"><i class="feather icon-info"></i> Nenhuma limpeza manual registrada ainda.</span>
+            <?php else: ?>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                        <thead>
+                            <tr style="background:#f4f6f9;color:#001f3f;font-weight:700;">
+                                <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #e0e4ea;">Data/Hora</th>
+                                <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #e0e4ea;">Admin</th>
+                                <th style="padding:8px 12px;text-align:center;border-bottom:2px solid #e0e4ea;">Logs removidos</th>
+                                <th style="padding:8px 12px;text-align:center;border-bottom:2px solid #e0e4ea;">Truncamentos</th>
+                                <th style="padding:8px 12px;text-align:center;border-bottom:2px solid #e0e4ea;">Uploads removidos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($admin_actions as $i => $entry): ?>
+                            <tr style="background:<?= $i % 2 === 0 ? '#fff' : '#fafafa' ?>;">
+                                <td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;color:#555;">
+                                    <i class="feather icon-clock" style="color:#001f3f;margin-right:4px;"></i>
+                                    <?= htmlspecialchars($entry['ts'] ?? '—', ENT_QUOTES, 'UTF-8') ?>
+                                </td>
+                                <td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">
+                                    <i class="feather icon-user" style="color:#FF5500;margin-right:4px;"></i>
+                                    <strong><?= htmlspecialchars($entry['admin'] ?? '—', ENT_QUOTES, 'UTF-8') ?></strong>
+                                </td>
+                                <td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">
+                                    <?= (int) ($entry['logs_removidos'] ?? 0) ?>
+                                </td>
+                                <td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">
+                                    <?= (int) ($entry['truncamentos'] ?? 0) ?>
+                                </td>
+                                <td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">
+                                    <?= (int) ($entry['uploads_removidos'] ?? 0) ?>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-muted mt-2 mb-0" style="font-size:12px;">
+                    <i class="feather icon-info"></i> Exibindo as últimas <?= count($admin_actions) ?> limpeza(s) manual(is), em ordem decrescente.
+                </p>
+            <?php endif; ?>
         </div>
     </div>
 

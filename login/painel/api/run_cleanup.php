@@ -70,6 +70,9 @@ $truncamentos   = 0;
 if (is_dir($logsDir)) {
     $limiteModif = time() - ($maxDias * 86400);
     foreach (glob($logsDir . '/*.{log,txt}', GLOB_BRACE) as $arquivo) {
+        if (basename($arquivo) === 'admin_actions.log') {
+            continue;
+        }
         if (is_file($arquivo) && filemtime($arquivo) < $limiteModif) {
             if (unlink($arquivo)) {
                 $removidosLogs++;
@@ -149,6 +152,26 @@ $statusUploads = json_encode([
 ], JSON_UNESCAPED_UNICODE);
 
 file_put_contents($base . '/status_limpar_uploads.json', $statusUploads);
+
+// -----------------------------------------------------------------------
+// Auditoria — registra ação manual do admin
+// -----------------------------------------------------------------------
+
+$adminActionsLog = $logsDir . '/admin_actions.log';
+
+if (!is_dir($logsDir)) {
+    @mkdir($logsDir, 0755, true);
+}
+
+$auditEntry = json_encode([
+    'ts'               => $ts,
+    'admin'            => $login,
+    'logs_removidos'   => $removidosLogs,
+    'truncamentos'     => $truncamentos,
+    'uploads_removidos' => $removidosUploads,
+], JSON_UNESCAPED_UNICODE);
+
+file_put_contents($adminActionsLog, $auditEntry . "\n", FILE_APPEND | LOCK_EX);
 
 // -----------------------------------------------------------------------
 // Resposta
