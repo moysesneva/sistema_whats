@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/error_config.php';
+
 /**
  * auth_guard.php — Proteção centralizada de sessão para o painel.
  *
