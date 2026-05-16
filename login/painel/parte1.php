@@ -1,5 +1,5 @@
 <?php
-#include 'conn.php';
+require_once __DIR__ . '/conn.php';
 
 // Buscar dados atuais do banco de dados para preencher o formulário
 $query = "SELECT * FROM config";
