@@ -4,15 +4,17 @@
 # automaticamente. Use este script apenas em clones externos (fora do Replit):
 #   bash scripts/install-hooks.sh
 
-set -e
-
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 if ! git rev-parse --git-dir > /dev/null 2>&1; then
-    echo "Erro: este diretório não é um repositório Git." >&2
-    exit 1
+    echo "Aviso: não é um repositório Git — hooks não configurados." >&2
+    exit 0
 fi
 
-git config core.hooksPath "$SCRIPT_DIR"
+if ! git config core.hooksPath "$SCRIPT_DIR" 2>/dev/null; then
+    echo "Aviso: não foi possível configurar core.hooksPath (ambiente sem permissão de escrita no .git/config — normal em CI/deploy)." >&2
+    exit 0
+fi
+
 echo "Hooks configurados: core.hooksPath=$SCRIPT_DIR"
 echo "O hook scripts/pre-commit será executado automaticamente antes de cada commit."
