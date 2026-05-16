@@ -202,6 +202,9 @@ DEALLOCATE PREPARE __stmt;
 -- Diagnóstico do banco de dados no menu admin (idempotente via INSERT IGNORE)
 INSERT IGNORE INTO `menu` (`id`, `menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`) VALUES (50, 'Diagnóstico BD', 'db_diagnostics.php', '1', '8.5', 'fa fa-database', 'adm,adm_install');
 
+-- Log de acessos bloqueados no menu admin (idempotente via INSERT IGNORE)
+INSERT IGNORE INTO `menu` (`id`, `menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`) VALUES (51, 'Acessos Bloqueados', 'auth_log.php', '1', '8.6', 'feather icon-shield', 'adm,adm_install');
+
 -- Logo MoysesNet (Modelo 1 Hexágono) — persiste após reinício
 UPDATE `estilo` SET
   `logo_site`    = 'img/logo-moysesnet.svg',
