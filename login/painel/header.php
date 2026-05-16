@@ -177,3 +177,4 @@ if (isset($tipo) && in_array($tipo, [1, 4])) {
     unset($_dbf_log, $_dbf_recente);
 }
 ?>
+<?php if (isset($tipo) && in_array($tipo, [1, 4])) include __DIR__ . '/disk_warning_banner.php'; ?>

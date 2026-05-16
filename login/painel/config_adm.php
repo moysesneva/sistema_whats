@@ -50,8 +50,6 @@ include 'bloqueio.php';
 ?>
 <?php include 'header.php'; ?>
 
-<?php include 'disk_warning_banner.php'; ?>
-
 <?php
 
 $sql_config = "SELECT * FROM config";
