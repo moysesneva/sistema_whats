@@ -183,6 +183,9 @@ INSERT IGNORE INTO `login` (`id`, `login`, `senha`, `tipo`, `usuario_api`, `nome
 -- Adicionar coluna endereco na tabela config (idempotente)
 ALTER TABLE `config` ADD COLUMN IF NOT EXISTS `endereco` VARCHAR(255) DEFAULT NULL;
 
+-- Diagnóstico do banco de dados no menu admin (idempotente via INSERT IGNORE)
+INSERT IGNORE INTO `menu` (`id`, `menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`) VALUES (50, 'Diagnóstico BD', 'db_diagnostics.php', '1', '8.5', 'fa fa-database', 'adm,adm_install');
+
 -- Logo MoysesNet (Modelo 1 Hexágono) — persiste após reinício
 UPDATE `estilo` SET
   `logo_site`    = 'img/logo-moysesnet.svg',
