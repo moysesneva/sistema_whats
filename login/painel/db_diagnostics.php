@@ -33,6 +33,21 @@ include 'menu.php';
 include 'bloqueio.php';
 
 // -----------------------------------------------------------------------
+// Informações de log de erros PHP
+// -----------------------------------------------------------------------
+
+$_diag_app_env   = getenv('APP_ENV') ?: '';
+$_diag_env_lower = strtolower($_diag_app_env);
+$_diag_is_dev    = ($_diag_env_lower === 'dev' || $_diag_env_lower === 'development');
+unset($_diag_env_lower);
+$_diag_log_erros = filter_var(ini_get('log_errors'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+$_diag_log_file  = ini_get('error_log');
+
+if (empty($_diag_log_file)) {
+    $_diag_log_file = getenv('PHP_ERROR_LOG') ?: '/tmp/php_errors.log';
+}
+
+// -----------------------------------------------------------------------
 // CSRF token para proteção do formulário de limpeza
 // -----------------------------------------------------------------------
 
@@ -172,6 +187,82 @@ function tipo_badge_class(string $tipo): string
         <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
     </div>
     <?php endif; ?>
+
+    <!-- Card: Log de erros PHP -->
+    <div class="card diag-card mb-4">
+        <div class="card-header">
+            <span><i class="feather icon-file-text"></i> Log de Erros PHP</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4 mb-3">
+                    <div class="stat-box">
+                        <div class="stat-label mb-1" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;">APP_ENV</div>
+                        <?php if ($_diag_is_dev): ?>
+                            <span class="badge badge-warning" style="font-size:14px;">
+                                <?= htmlspecialchars($_diag_app_env ?: 'dev', ENT_QUOTES, 'UTF-8') ?>
+                            </span>
+                        <?php elseif ($_diag_app_env !== ''): ?>
+                            <span class="badge badge-success" style="font-size:14px;">
+                                <?= htmlspecialchars($_diag_app_env, ENT_QUOTES, 'UTF-8') ?>
+                            </span>
+                        <?php else: ?>
+                            <span class="badge badge-secondary" style="font-size:14px;">produção (padrão)</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="stat-box">
+                        <div class="stat-label mb-1" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;">log_errors</div>
+                        <?php if ($_diag_log_erros): ?>
+                            <span class="badge badge-success" style="font-size:14px;"><i class="feather icon-check"></i> Ativo</span>
+                        <?php else: ?>
+                            <span class="badge badge-danger" style="font-size:14px;"><i class="feather icon-x"></i> Inativo</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <div class="stat-box">
+                        <div class="stat-label mb-1" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;">Destino dos logs</div>
+                        <?php if ($_diag_is_dev): ?>
+                            <span class="badge badge-info" style="font-size:13px;">stderr (modo dev)</span>
+                        <?php else: ?>
+                            <span class="badge badge-secondary" style="font-size:13px;">arquivo</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php if (!$_diag_is_dev): ?>
+            <div class="alert alert-light border mb-0 mt-1" style="font-size:13px;">
+                <i class="feather icon-info" style="color:#FF5500;margin-right:6px;"></i>
+                <strong>Arquivo de log:</strong>
+                <code style="word-break:break-all;"><?= htmlspecialchars($_diag_log_file, ENT_QUOTES, 'UTF-8') ?></code>
+                <?php
+                $log_existe = is_file($_diag_log_file);
+                $log_tam    = $log_existe ? filesize($_diag_log_file) : 0;
+                ?>
+                &nbsp;
+                <?php if ($log_existe): ?>
+                    <span class="badge badge-success">existe</span>
+                    <span class="text-muted" style="font-size:12px;">
+                        &mdash; <?= number_format($log_tam / 1024, 1) ?> KB
+                    </span>
+                <?php else: ?>
+                    <span class="badge badge-secondary">arquivo ainda não criado</span>
+                <?php endif; ?>
+                <div class="mt-2 text-muted" style="font-size:12px;">
+                    Para alterar o caminho, defina a variável de ambiente <code>PHP_ERROR_LOG</code>.
+                </div>
+            </div>
+            <?php else: ?>
+            <div class="alert alert-warning border mb-0 mt-1" style="font-size:13px;">
+                <i class="feather icon-alert-triangle" style="margin-right:6px;"></i>
+                Em modo <strong>dev</strong>, os erros são enviados para <code>stderr</code> (console do servidor), não para arquivo.
+                Remova ou altere <code>APP_ENV</code> para ativar o log em arquivo em produção.
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
 
     <!-- Contadores -->
     <div class="row mb-3">
