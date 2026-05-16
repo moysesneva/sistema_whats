@@ -459,12 +459,25 @@ document.getElementById('btn-limpar-agora').addEventListener('click', function (
         credentials: 'same-origin'
     })
     .then(function (res) {
-        if (!res.ok) {
-            throw new Error('HTTP ' + res.status);
-        }
-        return res.json();
+        return res.json().then(function (data) {
+            return { status: res.status, data: data };
+        });
     })
-    .then(function (data) {
+    .then(function (resp) {
+        var status = resp.status;
+        var data   = resp.data;
+
+        if (status === 429) {
+            result.innerHTML =
+                '<span style="color:#e07800;">' +
+                '<i class="feather icon-clock" style="margin-right:4px;"></i>' +
+                (data.erro || 'Aguarde antes de executar novamente.') +
+                '</span>';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="feather icon-zap" style="margin-right:6px;"></i>Limpar Agora';
+            return;
+        }
+
         if (data.ok) {
             result.innerHTML =
                 '<span style="color:#28a745;">' +

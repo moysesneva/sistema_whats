@@ -37,6 +37,51 @@ if (!$r || $r['autorizado'] != 2 || !in_array((int) $r['tipo'], [1, 4])) {
     exit;
 }
 
+$base = __DIR__;
+
+// -----------------------------------------------------------------------
+// Cooldown — evita execuções duplicadas em rápida sucessão
+// (leitura + verificação + escrita são atômicas via flock)
+// -----------------------------------------------------------------------
+
+$cooldownSec  = max(1, (int) (getenv('CLEANUP_COOLDOWN_SECONDS') ?: 30));
+$cooldownFile = $base . '/cleanup_cooldown.json';
+$lockFile     = $base . '/cleanup_cooldown.lock';
+
+$lockFp = fopen($lockFile, 'c');
+if ($lockFp === false || !flock($lockFp, LOCK_EX)) {
+    http_response_code(503);
+    echo json_encode(['ok' => false, 'erro' => 'Não foi possível adquirir o bloqueio de concorrência. Tente novamente.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// Dentro da seção crítica: ler, verificar e gravar são uma operação atômica.
+$ultimaExec = 0;
+if (is_file($cooldownFile)) {
+    $cd = json_decode(file_get_contents($cooldownFile), true);
+    $ultimaExec = isset($cd['ts']) ? (int) $cd['ts'] : 0;
+}
+
+$decorrido = time() - $ultimaExec;
+if ($decorrido < $cooldownSec) {
+    $restante = $cooldownSec - $decorrido;
+    flock($lockFp, LOCK_UN);
+    fclose($lockFp);
+    http_response_code(429);
+    echo json_encode([
+        'ok'                => false,
+        'erro'              => "Limpeza executada há menos de {$cooldownSec} segundos. Aguarde mais {$restante} segundo(s) antes de tentar novamente.",
+        'cooldown_restante' => $restante,
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// Grava o timestamp enquanto ainda segura o lock — impede corrida entre requisições.
+file_put_contents($cooldownFile, json_encode(['ts' => time()], JSON_UNESCAPED_UNICODE));
+
+flock($lockFp, LOCK_UN);
+fclose($lockFp);
+
 // -----------------------------------------------------------------------
 // Configurações (mesmas usadas pelos scripts shell)
 // -----------------------------------------------------------------------
@@ -51,7 +96,6 @@ $dbFailuresMaxMb   = max(1, (int) (getenv('DB_FAILURES_MAX_SIZE_MB')  ?: 1));
 $dbFailuresMaxBytes = $dbFailuresMaxMb * 1024 * 1024;
 $dbFailuresMaxAge  = max(1, (int) (getenv('DB_FAILURES_MAX_AGE_DAYS') ?: 30));
 
-$base      = __DIR__;
 $logsDir   = $base . '/logs';
 $logProc   = $base . '/log_processamento.txt';
 $logRecv   = $base . '/log_recebidos.txt';
