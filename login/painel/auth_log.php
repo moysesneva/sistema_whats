@@ -45,7 +45,8 @@ $csrf_token = $_SESSION['csrf_authlog'];
 // Limpar log se solicitado
 // -----------------------------------------------------------------------
 
-$log_file = __DIR__ . '/logs/auth_blocked.log';
+$log_file     = __DIR__ . '/logs/auth_blocked.log';
+$api_log_file = __DIR__ . '/logs/api_blocked.log';
 $msg_acao = '';
 $msg_acao_tipo = 'success';
 
@@ -53,17 +54,19 @@ if (
     isset($_POST['limpar_log']) && $_POST['limpar_log'] === '1' &&
     isset($_POST['csrf_token']) && hash_equals($csrf_token, $_POST['csrf_token'])
 ) {
-    if (is_file($log_file)) {
-        $limpo = @file_put_contents($log_file, '');
-        if ($limpo !== false) {
-            $msg_acao = 'Log de acessos bloqueados limpo com sucesso.';
-        } else {
-            $msg_acao = 'Erro: não foi possível limpar o log. Verifique as permissões do arquivo.';
-            $msg_acao_tipo = 'danger';
+    $erros = 0;
+    foreach ([$log_file, $api_log_file] as $__f) {
+        if (is_file($__f)) {
+            if (@file_put_contents($__f, '') === false) {
+                $erros++;
+            }
         }
+    }
+    if ($erros === 0) {
+        $msg_acao = 'Log de acessos bloqueados limpo com sucesso.';
     } else {
-        $msg_acao = 'Nenhum log encontrado para limpar.';
-        $msg_acao_tipo = 'warning';
+        $msg_acao = 'Erro: não foi possível limpar um ou mais arquivos de log. Verifique as permissões.';
+        $msg_acao_tipo = 'danger';
     }
 }
 
@@ -75,27 +78,34 @@ $filtro_ip     = trim($_GET['ip']     ?? '');
 $filtro_motivo = trim($_GET['motivo'] ?? '');
 
 // -----------------------------------------------------------------------
-// Leitura do log
+// Leitura dos logs (sessão + API webhook)
 // -----------------------------------------------------------------------
 
-$entradas    = [];
-$total       = 0;
-$total_1h    = 0;
-$total_24h   = 0;
-$agora       = time();
+$entradas  = [];
+$total     = 0;
+$total_1h  = 0;
+$total_24h = 0;
+$agora     = time();
 
-if (is_file($log_file)) {
-    $linhas = file($log_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach (array_reverse($linhas) as $linha) {
+foreach ([$log_file, $api_log_file] as $__arquivo_log) {
+    if (!is_file($__arquivo_log)) continue;
+    $linhas = file($__arquivo_log, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($linhas === false) continue;
+    foreach ($linhas as $linha) {
         $obj = json_decode($linha, true);
         if (!is_array($obj)) continue;
         $total++;
-        $ts = isset($obj['ts']) ? strtotime($obj['ts']) : 0;
-        if ($ts && ($agora - $ts) <= 3600)  $total_1h++;
-        if ($ts && ($agora - $ts) <= 86400) $total_24h++;
+        $ts_val = isset($obj['ts']) ? strtotime($obj['ts']) : 0;
+        if ($ts_val && ($agora - $ts_val) <= 3600)  $total_1h++;
+        if ($ts_val && ($agora - $ts_val) <= 86400) $total_24h++;
         $entradas[] = $obj;
     }
 }
+
+// Ordena todas as entradas da mais recente para a mais antiga
+usort($entradas, function (array $a, array $b): int {
+    return strcmp($b['ts'] ?? '', $a['ts'] ?? '');
+});
 
 // Aplicar filtros
 $filtradas = $entradas;
@@ -115,11 +125,16 @@ $exibir = array_slice($filtradas, 0, 100);
 
 function motivo_badge(string $motivo): string
 {
-    if ($motivo === 'sessao_expirada') {
-        return '<span class="badge badge-warning">Sessão expirada</span>';
-    }
-    if ($motivo === 'sem_sessao') {
-        return '<span class="badge badge-danger">Sem sessão</span>';
+    $map = [
+        'sessao_expirada'      => ['warning',  'Sessão expirada'],
+        'sem_sessao'           => ['danger',   'Sem sessão'],
+        'token_ausente'        => ['danger',   'Token ausente'],
+        'token_invalido'       => ['danger',   'Token inválido'],
+        'token_nao_configurado'=> ['secondary','Token não configurado'],
+    ];
+    if (isset($map[$motivo])) {
+        [$cor, $label] = $map[$motivo];
+        return '<span class="badge badge-' . $cor . '">' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>';
     }
     return '<span class="badge badge-secondary">' . htmlspecialchars($motivo, ENT_QUOTES, 'UTF-8') . '</span>';
 }
@@ -175,7 +190,7 @@ function motivo_badge(string $motivo): string
 <div class="container-fluid">
     <div class="page-title-box">
         <h4><i class="feather icon-shield" style="color:#FF5500;margin-right:8px;"></i>Log de Acessos Bloqueados</h4>
-        <p>Histórico de tentativas de acesso ao painel sem sessão válida (sessão expirada ou sem login ativo).</p>
+        <p>Histórico de tentativas de acesso negado: sessões inválidas no painel e tokens inválidos nos webhooks de API.</p>
     </div>
 
     <?php if ($msg_acao): ?>
@@ -224,10 +239,17 @@ function motivo_badge(string $motivo): string
             </div>
             <div class="form-group mr-3 mb-2">
                 <label class="mr-2" style="font-size:13px;font-weight:600;">Motivo:</label>
-                <select name="motivo" class="form-control form-control-sm" style="width:180px;">
+                <select name="motivo" class="form-control form-control-sm" style="width:200px;">
                     <option value="">Todos</option>
-                    <option value="sessao_expirada" <?= $filtro_motivo === 'sessao_expirada' ? 'selected' : '' ?>>Sessão expirada</option>
-                    <option value="sem_sessao"       <?= $filtro_motivo === 'sem_sessao'       ? 'selected' : '' ?>>Sem sessão</option>
+                    <optgroup label="Painel (sessão)">
+                        <option value="sessao_expirada" <?= $filtro_motivo === 'sessao_expirada' ? 'selected' : '' ?>>Sessão expirada</option>
+                        <option value="sem_sessao"      <?= $filtro_motivo === 'sem_sessao'      ? 'selected' : '' ?>>Sem sessão</option>
+                    </optgroup>
+                    <optgroup label="Webhook (token)">
+                        <option value="token_ausente"         <?= $filtro_motivo === 'token_ausente'         ? 'selected' : '' ?>>Token ausente</option>
+                        <option value="token_invalido"        <?= $filtro_motivo === 'token_invalido'        ? 'selected' : '' ?>>Token inválido</option>
+                        <option value="token_nao_configurado" <?= $filtro_motivo === 'token_nao_configurado' ? 'selected' : '' ?>>Token não configurado</option>
+                    </optgroup>
                 </select>
             </div>
             <div class="mb-2">
@@ -317,9 +339,9 @@ function motivo_badge(string $motivo): string
 
     <p class="text-muted" style="font-size:12px;">
         <i class="feather icon-info"></i>
-        Os acessos são registrados automaticamente em <code>logs/auth_blocked.log</code> sempre que uma página protegida é acessada sem sessão válida.
-        O log é exibido em ordem mais recente primeiro. Entradas com <strong>sem sessão</strong> indicam tentativas sem nenhum login prévio;
-        <strong>sessão expirada</strong> indica que o usuário estava logado mas ficou inativo além do tempo configurado.
+        Eventos de painel (sessão inválida) são registrados em <code>logs/auth_blocked.log</code>; eventos de webhook (token inválido) em <code>logs/api_blocked.log</code>.
+        Ambos são exibidos aqui em ordem mais recente primeiro. <strong>Token ausente</strong> / <strong>Token inválido</strong> indicam chamadas ao webhook sem autenticação correta;
+        <strong>Sem sessão</strong> / <strong>Sessão expirada</strong> indicam acessos ao painel sem login válido.
     </p>
 </div>
 
