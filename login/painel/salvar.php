@@ -91,7 +91,7 @@ if (file_exists('settings.txt')) {
     <li id="item4">Item 4</li>
 </ul>
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 $(document).ready(function() {
     // Função para aplicar configurações salvas
     function applySettings(settings) {

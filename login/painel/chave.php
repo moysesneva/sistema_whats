@@ -410,7 +410,7 @@ function truncarURL($url, $maxLength = 40) {
                             <div class="input-group mb-2">
                                 <input type="text" class="form-control bg-light" id="link_plano1_display" value="<?= htmlspecialchars(truncarURL($link_plano1), ENT_QUOTES, 'UTF-8'); ?>" readonly>
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="copyLink('link_plano1_full')">
+                                    <button class="btn btn-outline-secondary" type="button" data-fn="copyLink" data-args='["link_plano1_full"]'>
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
@@ -421,11 +421,11 @@ function truncarURL($url, $maxLength = 40) {
                                     <input type="hidden" name="chave" value="<?= htmlspecialchars($chave ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <input type="hidden" name="plano" value="plano1">
                                     <input type="hidden" name="apagar_plano" value="1">
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja remover este link?')">
+                                    <button type="submit" class="btn btn-sm btn-danger" data-fn="__confirm" data-args='["Tem certeza que deseja remover este link?"]'>
                                         <i class="fas fa-trash"></i> Remover
                                     </button>
                                 </form>
-                                <button type="button" class="btn btn-sm btn-secondary" onclick="copyWebhook('plano1')">
+                                <button type="button" class="btn btn-sm btn-secondary" data-fn="copyWebhook" data-args='["plano1"]'>
                                     <i class="fas fa-link"></i> Copiar Webhook
                                 </button>
                             </div>
@@ -438,7 +438,7 @@ function truncarURL($url, $maxLength = 40) {
                             <div class="input-group mb-2">
                                 <input type="text" class="form-control bg-light" id="link_plano2_display" value="<?= htmlspecialchars(truncarURL($link_plano2), ENT_QUOTES, 'UTF-8'); ?>" readonly>
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="copyLink('link_plano2_full')">
+                                    <button class="btn btn-outline-secondary" type="button" data-fn="copyLink" data-args='["link_plano2_full"]'>
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
@@ -449,11 +449,11 @@ function truncarURL($url, $maxLength = 40) {
                                     <input type="hidden" name="chave" value="<?= htmlspecialchars($chave ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <input type="hidden" name="plano" value="plano2">
                                     <input type="hidden" name="apagar_plano" value="1">
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja remover este link?')">
+                                    <button type="submit" class="btn btn-sm btn-danger" data-fn="__confirm" data-args='["Tem certeza que deseja remover este link?"]'>
                                         <i class="fas fa-trash"></i> Remover
                                     </button>
                                 </form>
-                                <button type="button" class="btn btn-sm btn-secondary" onclick="copyWebhook('plano2')">
+                                <button type="button" class="btn btn-sm btn-secondary" data-fn="copyWebhook" data-args='["plano2"]'>
                                     <i class="fas fa-link"></i> Copiar Webhook
                                 </button>
                             </div>
@@ -466,7 +466,7 @@ function truncarURL($url, $maxLength = 40) {
                             <div class="input-group mb-2">
                                 <input type="text" class="form-control bg-light" id="link_plano3_display" value="<?= htmlspecialchars(truncarURL($link_plano3), ENT_QUOTES, 'UTF-8'); ?>" readonly>
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="copyLink('link_plano3_full')">
+                                    <button class="btn btn-outline-secondary" type="button" data-fn="copyLink" data-args='["link_plano3_full"]'>
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
@@ -477,11 +477,11 @@ function truncarURL($url, $maxLength = 40) {
                                     <input type="hidden" name="chave" value="<?= htmlspecialchars($chave ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <input type="hidden" name="plano" value="plano3">
                                     <input type="hidden" name="apagar_plano" value="1">
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja remover este link?')">
+                                    <button type="submit" class="btn btn-sm btn-danger" data-fn="__confirm" data-args='["Tem certeza que deseja remover este link?"]'>
                                         <i class="fas fa-trash"></i> Remover
                                     </button>
                                 </form>
-                                <button type="button" class="btn btn-sm btn-secondary" onclick="copyWebhook('plano3')">
+                                <button type="button" class="btn btn-sm btn-secondary" data-fn="copyWebhook" data-args='["plano3"]'>
                                     <i class="fas fa-link"></i> Copiar Webhook
                                 </button>
                             </div>
@@ -494,7 +494,7 @@ function truncarURL($url, $maxLength = 40) {
                             <div class="input-group mb-2">
                                 <input type="text" class="form-control bg-light" id="link_creditos_display" value="<?= htmlspecialchars(truncarURL($link_creditos), ENT_QUOTES, 'UTF-8'); ?>" readonly>
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="copyLink('link_creditos_full')">
+                                    <button class="btn btn-outline-secondary" type="button" data-fn="copyLink" data-args='["link_creditos_full"]'>
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
@@ -505,11 +505,11 @@ function truncarURL($url, $maxLength = 40) {
                                     <input type="hidden" name="chave" value="<?= htmlspecialchars($chave ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <input type="hidden" name="plano" value="creditos">
                                     <input type="hidden" name="apagar_plano" value="1">
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja remover este link?')">
+                                    <button type="submit" class="btn btn-sm btn-danger" data-fn="__confirm" data-args='["Tem certeza que deseja remover este link?"]'>
                                         <i class="fas fa-trash"></i> Remover
                                     </button>
                                 </form>
-                                <button type="button" class="btn btn-sm btn-secondary" onclick="copyWebhook('creditos')">
+                                <button type="button" class="btn btn-sm btn-secondary" data-fn="copyWebhook" data-args='["creditos"]'>
                                     <i class="fas fa-link"></i> Copiar Webhook
                                 </button>
                             </div>
@@ -524,25 +524,25 @@ function truncarURL($url, $maxLength = 40) {
                             </div>
                             <div class="d-flex flex-wrap justify-content-center">
                                 <?php if (empty($link_plano1)) { ?>
-                                <button type="button" class="btn btn-sm btn-dark m-1" onclick="adicionarNovoLink('plano1', '<?= $chave; ?>')">
+                                <button type="button" class="btn btn-sm btn-dark m-1" data-fn="adicionarNovoLink" data-args='["plano1", "<?= $chave; ?>"]'>
                                     <i class="fas fa-plus"></i> Plano 1
                                 </button>
                                 <?php } ?>
                                 
                                 <?php if (empty($link_plano2)) { ?>
-                                <button type="button" class="btn btn-sm btn-dark m-1" onclick="adicionarNovoLink('plano2', '<?= $chave; ?>')">
+                                <button type="button" class="btn btn-sm btn-dark m-1" data-fn="adicionarNovoLink" data-args='["plano2", "<?= $chave; ?>"]'>
                                     <i class="fas fa-plus"></i> Plano 2
                                 </button>
                                 <?php } ?>
                                 
                                 <?php if (empty($link_plano3)) { ?>
-                                <button type="button" class="btn btn-sm btn-dark m-1" onclick="adicionarNovoLink('plano3', '<?= $chave; ?>')">
+                                <button type="button" class="btn btn-sm btn-dark m-1" data-fn="adicionarNovoLink" data-args='["plano3", "<?= $chave; ?>"]'>
                                     <i class="fas fa-plus"></i> Plano 3
                                 </button>
                                 <?php } ?>
                                 
                                 <?php if (empty($link_creditos)) { ?>
-                                <button type="button" class="btn btn-sm btn-dark m-1" onclick="adicionarNovoLink('creditos', '<?= $chave; ?>')">
+                                <button type="button" class="btn btn-sm btn-dark m-1" data-fn="adicionarNovoLink" data-args='["creditos", "<?= $chave; ?>"]'>
                                     <i class="fas fa-plus"></i> Créditos Extras de IA
                                 </button>
                                 <?php } ?>
@@ -569,13 +569,13 @@ function truncarURL($url, $maxLength = 40) {
                     
                     <div class="mt-3">
                         <button type="submit" class="btn btn-success">Adicionar Link</button>
-                        <button type="button" class="btn btn-secondary ml-2" onclick="document.getElementById('adicionarNovoLink').style.display = 'none'; document.getElementById('viewMode').style.display = 'block';">Cancelar</button>
+                        <button type="button" class="btn btn-secondary ml-2" data-fn="__show_hide" data-args='["adicionarNovoLink", "none", "viewMode", "block"]'>Cancelar</button>
                     </div>
                 </form>
             </div>
             
             <!-- Scripts -->
-            <script>
+            <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                 // Função para copiar link para área de transferência
                 function copyLink(elementId) {
                     var copyText = document.getElementById(elementId);

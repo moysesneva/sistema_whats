@@ -58,7 +58,7 @@ if($autorizado != 2){
     <!-- Selecionar o Profissional -->
     <div class="form-group">
         <label for="profissional">Selecione o Profissional</label>
-        <select class="form-control" id="profissional" name="profissional" onchange="carregarAgendamentos()">
+        <select class="form-control" id="profissional" name="profissional" data-change-fn="carregarAgendamentos">
             <option value="">Escolha um profissional</option>
             <?php
             // Conexão com o banco de dados
@@ -88,7 +88,7 @@ if($autorizado != 2){
 </div>
 
 <!-- Script AJAX para carregar agendamentos com base no profissional selecionado -->
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 function carregarAgendamentos() {
     var profissionalId = $('#profissional').val();
     if (profissionalId !== '') {

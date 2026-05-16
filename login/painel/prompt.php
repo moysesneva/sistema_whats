@@ -105,7 +105,7 @@ if($modo_atuante == 'Agendamento'){
                     <div class="model-selector">
                         <div class="row">
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('clinica')" data-model="clinica">
+                                <div class="model-card" data-fn="selectModel" data-args='["clinica"]' data-model="clinica">
                                     <div class="text-center">
                                         <div class="model-icon text-danger">🏥</div>
                                         <strong>Clínica Médica</strong>
@@ -114,7 +114,7 @@ if($modo_atuante == 'Agendamento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('salao')" data-model="salao">
+                                <div class="model-card" data-fn="selectModel" data-args='["salao"]' data-model="salao">
                                     <div class="text-center">
                                         <div class="model-icon text-warning">💄</div>
                                         <strong>Salão de Beleza</strong>
@@ -123,7 +123,7 @@ if($modo_atuante == 'Agendamento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('barbearia')" data-model="barbearia">
+                                <div class="model-card" data-fn="selectModel" data-args='["barbearia"]' data-model="barbearia">
                                     <div class="text-center">
                                         <div class="model-icon text-info">✂️</div>
                                         <strong>Barbearia</strong>
@@ -132,7 +132,7 @@ if($modo_atuante == 'Agendamento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('odonto')" data-model="odonto">
+                                <div class="model-card" data-fn="selectModel" data-args='["odonto"]' data-model="odonto">
                                     <div class="text-center">
                                         <div class="model-icon text-primary">🦷</div>
                                         <strong>Consultório Odontológico</strong>
@@ -141,7 +141,7 @@ if($modo_atuante == 'Agendamento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('veterinaria')" data-model="veterinaria">
+                                <div class="model-card" data-fn="selectModel" data-args='["veterinaria"]' data-model="veterinaria">
                                     <div class="text-center">
                                         <div class="model-icon text-success">🐕</div>
                                         <strong>Clínica Veterinária</strong>
@@ -150,7 +150,7 @@ if($modo_atuante == 'Agendamento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('estetica')" data-model="estetica">
+                                <div class="model-card" data-fn="selectModel" data-args='["estetica"]' data-model="estetica">
                                     <div class="text-center">
                                         <div class="model-icon text-secondary">✨</div>
                                         <strong>Centro de Estética</strong>
@@ -159,7 +159,7 @@ if($modo_atuante == 'Agendamento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('academia')" data-model="academia">
+                                <div class="model-card" data-fn="selectModel" data-args='["academia"]' data-model="academia">
                                     <div class="text-center">
                                         <div class="model-icon text-dark">💪</div>
                                         <strong>Academia</strong>
@@ -168,7 +168,7 @@ if($modo_atuante == 'Agendamento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('psicologia')" data-model="psicologia">
+                                <div class="model-card" data-fn="selectModel" data-args='["psicologia"]' data-model="psicologia">
                                     <div class="text-center">
                                         <div class="model-icon text-info">🧠</div>
                                         <strong>Psicologia</strong>
@@ -177,7 +177,7 @@ if($modo_atuante == 'Agendamento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('personalizado')" data-model="personalizado">
+                                <div class="model-card" data-fn="selectModel" data-args='["personalizado"]' data-model="personalizado">
                                     <div class="text-center">
                                         <div class="model-icon text-muted">⚙️</div>
                                         <strong>Personalizado</strong>
@@ -250,7 +250,7 @@ if($modo_atuante == 'Agendamento'){
         </div>
     </div>
 
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         let selectedModel = null; // Inicia sem nenhum modelo selecionado
 
         const models = {
@@ -507,7 +507,7 @@ if($modo_atuante == 'Atendimento'){
                     <div class="model-selector">
                         <div class="row">
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('ecommerce')" data-model="ecommerce">
+                                <div class="model-card" data-fn="selectModel" data-args='["ecommerce"]' data-model="ecommerce">
                                     <div class="text-center">
                                         <div class="model-icon text-primary">🛒</div>
                                         <strong>E-commerce</strong>
@@ -516,7 +516,7 @@ if($modo_atuante == 'Atendimento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('moda')" data-model="moda">
+                                <div class="model-card" data-fn="selectModel" data-args='["moda"]' data-model="moda">
                                     <div class="text-center">
                                         <div class="model-icon text-warning">👗</div>
                                         <strong>Loja de Roupas</strong>
@@ -525,7 +525,7 @@ if($modo_atuante == 'Atendimento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('tech')" data-model="tech">
+                                <div class="model-card" data-fn="selectModel" data-args='["tech"]' data-model="tech">
                                     <div class="text-center">
                                         <div class="model-icon text-info">📱</div>
                                         <strong>Eletrônicos</strong>
@@ -534,7 +534,7 @@ if($modo_atuante == 'Atendimento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('cursos')" data-model="cursos">
+                                <div class="model-card" data-fn="selectModel" data-args='["cursos"]' data-model="cursos">
                                     <div class="text-center">
                                         <div class="model-icon text-success">🎓</div>
                                         <strong>Cursos Online</strong>
@@ -543,7 +543,7 @@ if($modo_atuante == 'Atendimento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('alimentacao')" data-model="alimentacao">
+                                <div class="model-card" data-fn="selectModel" data-args='["alimentacao"]' data-model="alimentacao">
                                     <div class="text-center">
                                         <div class="model-icon text-danger">🍕</div>
                                         <strong>Delivery</strong>
@@ -552,7 +552,7 @@ if($modo_atuante == 'Atendimento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('financeiro')" data-model="financeiro">
+                                <div class="model-card" data-fn="selectModel" data-args='["financeiro"]' data-model="financeiro">
                                     <div class="text-center">
                                         <div class="model-icon text-success">💰</div>
                                         <strong>Financeiro</strong>
@@ -561,7 +561,7 @@ if($modo_atuante == 'Atendimento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('casa')" data-model="casa">
+                                <div class="model-card" data-fn="selectModel" data-args='["casa"]' data-model="casa">
                                     <div class="text-center">
                                         <div class="model-icon text-warning">🏠</div>
                                         <strong>Casa e Decoração</strong>
@@ -570,7 +570,7 @@ if($modo_atuante == 'Atendimento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('servicos')" data-model="servicos">
+                                <div class="model-card" data-fn="selectModel" data-args='["servicos"]' data-model="servicos">
                                     <div class="text-center">
                                         <div class="model-icon text-secondary">🔧</div>
                                         <strong>Serviços</strong>
@@ -579,7 +579,7 @@ if($modo_atuante == 'Atendimento'){
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <div class="model-card" onclick="selectModel('personalizado')" data-model="personalizado">
+                                <div class="model-card" data-fn="selectModel" data-args='["personalizado"]' data-model="personalizado">
                                     <div class="text-center">
                                         <div class="model-icon text-muted">⚙️</div>
                                         <strong>Personalizado</strong>
@@ -652,7 +652,7 @@ if($modo_atuante == 'Atendimento'){
         </div>
     </div>
 
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         let selectedModel = null; // Inicia sem nenhum modelo selecionado
 
         const models = {

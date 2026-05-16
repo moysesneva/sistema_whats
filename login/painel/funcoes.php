@@ -3,12 +3,12 @@ $termo = 'agenda_';
 
 function VaiPara($pagina) {
     if (!empty($pagina)) {
-        echo "<script type='text/javascript'>
+        echo "<script type='text/javascript' nonce=\"". ($GLOBALS['csp_nonce'] ?? '') ."\">
                 window.location.href = '$pagina';
               </script>";
         exit; // Importante: para interromper a execução e evitar conteúdo extra
     } else {
-        echo "<script type='text/javascript'>
+        echo "<script type='text/javascript' nonce=\"". ($GLOBALS['csp_nonce'] ?? '') ."\">
                 console.error('Erro: Nenhuma página definida para redirecionamento.');
               </script>";
         exit; // Também encerra mesmo com erro
@@ -59,8 +59,9 @@ function barra($url) {
 
 
 function espera($segundos = 5) {
+    $nonce = $GLOBALS['csp_nonce'] ?? '';
     echo "
-    <script>
+    <script nonce=\"{$nonce}\">
         setTimeout(function() {
             document.getElementById('espera-iniciar').style.display = 'block';
         }, " . ($segundos * 1000) . ");

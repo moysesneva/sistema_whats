@@ -21,7 +21,7 @@ if (isset($_POST['profissional_id'])) {
             echo "<tr>";
             echo "<td>{$row['dia']}</td>";
             echo "<td>{$row['horario']}</td>";
-            echo "<td><button class='btn btn-danger btn-sm' onclick='deletarAgendamento({$row['id']})'>Deletar</button></td>";
+            echo "<td><button class='btn btn-danger btn-sm' data-fn='deletarAgendamento' data-args='[{$row['id']}]'>Deletar</button></td>";
             echo "</tr>";
         }
         

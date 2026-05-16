@@ -65,7 +65,7 @@ if($autorizado != 2){
                             <h5><i class="fas fa-users"></i> Selecione os Clientes</h5>
                             <div class="ms-auto">
                                 <span class="selected-count" id="selectedCount">0 selecionados</span>
-                                <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="toggleSelectAll()">
+                                <button type="button" class="btn btn-sm btn-outline-primary ms-2" data-fn="toggleSelectAll">
                                     <i class="fas fa-check-double"></i> Selecionar Todos
                                 </button>
                             </div>
@@ -82,13 +82,13 @@ if($autorizado != 2){
                                 <!-- Modo de Filtro -->
                                 <div class="filter-mode-selector">
                                     <span class="text-muted">Modo:</span>
-                                    <button type="button" class="filter-mode-btn active" data-mode="any" onclick="setFilterMode('any')">
+                                    <button type="button" class="filter-mode-btn active" data-mode="any" data-fn="setFilterMode" data-args='["any"]'>
                                         <i class="fas fa-plus-circle"></i> Qualquer etiqueta
                                     </button>
-                                    <button type="button" class="filter-mode-btn" data-mode="all" onclick="setFilterMode('all')">
+                                    <button type="button" class="filter-mode-btn" data-mode="all" data-fn="setFilterMode" data-args='["all"]'>
                                         <i class="fas fa-check-double"></i> Todas as etiquetas
                                     </button>
-                                    <button type="button" class="filter-mode-btn" data-mode="none" onclick="setFilterMode('none')">
+                                    <button type="button" class="filter-mode-btn" data-mode="none" data-fn="setFilterMode" data-args='["none"]'>
                                         <i class="fas fa-times-circle"></i> Sem filtro
                                     </button>
                                 </div>
@@ -119,7 +119,7 @@ if($autorizado != 2){
                                         $count = $stmt_cnt->get_result()->fetch_assoc()['total'];
                                         $stmt_cnt->close();
                                     ?>
-                                    <div class="tag-filter-pill" onclick="toggleTagFilter('<?= htmlspecialchars($tag, ENT_QUOTES, 'UTF-8') ?>')">
+                                    <div class="tag-filter-pill" data-fn="toggleTagFilter" data-args='["<?= htmlspecialchars($tag, ENT_QUOTES, 'UTF-8') ?>"]'>
                                         <i class="fas fa-tag"></i> <?= htmlspecialchars($tag, ENT_QUOTES, 'UTF-8') ?> 
                                         <span class="badge bg-secondary ms-1"><?= $count ?></span>
                                     </div>
@@ -135,7 +135,7 @@ if($autorizado != 2){
                                        class="form-control form-control-modern"
                                        id="searchClientes"
                                        placeholder="🔍 Buscar cliente por nome, telefone ou etiqueta..."
-                                       onkeyup="filterClientes(this.value)">
+                                       data-keyup-fn="filterClientes" data-keyup-args='["__value__"]'>
                             </div>
 
                             <div class="clientes-container" id="clientesContainer">
@@ -166,8 +166,8 @@ if($autorizado != 2){
                                      data-nome="<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>"
                                      data-telefone="<?= htmlspecialchars($telefone, ENT_QUOTES, 'UTF-8') ?>"
                                      data-etiquetas="<?= htmlspecialchars($etiqueta, ENT_QUOTES, 'UTF-8') ?>"
-                                     onclick="toggleCliente(this)">
-                                    <button type="button" class="edit-tags-btn" onclick="event.stopPropagation(); openEditTagsModal(<?= $id ?>, '<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>', '<?= htmlspecialchars($etiqueta, ENT_QUOTES, 'UTF-8') ?>')">
+                                     data-fn="toggleCliente" data-args='["__this__"]'>
+                                    <button type="button" class="edit-tags-btn" data-fn="openEditTagsModal" data-args='[<?= $id ?>, "<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>", "<?= htmlspecialchars($etiqueta, ENT_QUOTES, 'UTF-8') ?>"]' data-stop-propagation="1">
                                         <i class="fas fa-tags"></i> Editar
                                     </button>
                                     <div class="cliente-info">
@@ -201,23 +201,23 @@ if($autorizado != 2){
                         </div>
                         <div class="card-body-modern">
                             <div class="media-type-selector">
-                                <div class="media-type-btn active" data-type="text" onclick="selectMediaType('text')">
+                                <div class="media-type-btn active" data-type="text" data-fn="selectMediaType" data-args='["text"]'>
                                     <i class="fas fa-comment"></i>
                                     <div>Texto</div>
                                 </div>
-                                <div class="media-type-btn" data-type="image" onclick="selectMediaType('image')">
+                                <div class="media-type-btn" data-type="image" data-fn="selectMediaType" data-args='["image"]'>
                                     <i class="fas fa-image"></i>
                                     <div>Imagem</div>
                                 </div>
-                                <div class="media-type-btn" data-type="video" onclick="selectMediaType('video')">
+                                <div class="media-type-btn" data-type="video" data-fn="selectMediaType" data-args='["video"]'>
                                     <i class="fas fa-video"></i>
                                     <div>Vídeo</div>
                                 </div>
-                                <div class="media-type-btn" data-type="audio" onclick="selectMediaType('audio')">
+                                <div class="media-type-btn" data-type="audio" data-fn="selectMediaType" data-args='["audio"]'>
                                     <i class="fas fa-microphone"></i>
                                     <div>Áudio</div>
                                 </div>
-                                <div class="media-type-btn" data-type="document" onclick="selectMediaType('document')">
+                                <div class="media-type-btn" data-type="document" data-fn="selectMediaType" data-args='["document"]'>
                                     <i class="fas fa-file"></i>
                                     <div>Documento</div>
                                 </div>
@@ -227,13 +227,13 @@ if($autorizado != 2){
 
                             <!-- Upload de Arquivo -->
                             <div id="uploadSection" style="display: none;">
-                                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                                <div class="upload-area" data-fn="__el_click" data-args='["fileInput"]'>
                                     <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
                                     <p class="mb-0">Clique para selecionar arquivo ou arraste aqui</p>
                                     <small class="text-muted">Tamanho máximo: 16MB</small>
                                 </div>
                                 <input type="file" id="fileInput" name="media_file" style="display: none;" 
-                                       onchange="handleFileSelect(this)">
+                                       data-change-fn="handleFileSelect" data-change-args='["__this__"]'>
                                 <div id="filePreview" style="display: none; margin-top: 1rem;"></div>
                             </div>
 
@@ -249,15 +249,15 @@ if($autorizado != 2){
                                         <small class="text-muted me-2 mb-1"><strong>Botões Especiais:</strong></small>
                                         
                                         <!-- Variáveis Dinâmicas -->
-                                        <button type="button" class="special-btn variable" onclick="insertVariable('{nome}')">
+                                        <button type="button" class="special-btn variable" data-fn="insertVariable" data-args='["{nome}"]'>
                                             <i class="fas fa-user"></i> Nome do Cliente
                                         </button>
                                         
-                                        <button type="button" class="special-btn variable" onclick="insertVariable('{data}')">
+                                        <button type="button" class="special-btn variable" data-fn="insertVariable" data-args='["{data}"]'>
                                             <i class="fas fa-calendar-day"></i> Data de Hoje
                                         </button>
                                         
-                                        <button type="button" class="special-btn variable" onclick="insertVariable('{telefone}')">
+                                        <button type="button" class="special-btn variable" data-fn="insertVariable" data-args='["{telefone}"]'>
                                             <i class="fas fa-phone"></i> Telefone
                                         </button>
                                         
@@ -272,7 +272,7 @@ if($autorizado != 2){
                                             </label>
                                         </div>
                                         <?php }?>
-                                        <button type="button" class="special-btn" onclick="clearText()">
+                                        <button type="button" class="special-btn" data-fn="clearText">
                                             <i class="fas fa-eraser"></i> Limpar Texto
                                         </button>
                                     </div>
@@ -529,20 +529,20 @@ if($autorizado != 2){
             
             <div class="tags-suggestions">
                 <small class="text-muted d-block w-100 mb-2">Sugestões:</small>
-                <span class="suggestion-tag" onclick="addSuggestionTag('lista de leads')">lista de leads</span>
-                <span class="suggestion-tag" onclick="addSuggestionTag('boletos atrasados')">boletos atrasados</span>
-                <span class="suggestion-tag" onclick="addSuggestionTag('premium')">premium</span>
-                <span class="suggestion-tag" onclick="addSuggestionTag('vip')">vip</span>
-                <span class="suggestion-tag" onclick="addSuggestionTag('novo cliente')">novo cliente</span>
-                <span class="suggestion-tag" onclick="addSuggestionTag('inativo')">inativo</span>
-                <span class="suggestion-tag" onclick="addSuggestionTag('potencial')">potencial</span>
+                <span class="suggestion-tag" data-fn="addSuggestionTag" data-args='["lista de leads"]'>lista de leads</span>
+                <span class="suggestion-tag" data-fn="addSuggestionTag" data-args='["boletos atrasados"]'>boletos atrasados</span>
+                <span class="suggestion-tag" data-fn="addSuggestionTag" data-args='["premium"]'>premium</span>
+                <span class="suggestion-tag" data-fn="addSuggestionTag" data-args='["vip"]'>vip</span>
+                <span class="suggestion-tag" data-fn="addSuggestionTag" data-args='["novo cliente"]'>novo cliente</span>
+                <span class="suggestion-tag" data-fn="addSuggestionTag" data-args='["inativo"]'>inativo</span>
+                <span class="suggestion-tag" data-fn="addSuggestionTag" data-args='["potencial"]'>potencial</span>
             </div>
             
             <div class="d-flex gap-2 mt-3">
-                <button type="button" class="btn btn-primary" onclick="saveClienteTags()">
+                <button type="button" class="btn btn-primary" data-fn="saveClienteTags">
                     <i class="fas fa-save"></i> Salvar
                 </button>
-                <button type="button" class="btn btn-secondary" onclick="closeEditTagsModal()">
+                <button type="button" class="btn btn-secondary" data-fn="closeEditTagsModal">
                     <i class="fas fa-times"></i> Cancelar
                 </button>
             </div>
@@ -550,7 +550,7 @@ if($autorizado != 2){
     </div>
 
     <!-- Scripts -->
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         let selectedClients = [];
         let currentMediaType = 'text';
         let cursorPosition = 0;

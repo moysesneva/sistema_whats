@@ -495,7 +495,7 @@ $sz_total       = $sz_logs_dir + $sz_log_proc + $sz_log_recv + $sz_uploads + $sz
 
 </div>
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 document.getElementById('btn-salvar-timeout').addEventListener('click', function () {
     var btn   = this;
     var input = document.getElementById('session-timeout-input');

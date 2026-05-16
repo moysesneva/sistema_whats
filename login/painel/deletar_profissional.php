@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
             
             mysqli_commit($conn);
             
-            echo "<script>
+            echo "<script nonce=\"". ($GLOBALS['csp_nonce'] ?? '') ."\">
                     alert('Profissional deletado com sucesso!');
                     window.location.href = 'listar_profissionais.php';
                   </script>";
@@ -46,14 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
         } catch (Exception $e) {
             mysqli_rollback($conn);
             
-            echo "<script>
+            echo "<script nonce=\"". ($GLOBALS['csp_nonce'] ?? '') ."\">
                     alert('Erro ao deletar profissional: " . $e->getMessage() . "');
                     window.history.back();
                   </script>";
         }
     } else {
         $stmt_busca->close();
-        echo "<script>
+        echo "<script nonce=\"". ($GLOBALS['csp_nonce'] ?? '') ."\">
                 alert('Profissional não encontrado ou sem permissão!');
                 window.history.back();
               </script>";

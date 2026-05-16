@@ -371,7 +371,7 @@ $stmt->close();
                 <form action="configurar_confirmacao.php" method="post">
                     <div class="form-group mb-3">
                         <label for="solicitarConfirmacao" class="form-label-modern">Solicitar confirmação de agendamento?</label>
-                        <select class="form-control select-modern" id="solicitarConfirmacao" name="solicitarConfirmacao" onchange="toggleEnqueteFields()">
+                        <select class="form-control select-modern" id="solicitarConfirmacao" name="solicitarConfirmacao" data-change-fn="toggleEnqueteFields">
                             <option value="nao" selected>❌ Não</option>
                             <option value="sim">✅ Sim</option>
                         </select>
@@ -383,16 +383,16 @@ $stmt->close();
 
                             <div class="tags-container">
                                 <div class="d-flex flex-wrap justify-content-center">
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{nome}')">👤 {nome}</button>
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{data_agendamento}')">📅 {data_agendamento}</button>
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{hora_agendamento}')">🕒 {hora_agendamento}</button>
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{profissional}')">👨‍⚕️ {profissional}</button>
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{telefone_cliente}')">📞 {telefone_cliente}</button>
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{serviço}')">🛠️ {serviço}</button>
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{preço_serviço}')">💰 {preço_serviço}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{nome}"]'>👤 {nome}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{data_agendamento}"]'>📅 {data_agendamento}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{hora_agendamento}"]'>🕒 {hora_agendamento}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{profissional}"]'>👨‍⚕️ {profissional}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{telefone_cliente}"]'>📞 {telefone_cliente}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{serviço}"]'>🛠️ {serviço}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{preço_serviço}"]'>💰 {preço_serviço}</button>
                                 </div>
                                 <div class="text-center mt-2">
-                                    <button type="button" class="btn btn-modern btn-model" onclick="carregarModeloEnquete()">✨ Carregar Modelo</button>
+                                    <button type="button" class="btn btn-modern btn-model" data-fn="carregarModeloEnquete">✨ Carregar Modelo</button>
                                 </div>
                             </div>
 
@@ -453,7 +453,7 @@ $stmt->close();
                 <form action="configurar_confirmacao.php" method="post">
                     <div class="form-group mb-3">
                         <label for="solicitarConfirmacao" class="form-label-modern">Solicitar confirmação de agendamento?</label>
-                        <select class="form-control select-modern" id="solicitarConfirmacao" name="solicitarConfirmacao" onchange="toggleEnqueteFields()">
+                        <select class="form-control select-modern" id="solicitarConfirmacao" name="solicitarConfirmacao" data-change-fn="toggleEnqueteFields">
                             <option value="sim" selected>✅ Sim</option>
                             <option value="nao">❌ Não</option>
                         </select>
@@ -465,16 +465,16 @@ $stmt->close();
 
                             <div class="tags-container">
                                 <div class="d-flex flex-wrap justify-content-center">
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{nome}')">👤 {nome}</button>
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{data_agendamento}')">📅 {data_agendamento}</button>
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{hora_agendamento}')">🕒 {hora_agendamento}</button>
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{profissional}')">👨‍⚕️ {profissional}</button>
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{telefone_cliente}')">📞 {telefone_cliente}</button>
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{serviço}')">🛠️ {serviço}</button>
-                                    <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemEnquete', '{preço_serviço}')">💰 {preço_serviço}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{nome}"]'>👤 {nome}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{data_agendamento}"]'>📅 {data_agendamento}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{hora_agendamento}"]'>🕒 {hora_agendamento}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{profissional}"]'>👨‍⚕️ {profissional}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{telefone_cliente}"]'>📞 {telefone_cliente}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{serviço}"]'>🛠️ {serviço}</button>
+                                    <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemEnquete", "{preço_serviço}"]'>💰 {preço_serviço}</button>
                                 </div>
                                 <div class="text-center mt-2">
-                                    <button type="button" class="btn btn-modern btn-model" onclick="carregarModeloEnquete()">✨ Carregar Modelo</button>
+                                    <button type="button" class="btn btn-modern btn-model" data-fn="carregarModeloEnquete">✨ Carregar Modelo</button>
                                 </div>
                             </div>
 
@@ -549,21 +549,21 @@ $stmt->close();
 
                         <div class="tags-container">
                             <div class="d-flex flex-wrap justify-content-center">
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacao', '{nome}')">👤 {nome}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacao', '{data_agendamento}')">📅 {data_agendamento}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacao', '{hora_agendamento}')">🕒 {hora_agendamento}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacao', '{profissional}')">👨‍⚕️ {profissional}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacao', '{telefone_cliente}')">📞 {telefone_cliente}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacao', '{serviço}')">🛠️ {serviço}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacao', '{preço_serviço}')">💰 {preço_serviço}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacao", "{nome}"]'>👤 {nome}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacao", "{data_agendamento}"]'>📅 {data_agendamento}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacao", "{hora_agendamento}"]'>🕒 {hora_agendamento}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacao", "{profissional}"]'>👨‍⚕️ {profissional}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacao", "{telefone_cliente}"]'>📞 {telefone_cliente}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacao", "{serviço}"]'>🛠️ {serviço}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacao", "{preço_serviço}"]'>💰 {preço_serviço}</button>
                                 <?php if($oculto){?>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacao', '{link_agendamento}')">🔗 {link_agendamento}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacao", "{link_agendamento}"]'>🔗 {link_agendamento}</button>
                             </div>
                             <?php
                                 }
                                 ?>
                             <div class="text-center mt-2">
-                                <button type="button" class="btn btn-modern btn-model" onclick="carregarModeloConfirmacao()">✨ Carregar Modelo</button>
+                                <button type="button" class="btn btn-modern btn-model" data-fn="carregarModeloConfirmacao">✨ Carregar Modelo</button>
                             </div>
                         </div>
 
@@ -592,16 +592,16 @@ $stmt->close();
 
                         <div class="tags-container">
                             <div class="d-flex flex-wrap justify-content-center">
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamento', '{nome}')">👤 {nome}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamento', '{data_agendamento}')">📅 {data_agendamento}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamento', '{hora_agendamento}')">🕒 {hora_agendamento}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamento', '{profissional}')">👨‍⚕️ {profissional}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamento', '{telefone_cliente}')">📞 {telefone_cliente}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamento', '{serviço}')">🛠️ {serviço}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamento', '{preço_serviço}')">💰 {preço_serviço}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamento", "{nome}"]'>👤 {nome}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamento", "{data_agendamento}"]'>📅 {data_agendamento}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamento", "{hora_agendamento}"]'>🕒 {hora_agendamento}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamento", "{profissional}"]'>👨‍⚕️ {profissional}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamento", "{telefone_cliente}"]'>📞 {telefone_cliente}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamento", "{serviço}"]'>🛠️ {serviço}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamento", "{preço_serviço}"]'>💰 {preço_serviço}</button>
                             </div>
                             <div class="text-center mt-2">
-                                <button type="button" class="btn btn-modern btn-model" onclick="carregarModeloCancelamento()">✨ Carregar Modelo</button>
+                                <button type="button" class="btn btn-modern btn-model" data-fn="carregarModeloCancelamento">✨ Carregar Modelo</button>
                             </div>
                         </div>
 
@@ -630,16 +630,16 @@ $stmt->close();
 
                         <div class="tags-container">
                             <div class="d-flex flex-wrap justify-content-center">
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacaoProfissional', '{nome}')">👤 {nome}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacaoProfissional', '{data_agendamento}')">📅 {data_agendamento}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacaoProfissional', '{hora_agendamento}')">🕒 {hora_agendamento}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacaoProfissional', '{profissional}')">👨‍⚕️ {profissional}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacaoProfissional', '{telefone_cliente}')">📞 {telefone_cliente}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacaoProfissional', '{serviço}')">🛠️ {serviço}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemConfirmacaoProfissional', '{preço_serviço}')">💰 {preço_serviço}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacaoProfissional", "{nome}"]'>👤 {nome}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacaoProfissional", "{data_agendamento}"]'>📅 {data_agendamento}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacaoProfissional", "{hora_agendamento}"]'>🕒 {hora_agendamento}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacaoProfissional", "{profissional}"]'>👨‍⚕️ {profissional}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacaoProfissional", "{telefone_cliente}"]'>📞 {telefone_cliente}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacaoProfissional", "{serviço}"]'>🛠️ {serviço}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacaoProfissional", "{preço_serviço}"]'>💰 {preço_serviço}</button>
                             </div>
                             <div class="text-center mt-2">
-                                <button type="button" class="btn btn-modern btn-model" onclick="carregarModeloConfirmacaoProfissional()">✨ Carregar Modelo</button>
+                                <button type="button" class="btn btn-modern btn-model" data-fn="carregarModeloConfirmacaoProfissional">✨ Carregar Modelo</button>
                             </div>
                         </div>
 
@@ -668,16 +668,16 @@ $stmt->close();
 
                         <div class="tags-container">
                             <div class="d-flex flex-wrap justify-content-center">
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamentoProfissional', '{nome}')">👤 {nome}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamentoProfissional', '{data_agendamento}')">📅 {data_agendamento}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamentoProfissional', '{hora_agendamento}')">🕒 {hora_agendamento}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamentoProfissional', '{profissional}')">👨‍⚕️ {profissional}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamentoProfissional', '{telefone_cliente}')">📞 {telefone_cliente}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamentoProfissional', '{serviço}')">🛠️ {serviço}</button>
-                                <button type="button" class="btn btn-modern btn-tag" onclick="inserirCampo('mensagemCancelamentoProfissional', '{preço_serviço}')">💰 {preço_serviço}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamentoProfissional", "{nome}"]'>👤 {nome}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamentoProfissional", "{data_agendamento}"]'>📅 {data_agendamento}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamentoProfissional", "{hora_agendamento}"]'>🕒 {hora_agendamento}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamentoProfissional", "{profissional}"]'>👨‍⚕️ {profissional}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamentoProfissional", "{telefone_cliente}"]'>📞 {telefone_cliente}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamentoProfissional", "{serviço}"]'>🛠️ {serviço}</button>
+                                <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemCancelamentoProfissional", "{preço_serviço}"]'>💰 {preço_serviço}</button>
                             </div>
                             <div class="text-center mt-2">
-                                <button type="button" class="btn btn-modern btn-model" onclick="carregarModeloCancelamentoProfissional()">✨ Carregar Modelo</button>
+                                <button type="button" class="btn btn-modern btn-model" data-fn="carregarModeloCancelamentoProfissional">✨ Carregar Modelo</button>
                             </div>
                         </div>
 
@@ -693,7 +693,7 @@ $stmt->close();
 </div>
 
 <!-- Script JavaScript para inserir placeholders no campo de texto -->
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
     function inserirCampo(idCampo, placeholder) {
         var campoTexto = document.getElementById(idCampo);
         
@@ -715,7 +715,7 @@ $stmt->close();
     }
 </script>
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
     // Função para mostrar/ocultar campos da enquete com base na seleção
     function toggleEnqueteFields() {
         var solicitarConfirmacao = document.getElementById('solicitarConfirmacao').value;

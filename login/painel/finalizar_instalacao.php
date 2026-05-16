@@ -62,7 +62,7 @@ if($autorizado != 2){
 </div>
 
 <!-- Script para animar a barra de progresso e redirecionar -->
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
     let progressBar = document.getElementById('progressBar');
     let width = 0;
     let interval = setInterval(function () {

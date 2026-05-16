@@ -72,13 +72,13 @@ if (isset($_POST['apagar_integracao'])) {
     $query = mysqli_stmt_execute($stmt_apagar);
 
     if ($query) {
-        echo '<script>
+        echo '<script nonce="'. ($GLOBALS['csp_nonce'] ?? '') .'">
             document.addEventListener("DOMContentLoaded", function() {
                 mostrarSucesso("✅ Integração removida com sucesso!");
             });
         </script>';
     } else {
-        echo '<script>
+        echo '<script nonce="'. ($GLOBALS['csp_nonce'] ?? '') .'">
             document.addEventListener("DOMContentLoaded", function() {
                 mostrarErro("❌ Erro ao remover integração. Tente novamente.");
             });
@@ -97,20 +97,20 @@ if (isset($_POST['email_gmail'])) {
         $query = mysqli_stmt_execute($stmt_save);
 
         if ($query) {
-            echo '<script>
+            echo '<script nonce="'. ($GLOBALS['csp_nonce'] ?? '') .'">
                 document.addEventListener("DOMContentLoaded", function() {
                     mostrarSucesso("✅ Email do Gmail salvo com sucesso!");
                 });
             </script>';
         } else {
-            echo '<script>
+            echo '<script nonce="'. ($GLOBALS['csp_nonce'] ?? '') .'">
                 document.addEventListener("DOMContentLoaded", function() {
                     mostrarErro("❌ Erro ao salvar email. Tente novamente.");
                 });
             </script>';
         }
     } else {
-        echo '<script>
+        echo '<script nonce="'. ($GLOBALS['csp_nonce'] ?? '') .'">
             document.addEventListener("DOMContentLoaded", function() {
                 mostrarErro("❌ Por favor, insira um email válido do Gmail.");
             });
@@ -122,7 +122,7 @@ if (isset($_POST['email_gmail'])) {
 <?php
 if (isset($_POST['email_gmail']) || isset($_POST['apagar_integracao'])) {
     $_POST['email_gmail'] = false;
-    echo '<script>window.location.href = window.location.pathname;</script>';
+    echo '<script nonce="'. ($GLOBALS['csp_nonce'] ?? '') .'">window.location.href = window.location.pathname;</script>';
     exit;
 }
 ?>

@@ -190,10 +190,10 @@ VaiPara('senha.php');
                                                 <div class="col-md-8 mx-auto">
                                                     <h4 class="mb-4">Insira e Verifique seu E-mail</h4>
                                                     
-                                                    <form action="verificar_email.php" method="post" onsubmit="return verificarEmails()">
+                                                    <form action="verificar_email.php" method="post" data-submit-fn="verificarEmails">
                                                         <div class="form-group">
                                                             <label for="emailPerfil">E-mail</label>
-                                                            <input type="email" class="form-control" id="emailPerfil" name="emailPerfil" placeholder="Digite seu e-mail" required onchange="mostrarAlerta()">
+                                                            <input type="email" class="form-control" id="emailPerfil" name="emailPerfil" placeholder="Digite seu e-mail" required data-change-fn="mostrarAlerta">
                                                             <small class="form-text text-info font-weight-bold">
                                                                 <i class="fas fa-exclamation-circle"></i> Este e-mail será utilizado como forma de identificação de pagamento. Por favor, insira um e-mail válido e confirme-o com cuidado.
                                                             </small>
@@ -212,7 +212,7 @@ VaiPara('senha.php');
                                         </div>
                                     </div>
 
-                                    <script>
+                                    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                         function verificarEmails() {
                                             var email = document.getElementById('emailPerfil').value;
                                             var emailConfirmar = document.getElementById('emailPerfilConfirmar').value;

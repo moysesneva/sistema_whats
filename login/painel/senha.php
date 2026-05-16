@@ -51,7 +51,7 @@ if($autorizado != 2){
 ?>
 <?php include 'header.php'; ?>
 
-    <button class="back-button" onclick="history.back()" title="Voltar">
+    <button class="back-button" data-fn="history.back" title="Voltar">
         <i class="material-icons">arrow_back</i>
     </button>
 
@@ -64,7 +64,7 @@ if($autorizado != 2){
             <p>Crie uma nova senha segura para sua conta</p>
         </div>
 
-        <form id="formSenha" action="atualizar_senha.php" method="POST" onsubmit="return validarSenhas()">
+        <form id="formSenha" action="atualizar_senha.php" method="POST" data-submit-fn="validarSenhas">
             <!-- Campo para Nova Senha -->
             <div class="form-group">
                 <label for="senha" class="form-label">
@@ -77,8 +77,8 @@ if($autorizado != 2){
                     </div>
                     <input type="password" class="form-control" id="senha" name="senha" 
                            placeholder="Digite sua nova senha" required 
-                           oninput="checkPasswordStrength(this.value)">
-                    <button type="button" class="password-toggle" onclick="togglePassword('senha')">
+                           data-input-fn="checkPasswordStrength" data-input-args='["__value__"]'>
+                    <button type="button" class="password-toggle" data-fn="togglePassword" data-args='["senha"]'>
                         <i class="material-icons">visibility</i>
                     </button>
                 </div>
@@ -127,8 +127,8 @@ if($autorizado != 2){
                     </div>
                     <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" 
                            placeholder="Confirme sua nova senha" required 
-                           oninput="checkPasswordMatch()">
-                    <button type="button" class="password-toggle" onclick="togglePassword('confirmar_senha')">
+                           data-input-fn="checkPasswordMatch">
+                    <button type="button" class="password-toggle" data-fn="togglePassword" data-args='["confirmar_senha"]'>
                         <i class="material-icons">visibility</i>
                     </button>
                 </div>
@@ -154,7 +154,7 @@ if($autorizado != 2){
         </form>
     </div>
 
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         // Função para alternar visibilidade da senha
         function togglePassword(inputId) {
             const input = document.getElementById(inputId);

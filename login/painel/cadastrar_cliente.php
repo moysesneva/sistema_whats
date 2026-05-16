@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $mensagem = '<div class="alert alert-success"><i class="fas fa-check-circle"></i> Cliente cadastrado com sucesso!</div>';
                         
                         // Auto-redirecionar para agendamento após 2 segundos
-                        echo '<script>
+                        echo '<script nonce="'. ($GLOBALS['csp_nonce'] ?? '') .'">
                                 setTimeout(function() {
                                     window.location.href = "agendamento.php";
                                 }, 2000);
@@ -270,7 +270,7 @@ mysqli_close($conn);
     </div>
 
     <script src="../files/bower_components/jquery/js/jquery.min.js"></script>
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
     // Máscara para telefone
     $('#telefone').on('input', function() {
         let value = this.value.replace(/\D/g, '');

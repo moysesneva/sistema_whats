@@ -295,7 +295,7 @@ function tipo_badge_class(string $tipo): string
                 <?php endif; ?>
             </span>
             <?php if ($total_erros > 0): ?>
-            <form method="post" style="margin:0;" onsubmit="return confirm('Limpar todo o histórico de falhas?');">
+            <form method="post" style="margin:0;" data-confirm="Limpar todo o histórico de falhas?">
                 <input type="hidden" name="limpar_log" value="1">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
                 <button type="submit" class="btn btn-sm btn-outline-light">

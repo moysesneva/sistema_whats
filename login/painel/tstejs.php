@@ -1,4 +1,4 @@
-<script type="text/javascript">
+<script type="text/javascript" nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
 "use strict";
 $.fn.pcodedmenu = function(settings) {

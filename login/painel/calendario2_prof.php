@@ -200,7 +200,7 @@ mysqli_close($conn);
                         echo '<span class="material-icons">chat</span>';
                         echo 'WhatsApp';
                         echo '</a>';
-                        echo '<a href="cancelar_agendamento.php?id=' . $id . '" class="btn-cancel" onclick="return confirm(\'Tem certeza que deseja cancelar este agendamento?\')">';
+                        echo '<a href="cancelar_agendamento.php?id=' . $id . '" class="btn-cancel" data-fn="__confirm" data-args=\'["Tem certeza que deseja cancelar este agendamento?"]\'>';
                         echo '<span class="material-icons">cancel</span>';
                         echo 'Cancelar';
                         echo '</a>';

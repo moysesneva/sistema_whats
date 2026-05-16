@@ -95,7 +95,7 @@ if (isset($_POST['deletar'])) {
                                 <label class="form-label-modern" for="profissional">
                                     <i class="fas fa-user-md"></i> Selecione o Profissional
                                 </label>
-                                <select class="form-control form-control-modern" id="profissional" name="profissional" required onchange="carregarDiasSemana()">
+                                <select class="form-control form-control-modern" id="profissional" name="profissional" required data-change-fn="carregarDiasSemana">
                                     <option value="">Escolha um profissional</option>
                                     <?php
                                     // Conexão com o banco de dados
@@ -255,7 +255,7 @@ if (isset($_POST['deletar'])) {
                                 echo '<td>';
                                 echo '<form method="post" action="" style="display:inline;">';
                                 echo '<input type="hidden" name="id" value="' . htmlspecialchars($row['id'], ENT_QUOTES, 'UTF-8') . '">';
-                                echo '<button type="submit" name="deletar" class="btn btn-modern btn-danger-modern" onclick="return confirm(\'Tem certeza que deseja excluir esta data especial?\')">';
+                                echo '<button type="submit" name="deletar" class="btn btn-modern btn-danger-modern" data-fn="__confirm" data-args=\'["Tem certeza que deseja excluir esta data especial?"]\'>';
                                 echo '<i class="fas fa-trash"></i> Excluir';
                                 echo '</button>';
                                 echo '</form>';
@@ -290,13 +290,13 @@ if (isset($_POST['deletar'])) {
     </div>
 
     <!-- Floating Action Button -->
-    <div class="floating-action" onclick="document.getElementById('profissional').focus()" title="Adicionar Data Especial">
+    <div class="floating-action" data-fn="__el_focus" data-args='["profissional"]' title="Adicionar Data Especial">
         <i class="fas fa-plus"></i>
     </div>
 
     <!-- Scripts -->
     <script src="../files/bower_components/jquery/js/jquery.min.js"></script>
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         // Função para buscar clientes em tempo real
         function buscarCliente() {
             var nome = document.getElementById('nome').value;

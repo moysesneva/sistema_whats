@@ -304,13 +304,13 @@ if($autorizado != 2){
                             <div class="form-radio">
                                 <div class="radio radiofill radio-primary radio-inline">
                                     <label>
-                                        <input type="radio" name="tipoEnvio" value="todos" checked onchange="toggleContactSelector()">
+                                        <input type="radio" name="tipoEnvio" value="todos" checked data-change-fn="toggleContactSelector">
                                         <i class="helper"></i>📋 Enviar para TODOS os contatos
                                     </label>
                                 </div>
                                 <div class="radio radiofill radio-primary radio-inline">
                                     <label>
-                                        <input type="radio" name="tipoEnvio" value="selecionados" onchange="toggleContactSelector()">
+                                        <input type="radio" name="tipoEnvio" value="selecionados" data-change-fn="toggleContactSelector">
                                         <i class="helper"></i>✅ Selecionar contatos específicos
                                     </label>
                                 </div>
@@ -320,10 +320,10 @@ if($autorizado != 2){
                             <div id="contactSelector" class="contact-selector" style="display: none;">
                                 <div class="row mb-2">
                                     <div class="col-6">
-                                        <button type="button" class="btn btn-sm btn-outline-primary btn-block" onclick="selectAllContacts()">Selecionar Todos</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary btn-block" data-fn="selectAllContacts">Selecionar Todos</button>
                                     </div>
                                     <div class="col-6">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary btn-block" onclick="deselectAllContacts()">Desmarcar Todos</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary btn-block" data-fn="deselectAllContacts">Desmarcar Todos</button>
                                     </div>
                                 </div>
                                 <!-- Lista de contatos -->
@@ -368,10 +368,10 @@ if($autorizado != 2){
                         <div class="form-section">
                             <div class="form-group">
                                 <label>Campos dinâmicos disponíveis:</label><br>
-                                <button type="button" class="btn btn-secondary btn-sm m-1" onclick="inserirCampo('mensagemTexto', '{nome}')">{nome}</button>
-                                <button type="button" class="btn btn-secondary btn-sm m-1" onclick="inserirCampo('mensagemTexto', '{saudacao}')">{saudacao}</button>
-                                <button type="button" class="btn btn-secondary btn-sm m-1" onclick="inserirCampo('mensagemTexto', '{datahora}')">{datahora}</button>
-                                <button type="button" class="btn btn-info btn-sm m-1" onclick="carregarModeloMassa()">📋 Modelo</button>
+                                <button type="button" class="btn btn-secondary btn-sm m-1" data-fn="inserirCampo" data-args='["mensagemTexto", "{nome}"]'>{nome}</button>
+                                <button type="button" class="btn btn-secondary btn-sm m-1" data-fn="inserirCampo" data-args='["mensagemTexto", "{saudacao}"]'>{saudacao}</button>
+                                <button type="button" class="btn btn-secondary btn-sm m-1" data-fn="inserirCampo" data-args='["mensagemTexto", "{datahora}"]'>{datahora}</button>
+                                <button type="button" class="btn btn-info btn-sm m-1" data-fn="carregarModeloMassa">📋 Modelo</button>
                             </div>
 
                             <div class="form-group">
@@ -387,16 +387,16 @@ if($autorizado != 2){
                         <div class="form-section">
                             <label>📎 Anexar Mídia (opcional)</label>
                             <div class="media-type-tabs">
-                                <div class="media-tab active" onclick="selectMediaType('none', this)">🚫 Sem mídia</div>
-                                <div class="media-tab" onclick="selectMediaType('image', this)">🖼️ Imagem</div>
-                                <div class="media-tab" onclick="selectMediaType('video', this)">🎥 Vídeo</div>
-                                <div class="media-tab" onclick="selectMediaType('audio', this)">🎵 Áudio</div>
+                                <div class="media-tab active" data-fn="selectMediaType" data-args='["none", "__this__"]'>🚫 Sem mídia</div>
+                                <div class="media-tab" data-fn="selectMediaType" data-args='["image", "__this__"]'>🖼️ Imagem</div>
+                                <div class="media-tab" data-fn="selectMediaType" data-args='["video", "__this__"]'>🎥 Vídeo</div>
+                                <div class="media-tab" data-fn="selectMediaType" data-args='["audio", "__this__"]'>🎵 Áudio</div>
                             </div>
                             <input type="hidden" name="tipoMidia" id="tipoMidia" value="none">
 
                             <!-- Área de upload -->
-                            <div id="uploadArea" class="file-upload-area" style="display: none;" onclick="document.getElementById('arquivoMidia').click()">
-                                <input type="file" id="arquivoMidia" name="arquivoMidia" style="display: none;" onchange="handleFileSelect(this)">
+                            <div id="uploadArea" class="file-upload-area" style="display: none;" data-fn="__el_click" data-args='["arquivoMidia"]'>
+                                <input type="file" id="arquivoMidia" name="arquivoMidia" style="display: none;" data-change-fn="handleFileSelect" data-change-args='["__this__"]'>
                                 <div id="uploadText">
                                     <i class="feather icon-upload"></i><br>
                                     <span>Clique aqui ou arraste o arquivo</span><br>
@@ -418,13 +418,13 @@ if($autorizado != 2){
                                     <div class="form-radio">
                                         <div class="radio radiofill radio-success">
                                             <label>
-                                                <input type="radio" name="opcaoEnvio" value="agora" checked onchange="toggleSchedule()">
+                                                <input type="radio" name="opcaoEnvio" value="agora" checked data-change-fn="toggleSchedule">
                                                 <i class="helper"></i>🚀 Enviar Agora
                                             </label>
                                         </div>
                                         <div class="radio radiofill radio-warning">
                                             <label>
-                                                <input type="radio" name="opcaoEnvio" value="agendar" onchange="toggleSchedule()">
+                                                <input type="radio" name="opcaoEnvio" value="agendar" data-change-fn="toggleSchedule">
                                                 <i class="helper"></i>📅 Agendar Envio
                                             </label>
                                         </div>
@@ -498,7 +498,7 @@ if($autorizado != 2){
 </div>
 
 <!-- JavaScript para funcionalidades -->
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
     // Função para inserir campos dinâmicos
     function inserirCampo(idCampo, placeholder) {
         var campoTexto = document.getElementById(idCampo);

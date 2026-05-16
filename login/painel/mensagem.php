@@ -100,7 +100,7 @@
                             </div>
                         </li>
                         <li>
-                            <a href="#!" onclick="javascript:toggleFullScreen()">
+                            <a href="#!" data-fn="toggleFullScreen">
                                 <i class="feather icon-maximize full-screen"></i>
                             </a>
                         </li>

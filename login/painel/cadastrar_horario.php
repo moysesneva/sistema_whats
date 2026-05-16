@@ -421,7 +421,7 @@ $stmt_horarios->close();
                                                                                         </label>
                                                                                         <div id="intervalos_<?=$dia_key?>">
                                                                                             <button type="button" class="btn btn-sm btn-outline-info btn-custom" 
-                                                                                                    onclick="adicionarIntervalo('<?=$dia_key?>')">
+                                                                                                    data-fn="adicionarIntervalo" data-args='["<?=$dia_key?>"]'>
                                                                                                 <i class="fa fa-plus"></i> Adicionar Intervalo
                                                                                             </button>
                                                                                         </div>
@@ -498,7 +498,7 @@ $stmt_horarios->close();
                                                                                         </div>
                                                                                         <div class="col-md-2">
                                                                                             <label>&nbsp;</label>
-                                                                                            <button type="button" class="btn btn-danger btn-block btn-custom" onclick="removerServico(this)">
+                                                                                            <button type="button" class="btn btn-danger btn-block btn-custom" data-fn="removerServico" data-args='["__this__"]'>
                                                                                                 <i class="fa fa-trash"></i> Remover
                                                                                             </button>
                                                                                         </div>
@@ -507,7 +507,7 @@ $stmt_horarios->close();
                                                                             </div>
                                                                             
                                                                             <div class="text-center mt-3">
-                                                                                <button type="button" class="btn btn-outline-info btn-custom" onclick="adicionarServico()">
+                                                                                <button type="button" class="btn btn-outline-info btn-custom" data-fn="adicionarServico">
                                                                                     <i class="fa fa-plus"></i> Adicionar Mais Serviços
                                                                                 </button>
                                                                             </div>
@@ -542,7 +542,7 @@ $stmt_horarios->close();
                                                                         <i class="fa fa-calendar-check-o"></i> Horários Cadastrados
                                                                     </h5>
                                                                     <div class="card-tools d-flex align-items-center">
-                                                                        <select class="form-control mr-2" id="filtro-profissional" onchange="filtrarPorProfissional()" 
+                                                                        <select class="form-control mr-2" id="filtro-profissional" data-change-fn="filtrarPorProfissional" 
                                                                                 style="width: 250px;">
                                                                             <option value="">👥 Todos os Profissionais</option>
                                                                             <?php
@@ -556,7 +556,7 @@ $stmt_horarios->close();
                                                                             }
                                                                             ?>
                                                                         </select>
-                                                                        <button class="btn btn-info btn-sm btn-custom" onclick="recarregarHorarios()">
+                                                                        <button class="btn btn-info btn-sm btn-custom" data-fn="recarregarHorarios">
                                                                             <i class="fa fa-refresh"></i> Atualizar
                                                                         </button>
                                                                     </div>
@@ -628,19 +628,19 @@ $stmt_horarios->close();
                                                                                 <td><?=$status_badge?></td>
                                                                                 <td>
                                                                                     <div class="btn-group" role="group">
-                                                                                        <button class="btn btn-warning btn-sm" onclick="editarHorario(<?=$horario['horario_id']?>)" title="Editar">
+                                                                                        <button class="btn btn-warning btn-sm" data-fn="editarHorario" data-args='[<?=$horario['horario_id']?>]' title="Editar">
                                                                                             <i class="fa fa-edit"></i>
                                                                                         </button>
-                                                                                        <button class="btn btn-info btn-sm" onclick="verDetalhesHorario(<?=$horario['horario_id']?>)" title="Ver Detalhes">
+                                                                                        <button class="btn btn-info btn-sm" data-fn="verDetalhesHorario" data-args='[<?=$horario['horario_id']?>]' title="Ver Detalhes">
                                                                                             <i class="fa fa-eye"></i>
                                                                                         </button>
                                                                                         <button class="btn btn-<?=$horario['ativo'] == 1 ? 'secondary' : 'success'?> btn-sm" 
-                                                                                                onclick="toggleStatusHorario(<?=$horario['horario_id']?>, <?=$horario['ativo']?>)" 
+                                                                                                data-fn="toggleStatusHorario" data-args='[<?=$horario['horario_id']?>, <?=$horario['ativo']?>]' 
                                                                                                 title="<?=$horario['ativo'] == 1 ? 'Desativar' : 'Ativar'?>">
                                                                                             <i class="fa fa-power-off"></i>
                                                                                         </button>
                                                                                         <button class="btn btn-danger btn-sm" 
-                                                                                                onclick="excluirHorario(<?=$horario['horario_id']?>, '<?=$horario['profissional_nome']?>', '<?=$dias_map[$horario['dia_semana']]?>')" 
+                                                                                                data-fn="excluirHorario" data-args='[<?=$horario['horario_id']?>, "<?=$horario['profissional_nome']?>", "<?=$dias_map[$horario['dia_semana']]?>"]' 
                                                                                                 title="Excluir">
                                                                                             <i class="fa fa-trash"></i>
                                                                                         </button>
@@ -656,7 +656,7 @@ $stmt_horarios->close();
                                                                     <i class="fa fa-info-circle fa-3x mb-3 text-info"></i>
                                                                     <h4>Nenhum horário cadastrado ainda</h4>
                                                                     <p>Utilize a aba "Configurar Horários e Serviços" para cadastrar horários para seus profissionais.</p>
-                                                                    <button class="btn btn-primary btn-custom" onclick="$('#servico-tab').tab('show')">
+                                                                    <button class="btn btn-primary btn-custom" data-fn="__jq_tab" data-args='["#servico-tab","show"]'>
                                                                         <i class="fa fa-plus"></i> Cadastrar Primeiro Horário
                                                                     </button>
                                                                 </div>
@@ -717,7 +717,7 @@ $stmt_horarios->close();
                                     </div>
                                     <div class="col-md-2">
                                         <label>&nbsp;</label>
-                                        <button type="button" class="btn btn-success btn-block btn-custom" onclick="salvarNovoServico()">
+                                        <button type="button" class="btn btn-success btn-block btn-custom" data-fn="salvarNovoServico">
                                             <i class="fa fa-save"></i> Salvar
                                         </button>
                                     </div>
@@ -767,10 +767,10 @@ $stmt_horarios->close();
                                                     <td>'.$status_badge.'</td>
                                                     <td>
                                                         <div class="btn-group" role="group">
-                                                            <button class="btn btn-sm btn-warning" onclick="editarServico('.$servico['id'].')" title="Editar">
+                                                            <button class="btn btn-sm btn-warning" data-fn="editarServico" data-args="['.(int)$servico['id'].']" title="Editar">
                                                                 <i class="fa fa-edit"></i>
                                                             </button>
-                                                            <button class="btn btn-sm btn-'.($servico['ativo'] == 1 ? 'secondary' : 'success').'" onclick="toggleServico('.$servico['id'].')" title="'.($servico['ativo'] == 1 ? 'Desativar' : 'Ativar').'">
+                                                            <button class="btn btn-sm btn-'.($servico['ativo'] == 1 ? 'secondary' : 'success').'" data-fn="toggleServico" data-args="['.(int)$servico['id'].']" title="'.($servico['ativo'] == 1 ? 'Desativar' : 'Ativar').'">
                                                                 <i class="fa fa-power-off"></i>
                                                             </button>
                                                         </div>
@@ -859,7 +859,7 @@ $stmt_horarios->close();
                             <div class="card-header bg-info text-white">
                                 <h6 class="mb-0 d-flex justify-content-between align-items-center">
                                     <span><i class="fa fa-coffee"></i> Intervalos Adicionais</span>
-                                    <button type="button" class="btn btn-light btn-sm" onclick="adicionarIntervaloEdicao()">
+                                    <button type="button" class="btn btn-light btn-sm" data-fn="adicionarIntervaloEdicao">
                                         <i class="fa fa-plus"></i> Adicionar
                                     </button>
                                 </h6>

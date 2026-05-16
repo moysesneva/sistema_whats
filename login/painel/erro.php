@@ -78,7 +78,7 @@ if (!defined('ERRO_PHP_STYLES')) {
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 function popup_fechar_btn($id, $tipo = 'danger') {
-    return '<button class="popup-btn popup-btn-' . $tipo . '" onclick="document.getElementById(\'' . $id . '\').remove()">Fechar</button>';
+    return '<button class="popup-btn popup-btn-' . $tipo . '" data-fn="__el_remove" data-args=\'[' . json_encode((string)$id) . ']\'>' . 'Fechar</button>';
 }
 function popup_wrap($id, $top_class, $icon, $titulo, $msg, $btn) {
     return '<div class="popup-overlay" id="' . $id . '">
@@ -146,7 +146,7 @@ function popup_wrap($id, $top_class, $icon, $titulo, $msg, $btn) {
         <p style="margin-top:10px;font-size:12px;" id="pct-label">0%</p>
     </div>
 </div>
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 (function(){
     var w = 0;
     var bar = document.getElementById('progressBar');

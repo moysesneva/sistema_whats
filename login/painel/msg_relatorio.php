@@ -204,7 +204,7 @@ while ($row = $result->fetch_assoc()) {
                         </div>
 
                         <!-- Botão Apagar -->
-                        <button type="button" class="btn btn-delete" data-toggle="modal" data-target="#deleteModal" onclick="setCampaignToDelete(<?php echo $campanha['id']; ?>, '<?php echo htmlspecialchars($campanha['campaign_name'], ENT_QUOTES); ?>')">
+                        <button type="button" class="btn btn-delete" data-toggle="modal" data-target="#deleteModal" data-fn="setCampaignToDelete" data-args='[<?php echo $campanha['id']; ?>, "<?php echo htmlspecialchars($campanha['campaign_name'], ENT_QUOTES); ?>"]'>
                             <i class="fas fa-trash"></i>
                             Apagar Campanha
                         </button>
@@ -239,7 +239,7 @@ while ($row = $result->fetch_assoc()) {
                         <i class="fas fa-times"></i>
                         Cancelar
                     </button>
-                    <button type="button" class="btn btn-modern btn-danger-modern" onclick="deleteCampaign()">
+                    <button type="button" class="btn btn-modern btn-danger-modern" data-fn="deleteCampaign">
                         <i class="fas fa-trash"></i>
                         Sim, Apagar
                     </button>
@@ -249,7 +249,7 @@ while ($row = $result->fetch_assoc()) {
     </div>
 
     <!-- Scripts -->
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         let campaignIdToDelete = null;
 
         // Função para definir qual campanha será deletada

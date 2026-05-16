@@ -67,7 +67,7 @@
                                 </div>
                             </li>
                             <li>
-                                <a href="#!" onclick="javascript:toggleFullScreen()">
+                                <a href="#!" id="pcoded-fullscreen-btn">
                                     <i class="feather icon-maximize full-screen"></i>
                                 </a>
                             </li>
@@ -194,35 +194,9 @@ if (isset($tipo) && in_array($tipo, [1, 4]) && empty(getenv('API_WEBHOOK_TOKEN')
         </span>
     </span>
     <button type="button"
-            onclick="_apiTokenWarnDismiss();"
+            id="api-token-warn-dismiss-btn"
             style="background:none;border:none;font-size:20px;line-height:1;color:#888;cursor:pointer;padding:0 4px;flex-shrink:0;"
             aria-label="Fechar aviso">&times;</button>
 </div>
-<script>
-(function(){
-    var KEY = 'api_token_warn_dismissed_until';
-    function _dismissed(){
-        try{
-            var until = parseInt(localStorage.getItem(KEY), 10);
-            if(isNaN(until)) return false;
-            if(Date.now() >= until){ localStorage.removeItem(KEY); return false; }
-            return true;
-        }catch(e){ return false; }
-    }
-    function _endOfDay(){
-        var d = new Date();
-        d.setHours(23,59,59,999);
-        return d.getTime();
-    }
-    window._apiTokenWarnDismiss = function(){
-        try{ localStorage.setItem(KEY, _endOfDay()); }catch(e){}
-        var el = document.getElementById('api-token-warning-banner');
-        if(el) el.style.display = 'none';
-    };
-    if(_dismissed()){
-        var el = document.getElementById('api-token-warning-banner');
-        if(el) el.style.display = 'none';
-    }
-})();
-</script>
+<script src="../files/assets/js/api-token-warning.js"></script>
 <?php endif; ?>

@@ -221,7 +221,7 @@ include 'bloqueio.php';
 <script src="../files/bower_components/jquery/js/jquery.min.js"></script>
 <!-- Adicionar JS do intl-tel-input -->
 <script src="../files/assets/vendor/intl-tel-input/js/intlTelInput.min.js"></script>
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
     $(document).ready(function() {
         var input = document.querySelector("#telefone_cliente");
         var iti = window.intlTelInput(input, {

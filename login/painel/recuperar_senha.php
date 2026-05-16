@@ -421,7 +421,7 @@ switch ($tema) {
     <script src="../files/assets/vendor/aos/aos.js"></script>
 
     <!-- Script para inicializar o seletor de país e animações -->
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         $(document).ready(function() {
             // Inicializa AOS (Animate On Scroll)
             AOS.init({

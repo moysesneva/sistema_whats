@@ -691,13 +691,13 @@ if($autorizado != 2){
                                     <div class="form-radio">
                                         <div class="radio radiofill radio-primary radio-inline">
                                             <label>
-                                                <input type="radio" name="tipoEnvioGrupos" value="todos" checked onchange="toggleGroupSelector()">
+                                                <input type="radio" name="tipoEnvioGrupos" value="todos" checked data-change-fn="toggleGroupSelector">
                                                 <i class="helper"></i>📋 Enviar para TODOS os grupos
                                             </label>
                                         </div>
                                         <div class="radio radiofill radio-primary radio-inline">
                                             <label>
-                                                <input type="radio" name="tipoEnvioGrupos" value="selecionados" onchange="toggleGroupSelector()">
+                                                <input type="radio" name="tipoEnvioGrupos" value="selecionados" data-change-fn="toggleGroupSelector">
                                                 <i class="helper"></i>✅ Selecionar grupos específicos
                                             </label>
                                         </div>
@@ -707,10 +707,10 @@ if($autorizado != 2){
                                     <div id="groupSelector" class="group-selector" style="display: none;">
                                         <div class="row mb-2">
                                             <div class="col-6">
-                                                <button type="button" class="btn btn-sm btn-outline-primary btn-block" onclick="selectAllGroups()">Selecionar Todos</button>
+                                                <button type="button" class="btn btn-sm btn-outline-primary btn-block" data-fn="selectAllGroups">Selecionar Todos</button>
                                             </div>
                                             <div class="col-6">
-                                                <button type="button" class="btn btn-sm btn-outline-secondary btn-block" onclick="deselectAllGroups()">Desmarcar Todos</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary btn-block" data-fn="deselectAllGroups">Desmarcar Todos</button>
                                             </div>
                                         </div>
                                         <!-- Lista de grupos -->

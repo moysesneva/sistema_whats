@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         mysqli_commit($conn);
 
-        echo "<script>
+        echo "<script nonce=\"". ($GLOBALS['csp_nonce'] ?? '') ."\">
                 alert('Profissional cadastrado com sucesso!');
                 window.location.href = 'listar_profissionais.php';
               </script>";
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } catch (Exception $e) {
         mysqli_rollback($conn);
 
-        echo "<script>
+        echo "<script nonce=\"". ($GLOBALS['csp_nonce'] ?? '') ."\">
                 alert('Erro ao cadastrar profissional: " . addslashes($e->getMessage()) . "');
                 window.history.back();
               </script>";

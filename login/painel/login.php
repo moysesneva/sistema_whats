@@ -318,7 +318,7 @@ include 'header_auth.php';
                 </div>
 
                 <div style="text-align:center;margin-top:18px;">
-                    <a href="login_adm.php" style="font-size:11px;color:rgba(255,255,255,0.2);text-decoration:none;letter-spacing:1px;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,85,0,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.2)'">&#9679; ACESSO ADMINISTRATIVO</a>
+                    <a href="login_adm.php" style="font-size:11px;color:rgba(255,255,255,0.2);text-decoration:none;letter-spacing:1px;font-weight:600;transition:color 0.2s;" data-mouseover-fn="__set_style" data-mouseover-args='["__this__","color","rgba(255,85,0,0.6)"]' data-mouseout-fn="__set_style" data-mouseout-args='["__this__","color","rgba(255,255,255,0.2)"]'>&#9679; ACESSO ADMINISTRATIVO</a>
                 </div>
             </div>
         </form>
@@ -326,7 +326,7 @@ include 'header_auth.php';
 
 <?php
 $js_extra = '
-    <script>
+    <script nonce="' . ($GLOBALS['csp_nonce'] ?? '') . '">
         $(document).ready(function() {
             AOS.init({ once: true, duration: 700 });
 

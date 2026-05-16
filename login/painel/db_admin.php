@@ -205,16 +205,16 @@ td.editing input.edit-input { display: block; }
                         </thead>
                         <tbody>
                         <?php foreach ($linhas as $row): ?>
-                            <tr data-pk-val="<?= htmlspecialchars((string, ENT_QUOTES, 'UTF-8')($row[$pk_col] ?? '')) ?>">
+                            <tr data-pk-val="<?= htmlspecialchars((string)($row[$pk_col] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
                                 <?php foreach ($colunas as $c): ?>
-                                    <td data-col="<?= htmlspecialchars($c, ENT_QUOTES, 'UTF-8') ?>" data-orig="<?= htmlspecialchars((string, ENT_QUOTES, 'UTF-8')$row[$c]) ?>">
-                                        <span class="cell-inner" title="<?= htmlspecialchars((string, ENT_QUOTES, 'UTF-8')$row[$c]) ?>"><?= htmlspecialchars((string, ENT_QUOTES, 'UTF-8')$row[$c]) ?></span>
-                                        <input class="edit-input" type="text" value="<?= htmlspecialchars((string, ENT_QUOTES, 'UTF-8')$row[$c]) ?>">
+                                    <td data-col="<?= htmlspecialchars($c, ENT_QUOTES, 'UTF-8') ?>" data-orig="<?= htmlspecialchars((string)$row[$c], ENT_QUOTES, 'UTF-8') ?>">
+                                        <span class="cell-inner" title="<?= htmlspecialchars((string)$row[$c], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string)$row[$c], ENT_QUOTES, 'UTF-8') ?></span>
+                                        <input class="edit-input" type="text" value="<?= htmlspecialchars((string)$row[$c], ENT_QUOTES, 'UTF-8') ?>">
                                     </td>
                                 <?php endforeach; ?>
                                 <?php if ($tabela_sel && $pk_col): ?>
                                     <td style="max-width:36px;text-align:center">
-                                        <button class="btn-del" title="Deletar linha" onclick="deletarLinha(this)">&#10005;</button>
+                                        <button class="btn-del" title="Deletar linha" data-fn="deletarLinha" data-args='["__this__"]'>&#10005;</button>
                                     </td>
                                 <?php endif; ?>
                             </tr>
@@ -231,7 +231,7 @@ td.editing input.edit-input { display: block; }
 </div>
 <div class="toast" id="toast"></div>
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 const tabelaDados = document.getElementById('tabela-dados');
 const tabela = tabelaDados ? tabelaDados.dataset.tabela : '';
 const pkCol  = tabelaDados ? tabelaDados.dataset.pk : '';

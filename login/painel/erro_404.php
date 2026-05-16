@@ -168,9 +168,9 @@
 <body>
     <div class="logo-wrap">
         <img
+            id="erro-404-logo"
             src="/login/files/assets/images/logo.png"
             alt="MoysesNet"
-            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
         >
         <span class="logo-fallback">MoysesNet</span>
     </div>
@@ -207,5 +207,17 @@
             <a href="/" class="btn-home">Ir para o início</a>
         </div>
     </div>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+(function () {
+    var img = document.getElementById('erro-404-logo');
+    if (img) {
+        img.addEventListener('error', function () {
+            img.style.display = 'none';
+            var fallback = img.nextElementSibling;
+            if (fallback) fallback.style.display = 'block';
+        });
+    }
+}());
+</script>
 </body>
 </html>

@@ -254,7 +254,7 @@ include 'conn.php';
                                     <form method='post' action='' style='display:inline;'>
                                         <input type='hidden' name='id_modulo' value='{$row_credito['id']}'>
                                         <button type='submit' name='excluir_credito' class='btn btn-sm btn-danger' 
-                                                onclick='return confirm(\"Tem certeza que deseja excluir este módulo de crédito?\n\nEsta ação não pode ser desfeita!\");' 
+                                                data-fn='__confirm' data-args='[\"Tem certeza que deseja excluir este módulo de crédito?\n\nEsta ação não pode ser desfeita!\"]' 
                                                 data-toggle='tooltip' title='Excluir Módulo'>
                                             <i class='feather icon-trash'></i>
                                         </button>
@@ -313,7 +313,7 @@ include 'conn.php';
     </div>
 </div>
 
-<script type="text/javascript">
+<script type="text/javascript" nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 document.addEventListener('DOMContentLoaded', function() {
     
     function initializeEvents() {

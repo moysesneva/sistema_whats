@@ -53,7 +53,7 @@ if (mysqli_num_rows($query_busca_clientes) > 0) {
     while ($cliente = mysqli_fetch_assoc($query_busca_clientes)) {
         $nome_cliente = htmlspecialchars($cliente['nome'], ENT_QUOTES);
         $telefone_cliente = htmlspecialchars($cliente['telefone'], ENT_QUOTES);
-        echo "<li class='list-group-item' onclick=\"preencherCampos('$nome_cliente', '$telefone_cliente')\">";
+        echo "<li class='list-group-item' data-fn='preencherCampos' data-args='[" . json_encode($cliente['nome'], JSON_HEX_QUOT | JSON_HEX_APOS) . "," . json_encode($cliente['telefone'], JSON_HEX_QUOT | JSON_HEX_APOS) . "]'>";
         echo "Nome: " . htmlspecialchars($cliente['nome'], ENT_QUOTES, 'UTF-8') . " - Telefone: " . htmlspecialchars($cliente['telefone'], ENT_QUOTES, 'UTF-8');
         echo "</li>";
     }

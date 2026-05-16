@@ -167,7 +167,7 @@ include 'conn.php';
                                             echo '<form method="post" class="d-inline">';
                                                 echo '<input type="hidden" name="remover_modulo" value="' . $modulo['id'] . '">';
                                                 echo '<input type="hidden" name="plano" value="' . $plano . '">';
-                                                echo '<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Tem certeza que deseja remover este módulo?\')">';
+                                                echo '<button type="submit" class="btn btn-sm btn-danger" data-fn="__confirm" data-args=\'["Tem certeza que deseja remover este módulo?"]\'>';
                                                     echo '<i class="fas fa-trash"></i>';
                                                 echo '</button>';
                                             echo '</form>';
@@ -276,7 +276,7 @@ include 'conn.php';
                                             echo '<form method="post" class="d-inline">';
                                                 echo '<input type="hidden" name="remover_modulo" value="' . $modulo2['id'] . '">';
                                                 echo '<input type="hidden" name="plano" value="' . $plano2 . '">';
-                                                echo '<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Tem certeza que deseja remover este módulo?\')">';
+                                                echo '<button type="submit" class="btn btn-sm btn-danger" data-fn="__confirm" data-args=\'["Tem certeza que deseja remover este módulo?"]\'>';
                                                     echo '<i class="fas fa-trash"></i>';
                                                 echo '</button>';
                                             echo '</form>';
@@ -368,7 +368,7 @@ include 'conn.php';
                                             echo '<form method="post" class="d-inline">';
                                                 echo '<input type="hidden" name="remover_modulo" value="' . $modulo3['id'] . '">';
                                                 echo '<input type="hidden" name="plano" value="' . $plano3 . '">';
-                                                echo '<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Tem certeza que deseja remover este módulo?\')">';
+                                                echo '<button type="submit" class="btn btn-sm btn-danger" data-fn="__confirm" data-args=\'["Tem certeza que deseja remover este módulo?"]\'>';
                                                     echo '<i class="fas fa-trash"></i>';
                                                 echo '</button>';
                                             echo '</form>';
@@ -478,7 +478,7 @@ include 'conn.php';
 }
 </style>
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 document.addEventListener('DOMContentLoaded', function() {
     // Adiciona confirmação para remoção de módulos
     document.querySelectorAll('button[type="submit"]').forEach(function(btn) {

@@ -65,11 +65,11 @@ if($autorizado != 2){
                     <p class="header-subtitle">Gerencie seus clientes de forma fácil e organizada</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn btn-secondary" onclick="window.print()">
+                    <button class="btn btn-secondary" data-fn="__window_print">
                         <i class="material-icons">print</i>
                         Imprimir
                     </button>
-                    <button id="btnAdicionarCliente" class="btn btn-success" onclick="openModal('addClienteModal')">
+                    <button id="btnAdicionarCliente" class="btn btn-success" data-fn="openModal" data-args='["addClienteModal"]'>
                         <i class="material-icons">person_add</i>
                         Novo Cliente
                     </button>
@@ -169,12 +169,12 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
                                         <i class="fab fa-whatsapp"></i>
                                     </a>
                                     <button type="button" class="btn btn-sm btn-edit" 
-                                            onclick="editarCliente(<?php echo (int)$id_cliente; ?>, '<?php echo htmlspecialchars(addslashes($nome), ENT_QUOTES, 'UTF-8'); ?>', '<?php echo htmlspecialchars(addslashes($telefone), ENT_QUOTES, 'UTF-8'); ?>', '<?php echo htmlspecialchars(addslashes($endereco), ENT_QUOTES, 'UTF-8'); ?>')" 
+                                            data-fn="editarCliente" data-args='[<?php echo (int)$id_cliente; ?>, "<?php echo htmlspecialchars(addslashes($nome), ENT_QUOTES, 'UTF-8'); ?>", "<?php echo htmlspecialchars(addslashes($telefone), ENT_QUOTES, 'UTF-8'); ?>", "<?php echo htmlspecialchars(addslashes($endereco), ENT_QUOTES, 'UTF-8'); ?>"]' 
                                             title="Editar Cliente">
                                         <i class="material-icons">edit</i>
                                     </button>
                                     <button type="button" class="btn btn-sm btn-delete" 
-                                            onclick="confirmarExclusao(<?php echo (int)$id_cliente; ?>, '<?php echo htmlspecialchars(addslashes($nome), ENT_QUOTES, 'UTF-8'); ?>')" 
+                                            data-fn="confirmarExclusao" data-args='[<?php echo (int)$id_cliente; ?>, "<?php echo htmlspecialchars(addslashes($nome), ENT_QUOTES, 'UTF-8'); ?>"]' 
                                             title="Excluir Cliente">
                                         <i class="material-icons">delete</i>
                                     </button>
@@ -189,7 +189,7 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
                     <div class="material-icons empty-icon">person_add</div>
                     <h3>Nenhum cliente encontrado</h3>
                     <p>Comece adicionando seu primeiro cliente!</p>
-                    <button class="btn btn-success" onclick="openModal('addClienteModal')" style="margin-top: 20px;">
+                    <button class="btn btn-success" data-fn="openModal" data-args='["addClienteModal"]' style="margin-top: 20px;">
                         <i class="material-icons">person_add</i>
                         Adicionar Primeiro Cliente
                     </button>
@@ -204,7 +204,7 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
         <div class="modal-dialog">
             <div class="modal-header bg-success">
                 <h5 class="modal-title">Adicionar Novo Cliente</h5>
-                <button type="button" class="modal-close" onclick="closeModal('addClienteModal')">
+                <button type="button" class="modal-close" data-fn="closeModal" data-args='["addClienteModal"]'>
                     <i class="material-icons">close</i>
                 </button>
             </div>
@@ -226,7 +226,7 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('addClienteModal')">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-fn="closeModal" data-args='["addClienteModal"]'>Cancelar</button>
                     <button type="submit" class="btn btn-success">
                         <i class="material-icons">save</i>
                         Salvar Cliente
@@ -241,7 +241,7 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
         <div class="modal-dialog">
             <div class="modal-header bg-primary">
                 <h5 class="modal-title">Editar Cliente</h5>
-                <button type="button" class="modal-close" onclick="closeModal('editClienteModal')">
+                <button type="button" class="modal-close" data-fn="closeModal" data-args='["editClienteModal"]'>
                     <i class="material-icons">close</i>
                 </button>
             </div>
@@ -263,7 +263,7 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('editClienteModal')">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-fn="closeModal" data-args='["editClienteModal"]'>Cancelar</button>
                     <button type="submit" class="btn btn-primary">
                         <i class="material-icons">update</i>
                         Atualizar Cliente
@@ -278,7 +278,7 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
         <div class="modal-dialog">
             <div class="modal-header bg-danger">
                 <h5 class="modal-title">Confirmar Exclusão</h5>
-                <button type="button" class="modal-close" onclick="closeModal('deleteModal')">
+                <button type="button" class="modal-close" data-fn="closeModal" data-args='["deleteModal"]'>
                     <i class="material-icons">close</i>
                 </button>
             </div>
@@ -289,7 +289,7 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancelar</button>
+                <button type="button" class="btn btn-secondary" data-fn="closeModal" data-args='["deleteModal"]'>Cancelar</button>
                 <form id="deleteForm" action="processa_cliente.php" method="POST" style="display: inline;">
                     <input type="hidden" name="acao" value="excluir">
                     <input type="hidden" id="deleteClienteId" name="id_cliente" value="">
@@ -302,7 +302,7 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
             </div>
         </div>
     </div>
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 (function(){
   // Fecha todos os modais; se reloadPage for true, faz um reload no fim
   function fecharTodosModais(reloadPage = false) {
@@ -335,7 +335,7 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
 })();
 </script>
 
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         // Funções para controle de modais
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('show');

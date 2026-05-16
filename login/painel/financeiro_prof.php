@@ -473,11 +473,11 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
 <div class="row mb-3">
     <div class="col-md-12 text-right">
         <div class="btn-group">
-            <button type="button" class="btn btn-success" onclick="exportarPDF()">
+            <button type="button" class="btn btn-success" data-fn="exportarPDF">
                 <i class="feather icon-file-text"></i> Exportar PDF
             </button>
          
-            <button type="button" class="btn btn-warning" onclick="window.print()">
+            <button type="button" class="btn btn-warning" data-fn="__window_print">
                 <i class="feather icon-printer"></i> Imprimir
             </button>
         </div>
@@ -494,10 +494,10 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                 <h5><i class="feather icon-filter"></i> Filtros Avançados</h5>
                 <div class="card-header-right">
                     <div class="btn-group btn-group-sm">
-                        <button type="button" class="btn btn-outline-info" onclick="abrirCalendario()">
+                        <button type="button" class="btn btn-outline-info" data-fn="abrirCalendario">
                             <i class="feather icon-calendar"></i> Calendário
                         </button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="toggleGraficos()">
+                        <button type="button" class="btn btn-outline-secondary" data-fn="toggleGraficos">
                             <i class="feather icon-bar-chart-2"></i> <?=$mostrar_graficos == '1' ? 'Ocultar' : 'Mostrar'?> Gráficos
                         </button>
                     </div>
@@ -511,7 +511,7 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Mês</label>
-                                <select name="mes" class="form-control" onchange="limparDatasPersonalizadas()">
+                                <select name="mes" class="form-control" data-change-fn="limparDatasPersonalizadas">
                                     <?php for($i = 1; $i <= 12; $i++): ?>
                                         <option value="<?=$i?>" <?=($i == $mes_atual) ? 'selected' : ''?>>
                                             <?=getNomeMes($i)?>
@@ -523,7 +523,7 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Ano</label>
-                                <select name="ano" class="form-control" onchange="limparDatasPersonalizadas()">
+                                <select name="ano" class="form-control" data-change-fn="limparDatasPersonalizadas">
                                     <?php for($i = 2020; $i <= date('Y') + 1; $i++): ?>
                                         <option value="<?=$i?>" <?=($i == $ano_atual) ? 'selected' : ''?>><?=$i?></option>
                                     <?php endfor; ?>
@@ -533,13 +533,13 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Data Início</label>
-                                <input type="date" name="data_inicio" class="form-control" value="<?=$data_inicio?>" onchange="limparMesAno()">
+                                <input type="date" name="data_inicio" class="form-control" value="<?=$data_inicio?>" data-change-fn="limparMesAno">
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Data Fim</label>
-                                <input type="date" name="data_fim" class="form-control" value="<?=$data_fim?>" onchange="limparMesAno()">
+                                <input type="date" name="data_fim" class="form-control" value="<?=$data_fim?>" data-change-fn="limparMesAno">
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -810,7 +810,6 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
 </div>
 
 <?php if($total_encontrados > 0): ?>
-<?php if($total_encontrados > 0): ?>
 
 <!-- Análise Detalhada de Serviços -->
 <?php #if(count($servicos_vendidos) > 0): ?>
@@ -823,9 +822,9 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                 <h5>Análise Detalhada de Serviços</h5>
                 <div class="card-header-right">
                     <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="ordenarServicos('vendas')">Por Vendas</button>
-                        <button class="btn btn-outline-success" onclick="ordenarServicos('faturamento')">Por Faturamento</button>
-                        <button class="btn btn-outline-info" onclick="ordenarServicos('ticket')">Por Ticket Médio</button>
+                        <button class="btn btn-outline-primary" data-fn="ordenarServicos" data-args='["vendas"]'>Por Vendas</button>
+                        <button class="btn btn-outline-success" data-fn="ordenarServicos" data-args='["faturamento"]'>Por Faturamento</button>
+                        <button class="btn btn-outline-info" data-fn="ordenarServicos" data-args='["ticket"]'>Por Ticket Médio</button>
                     </div>
                 </div>
             </div>
@@ -1026,16 +1025,16 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                 <h5 id="tituloTabelaVendas">Histórico de Vendas (<?=$total_encontrados?> registros)</h5>
                 <div class="card-header-right">
                     <div class="btn-group btn-group-sm" role="group">
-                        <button class="btn btn-outline-secondary active" onclick="filtrarTabela('todos')">
+                        <button class="btn btn-outline-secondary active" data-fn="filtrarTabela" data-args='["todos"]'>
                             <i class="feather icon-list"></i> Todos
                         </button>
-                        <button class="btn btn-outline-success" onclick="filtrarTabela('confirmado')">
+                        <button class="btn btn-outline-success" data-fn="filtrarTabela" data-args='["confirmado"]'>
                             <i class="feather icon-check"></i> Confirmados
                         </button>
-                        <button class="btn btn-outline-warning" onclick="filtrarTabela('pendente')">
+                        <button class="btn btn-outline-warning" data-fn="filtrarTabela" data-args='["pendente"]'>
                             <i class="feather icon-clock"></i> Pendentes
                         </button>
-                        <button class="btn btn-outline-danger" onclick="filtrarTabela('cancelado')">
+                        <button class="btn btn-outline-danger" data-fn="filtrarTabela" data-args='["cancelado"]'>
                             <i class="feather icon-x"></i> Cancelados
                         </button>
                     </div>
@@ -1095,10 +1094,10 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
             <h5><i class="feather icon-alert-triangle"></i> Nenhum dado encontrado</h5>
             <p>Não foram encontrados registros para o período selecionado.</p>
             <div class="mt-3">
-                <button class="btn btn-primary" onclick="abrirCalendario()">
+                <button class="btn btn-primary" data-fn="abrirCalendario">
                     <i class="feather icon-calendar"></i> Selecionar Outro Período
                 </button>
-                <button class="btn btn-secondary" onclick="limparFiltros()">
+                <button class="btn btn-secondary" data-fn="limparFiltros">
                     <i class="feather icon-refresh-cw"></i> Limpar Filtros
                 </button>
             </div>
@@ -1130,23 +1129,23 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
                     <div class="col-md-12">
                         <label>Períodos Pré-definidos:</label>
                         <div class="btn-group btn-group-sm btn-block" role="group">
-                            <button type="button" class="btn btn-outline-primary" onclick="setDataPeriodo('hoje')">Hoje</button>
-                            <button type="button" class="btn btn-outline-primary" onclick="setDataPeriodo('ontem')">Ontem</button>
-                            <button type="button" class="btn btn-outline-primary" onclick="setDataPeriodo('semana')">Esta Semana</button>
-                            <button type="button" class="btn btn-outline-primary" onclick="setDataPeriodo('mes')">Este Mês</button>
+                            <button type="button" class="btn btn-outline-primary" data-fn="setDataPeriodo" data-args='["hoje"]'>Hoje</button>
+                            <button type="button" class="btn btn-outline-primary" data-fn="setDataPeriodo" data-args='["ontem"]'>Ontem</button>
+                            <button type="button" class="btn btn-outline-primary" data-fn="setDataPeriodo" data-args='["semana"]'>Esta Semana</button>
+                            <button type="button" class="btn btn-outline-primary" data-fn="setDataPeriodo" data-args='["mes"]'>Este Mês</button>
                         </div>
                         <div class="btn-group btn-group-sm btn-block mt-2" role="group">
-                            <button type="button" class="btn btn-outline-secondary" onclick="setDataPeriodo('semana_passada')">Semana Passada</button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="setDataPeriodo('mes_passado')">Mês Passado</button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="setDataPeriodo('trimestre')">Trimestre</button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="setDataPeriodo('ano')">Este Ano</button>
+                            <button type="button" class="btn btn-outline-secondary" data-fn="setDataPeriodo" data-args='["semana_passada"]'>Semana Passada</button>
+                            <button type="button" class="btn btn-outline-secondary" data-fn="setDataPeriodo" data-args='["mes_passado"]'>Mês Passado</button>
+                            <button type="button" class="btn btn-outline-secondary" data-fn="setDataPeriodo" data-args='["trimestre"]'>Trimestre</button>
+                            <button type="button" class="btn btn-outline-secondary" data-fn="setDataPeriodo" data-args='["ano"]'>Este Ano</button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="aplicarDataPeriodo()">Aplicar Período</button>
+                <button type="button" class="btn btn-primary" data-fn="aplicarDataPeriodo">Aplicar Período</button>
             </div>
         </div>
     </div>
@@ -1286,7 +1285,7 @@ $ticket_medio_geral = $total_encontrados > 0 ? $total_geral / $total_encontrados
 <script src="../files/assets/vendor/chart.js/chart.min.js"></script>
 <script src="../files/assets/vendor/jspdf/jspdf.umd.min.js"></script>
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 // Variáveis globais para os dados
 const dadosEvolucao = <?=json_encode(array_reverse($evolucao_mensal))?>;
 const dadosProfissional = <?=json_encode($dados_grafico_profissional)?>;

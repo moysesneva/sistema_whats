@@ -76,7 +76,7 @@ include 'estilo.php';
                                 </div>
                                 <div class="col-md-12 mt-3">
         <!-- Botão Reenviar Código -->
-        <button type="button" class="btn btn-warning btn-md btn-block waves-effect text-center m-b-20" onclick="redirecionarParaCodigo()">Reenviar Código</button>
+        <button type="button" class="btn btn-warning btn-md btn-block waves-effect text-center m-b-20" data-fn="redirecionarParaCodigo">Reenviar Código</button>
     </div>
                                 <p class="f-w-600 text-right">Voltar para <a href="login.php">Login.</a></p>
                                 <div class="row">
@@ -97,7 +97,7 @@ include 'estilo.php';
         </div>
         <!-- Fim do Container -->
     </section>
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
     function redirecionarParaCodigo() {
         window.location.href = 'codigo.php';
     }

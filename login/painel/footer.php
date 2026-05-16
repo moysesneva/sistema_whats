@@ -28,10 +28,15 @@
     <script src="../files/assets/js/vartical-layout.min.js"></script>
     <script type="text/javascript" src="../files/assets/pages/dashboard/custom-dashboard.js"></script>
     <script type="text/javascript" src="../files/assets/js/script.min.js"></script>
+    <!-- Panel-wide event handlers and safe CSP event dispatcher -->
+    <script src="../files/assets/js/panel-handlers.js"></script>
+    <script src="../files/assets/js/panel-event-dispatcher.js"></script>
+    <!-- Banner scripts (disk warning, API token warning) -->
+    <script src="../files/assets/js/disk-warning-banner.js"></script>
     <?php if (isset($js_extra)) echo $js_extra; ?>
 
     <!-- Configuração do aviso de expiração de sessão -->
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
     window.SESSION_TIMEOUT_SEC   = <?= defined('SESSION_TIMEOUT') ? (int) SESSION_TIMEOUT : 1800 ?>;
     window.SESSION_WARN_SEC      = <?= defined('SESSION_TIMEOUT') ? min(300, max(60, (int) SESSION_TIMEOUT - 60)) : 240 ?>;
     window.SESSION_KEEPALIVE_URL = 'api/keepalive.php';
@@ -63,13 +68,11 @@
                 </div>
                 <div class="modal-footer" style="border:none;padding:12px 24px 20px;justify-content:center;gap:12px;">
                     <button type="button" id="session-warning-btn-continuar"
-                            style="background:#FF5500;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-weight:700;font-size:0.95rem;cursor:pointer;transition:opacity .2s;"
-                            onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                            style="background:#FF5500;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-weight:700;font-size:0.95rem;cursor:pointer;transition:opacity .2s;">
                         <i class="feather icon-refresh-cw" style="margin-right:6px;"></i>Continuar sessão
                     </button>
                     <button type="button" id="session-warning-btn-sair"
-                            style="background:#fff;color:#001f3f;border:2px solid #001f3f;border-radius:8px;padding:9px 22px;font-weight:600;font-size:0.95rem;cursor:pointer;transition:opacity .2s;"
-                            onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">
+                            style="background:#fff;color:#001f3f;border:2px solid #001f3f;border-radius:8px;padding:9px 22px;font-weight:600;font-size:0.95rem;cursor:pointer;transition:opacity .2s;">
                         <i class="feather icon-log-out" style="margin-right:6px;"></i>Sair
                     </button>
                 </div>

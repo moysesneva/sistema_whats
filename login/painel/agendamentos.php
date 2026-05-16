@@ -60,28 +60,28 @@ if($autorizado != 2){
     
     <div class="menu-grid">
         <!-- Cadastrar Profissional -->
-        <div class="nav-card nav-card-primary" onclick="window.location.href='cadastrar_profissional.php'">
+        <div class="nav-card nav-card-primary" data-fn="__navigate" data-args='["cadastrar_profissional.php"]'>
             <i class="fas fa-user-plus nav-icon"></i>
             <h5 class="nav-title">Cadastrar Profissional</h5>
             <p class="nav-subtitle">Adicione novos profissionais ao sistema</p>
         </div>
 
         <!-- Cadastro Horários e Serviços -->
-        <div class="nav-card nav-card-info" onclick="window.location.href='cadastrar_horario.php'">
+        <div class="nav-card nav-card-info" data-fn="__navigate" data-args='["cadastrar_horario.php"]'>
             <i class="fas fa-clock nav-icon"></i>
             <h5 class="nav-title">Horários e Serviços</h5>
             <p class="nav-subtitle">Configure horários e cadastre serviços</p>
         </div>
 
         <!-- Agendar Cliente -->
-        <div class="nav-card nav-card-success pulse-animation" onclick="window.location.href='agendar_servico.php'">
+        <div class="nav-card nav-card-success pulse-animation" data-fn="__navigate" data-args='["agendar_servico.php"]'>
             <i class="fas fa-user-check nav-icon"></i>
             <h5 class="nav-title">Agendar Cliente</h5>
             <p class="nav-subtitle">Faça novos agendamentos para clientes</p>
         </div>
 
         <!-- Minhas Configurações -->
-        <div class="nav-card nav-card-warning" onclick="window.location.href='configuracoes.php'">
+        <div class="nav-card nav-card-warning" data-fn="__navigate" data-args='["configuracoes.php"]'>
             <i class="fas fa-cog nav-icon"></i>
             <h5 class="nav-title">Minhas Configurações</h5>
             <p class="nav-subtitle">Personalize e ajuste suas preferências</p>
@@ -89,7 +89,7 @@ if($autorizado != 2){
     </div>
 </div>
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 // Adiciona efeito de clique suave
 document.querySelectorAll('.nav-card').forEach(card => {
     card.addEventListener('click', function() {

@@ -103,7 +103,7 @@ include 'estilo.php';
             <div class="row">
                 <div class="col-sm-12">
                     <!-- Início do formulário de autenticação -->
-                    <form class="md-float-material form-material" action="validar_adm.php" method="post" onsubmit="return validarSenha()" id="cadastro-form">
+                    <form class="md-float-material form-material" action="validar_adm.php" method="post" data-submit-fn="validarSenha" id="cadastro-form">
                         <div class="text-center">
                             <img src="<?php echo $logo; ?>" alt="Logo" style="max-width: 200px;">
                         </div>
@@ -193,7 +193,7 @@ include 'estilo.php';
     <script src="../files/assets/vendor/intl-tel-input/js/intlTelInput.min.js"></script>
 
     <!-- Script para formatação do telefone e validações -->
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         $(document).ready(function() {
             // Inicializa o plugin IntlTelInput
             var input = document.querySelector("#telefone");

@@ -2,7 +2,7 @@
 require_once __DIR__ . '/auth_guard.php';
 // Função Vaipara para redirecionamento
 function Vaipara($site) {
-    echo "<script>window.location.href = '$site';</script>";
+    echo "<script nonce=\"". ($GLOBALS['csp_nonce'] ?? '') ."\">window.location.href = '$site';</script>";
     exit; // Garante que o script PHP pare de executar
 }
 

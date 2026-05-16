@@ -448,7 +448,7 @@ foreach($modulos_adquiridos as $mod) {
                         
                         <?php if(!empty($modulo['video_youtube'])): ?>
                             <div class="modulo-video">
-                                <button class="btn" onclick="abrirVideo('<?php echo $modulo['video_youtube']; ?>')">Ver Vídeo</button>
+                                <button class="btn" data-fn="abrirVideo" data-args='["<?php echo $modulo['video_youtube']; ?>"]'>Ver Vídeo</button>
                             </div>
                         <?php endif; ?>
                         
@@ -470,12 +470,12 @@ foreach($modulos_adquiridos as $mod) {
     <!-- Pop-up para vídeo do YouTube -->
     <div class="popup-overlay" id="videoPopup">
         <div class="popup-content">
-            <span class="popup-close" onclick="fecharVideo()">&times;</span>
+            <span class="popup-close" data-fn="fecharVideo">&times;</span>
             <div id="videoContainer"></div>
         </div>
     </div>
     
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         function abrirVideo(videoId) {
             const popup = document.getElementById('videoPopup');
             const container = document.getElementById('videoContainer');

@@ -141,11 +141,11 @@ if($autorizado != 2){
                     <p class="header-subtitle">Sistema de controle e bloqueio de contatos indesejados</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn btn-secondary" onclick="window.print()">
+                    <button class="btn btn-secondary" data-fn="__window_print">
                         <i class="material-icons">print</i>
                         Imprimir
                     </button>
-                    <button id="btnAdicionarContato" class="btn btn-danger" onclick="openModal('addContatoModal')">
+                    <button id="btnAdicionarContato" class="btn btn-danger" data-fn="openModal" data-args='["addContatoModal"]'>
                         <i class="material-icons">person_add_disabled</i>
                         Bloquear Contato
                     </button>
@@ -251,7 +251,7 @@ if($autorizado != 2){
                                     <?php } ?>
                                   
                                     <button type="button" class="btn btn-sm btn-delete" 
-                                            onclick="confirmarRemocao(<?php echo (int)$id_contato; ?>, '<?php echo htmlspecialchars(addslashes($nome), ENT_QUOTES, 'UTF-8'); ?>')" 
+                                            data-fn="confirmarRemocao" data-args='[<?php echo (int)$id_contato; ?>, "<?php echo htmlspecialchars(addslashes($nome), ENT_QUOTES, 'UTF-8'); ?>"]' 
                                             title="Remover da Lista">
                                         <i class="material-icons">delete</i>
                                     </button>
@@ -266,7 +266,7 @@ if($autorizado != 2){
                     <div class="fas fa-shield-alt empty-icon"></div>
                     <h3>Lista negra vazia</h3>
                     <p>Nenhum contato foi bloqueado ainda!</p>
-                    <button class="btn btn-danger" onclick="openModal('addContatoModal')" style="margin-top: 20px;">
+                    <button class="btn btn-danger" data-fn="openModal" data-args='["addContatoModal"]' style="margin-top: 20px;">
                         <i class="material-icons">person_add_disabled</i>
                         Bloquear Primeiro Contato
                     </button>
@@ -281,7 +281,7 @@ if($autorizado != 2){
         <div class="modal-dialog">
             <div class="modal-header bg-danger">
                 <h5 class="modal-title"><i class="fas fa-ban"></i> Bloquear Novo Contato</h5>
-                <button type="button" class="modal-close" onclick="closeModal('addContatoModal')">
+                <button type="button" class="modal-close" data-fn="closeModal" data-args='["addContatoModal"]'>
                     <i class="material-icons">close</i>
                 </button>
             </div>
@@ -322,7 +322,7 @@ if($autorizado != 2){
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('addContatoModal')">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-fn="closeModal" data-args='["addContatoModal"]'>Cancelar</button>
                     <button type="submit" class="btn btn-danger">
                         <i class="fas fa-ban"></i>
                         Bloquear Contato
@@ -337,7 +337,7 @@ if($autorizado != 2){
         <div class="modal-dialog">
             <div class="modal-header bg-warning">
                 <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Contato Bloqueado</h5>
-                <button type="button" class="modal-close" onclick="closeModal('editContatoModal')">
+                <button type="button" class="modal-close" data-fn="closeModal" data-args='["editContatoModal"]'>
                     <i class="material-icons">close</i>
                 </button>
             </div>
@@ -376,7 +376,7 @@ if($autorizado != 2){
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('editContatoModal')">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-fn="closeModal" data-args='["editContatoModal"]'>Cancelar</button>
                     <button type="submit" class="btn btn-primary">
                         <i class="material-icons">update</i>
                         Atualizar Contato
@@ -391,7 +391,7 @@ if($autorizado != 2){
         <div class="modal-dialog">
             <div class="modal-header bg-delete">
                 <h5 class="modal-title"><i class="fas fa-trash"></i> Confirmar Remoção</h5>
-                <button type="button" class="modal-close" onclick="closeModal('deleteModal')">
+                <button type="button" class="modal-close" data-fn="closeModal" data-args='["deleteModal"]'>
                     <i class="material-icons">close</i>
                 </button>
             </div>
@@ -402,7 +402,7 @@ if($autorizado != 2){
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancelar</button>
+                <button type="button" class="btn btn-secondary" data-fn="closeModal" data-args='["deleteModal"]'>Cancelar</button>
                 <form id="deleteForm" action="processa_lista_negra.php" method="POST" style="display: inline;">
                     <input type="hidden" name="acao" value="excluir">
                     <input type="hidden" id="deleteContatoId" name="id_contato" value="">
@@ -416,7 +416,7 @@ if($autorizado != 2){
         </div>
     </div>
 
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         // Funções para controle de modais
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('show');

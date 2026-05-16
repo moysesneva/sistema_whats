@@ -228,7 +228,7 @@ include 'funcoes.php';
     </div>
 
     <script src="../files/assets/vendor/aos/aos.js"></script>
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         AOS.init({ once: true, duration: 700 });
         window.addEventListener('load', function() {
             document.getElementById('loader').style.display = 'none';

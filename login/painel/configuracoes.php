@@ -230,7 +230,7 @@ if($autorizado != 2){
     <input type="tel" name="numero_whatsapp" id="numero_whatsapp" class="text-input"
            placeholder="Ex: 5511999998888"
            pattern="[0-9]{10,15}" 
-           oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+           data-input-fn="__digits_only" data-input-args='["__this__"]' 
            required>
     <small class="form-text text-muted">
         Digite o número do WhatsApp para onde o cliente será redirecionado no celular logo após concluir o agendamento.  
@@ -260,7 +260,7 @@ if($autorizado != 2){
 </form>
     </div>
 
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         // Melhora a experiência do input de arquivo
         document.getElementById('logo').addEventListener('change', function(e) {
             const label = document.querySelector('.file-input-label');

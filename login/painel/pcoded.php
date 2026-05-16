@@ -39,7 +39,7 @@ $tema = 'light';#dark light
 
 
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
 $.fn.pcodedmenu = function(settings) {
 var tema_lateral = '<?php echo $barra_icon; ?>';

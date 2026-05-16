@@ -192,12 +192,12 @@ mysqli_stmt_close($stmt_busca_config);
                                                 
                                                 <div class="form-group">
                                                     <label for="nome_busca"><i class="fas fa-user"></i> Nome do Cliente</label>
-                                                    <input type="text" class="form-control" id="nome_busca" onkeyup="buscarCliente()" placeholder="Digite o nome do cliente">
+                                                    <input type="text" class="form-control" id="nome_busca" data-keyup-fn="buscarCliente" placeholder="Digite o nome do cliente">
                                                 </div>
                                                 
                                                 <div class="form-group">
                                                     <label for="telefone_busca"><i class="fas fa-phone"></i> Telefone do Cliente</label>
-                                                    <input type="text" class="form-control" id="telefone_busca" onkeyup="buscarCliente()" placeholder="Digite o telefone do cliente">
+                                                    <input type="text" class="form-control" id="telefone_busca" data-keyup-fn="buscarCliente" placeholder="Digite o telefone do cliente">
                                                 </div>
                                                 
                                                 <div id="resultadoBusca"></div>
@@ -221,7 +221,7 @@ mysqli_stmt_close($stmt_busca_config);
                                                 <form action="processar_agendamento_servico.php" method="POST" id="formAgendamento">
                                                     <div class="form-group">
                                                         <label for="profissional"><i class="fas fa-user-md"></i> Escolha o profissional</label>
-                                                        <select class="form-control" id="profissional" name="profissional" required onchange="carregarServicosDoProfissional()">
+                                                        <select class="form-control" id="profissional" name="profissional" required data-change-fn="carregarServicosDoProfissional">
                                                             <option value=''>Selecione um profissional</option>
                                                             <?php
                                                             if ($usuario_api) {
@@ -284,7 +284,7 @@ mysqli_stmt_close($stmt_busca_config);
                                     </div>
 
 <?php ob_start(); ?>
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
     // =========================================================================
     // JAVASCRIPT UNIFICADO
     // =========================================================================

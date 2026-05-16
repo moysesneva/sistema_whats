@@ -141,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                                <div class="col-md-4 text-right">
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 document.addEventListener('DOMContentLoaded', function() {
   const btnAtualizar = document.getElementById('btnAtualizar');
   const barraPorcentagem = document.getElementById('barraPorcentagem');
@@ -329,20 +329,20 @@ include 'conn.php';
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-sm btn-success" onclick="executarAcao('<?=$usuario_api;?>', 'iniciar')" data-toggle="tooltip" title="Iniciar Bot">
+                                <button type="button" class="btn btn-sm btn-success" data-fn="executarAcao" data-args='["<?=$usuario_api;?>", "iniciar"]' data-toggle="tooltip" title="Iniciar Bot">
                                     <i class="feather icon-play"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-warning" onclick="executarAcao('<?=$usuario_api;?>', 'parar')" data-toggle="tooltip" title="Parar Bot">
+                                <button type="button" class="btn btn-sm btn-warning" data-fn="executarAcao" data-args='["<?=$usuario_api;?>", "parar"]' data-toggle="tooltip" title="Parar Bot">
                                     <i class="feather icon-pause"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-secondary" onclick="executarAcao('<?=$usuario_api;?>', 'bloquear')" data-toggle="tooltip" title="Bloquear Bot">
+                                <button type="button" class="btn btn-sm btn-secondary" data-fn="executarAcao" data-args='["<?=$usuario_api;?>", "bloquear"]' data-toggle="tooltip" title="Bloquear Bot">
                                     <i class="feather icon-lock"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-info" onclick="mostrarImagemBot('<?=$usuario_api;?>', '<?=htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');?>')" data-toggle="tooltip" title="Visualizar QR Code">
+                                <button type="button" class="btn btn-sm btn-info" data-fn="mostrarImagemBot" data-args='["<?=$usuario_api;?>", "<?=htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');?>"]' data-toggle="tooltip" title="Visualizar QR Code">
                                     <i class="feather icon-image"></i>
                                 </button>
                                 
-                                <button type="button" class="btn btn-sm btn-danger" onclick="executarAcao('<?=$usuario_api;?>', 'deletar')" data-toggle="tooltip" title="Deletar Bot">
+                                <button type="button" class="btn btn-sm btn-danger" data-fn="executarAcao" data-args='["<?=$usuario_api;?>", "deletar"]' data-toggle="tooltip" title="Deletar Bot">
                                     <i class="feather icon-trash-2"></i>
                                 </button>
                             </div>
@@ -507,7 +507,7 @@ include 'conn.php';
     </div>
 </div>
 
-<script type="text/javascript">
+<script type="text/javascript" nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 document.addEventListener('DOMContentLoaded', function() {
     
     // Função para inicializar os modais

@@ -67,10 +67,10 @@ if (strlen($nome) >= 2 || strlen($telefone) >= 2) {
                 $statusCliente = !empty($idAgendamento) ? 'Cliente ativo' : 'Cliente sem agendamento';
                 $iconClass = !empty($idAgendamento) ? 'fas fa-user-check text-success' : 'fas fa-user-times text-warning';
                 
-                echo '<div class="cliente-resultado" onclick="selecionarCliente(' . 
+                echo '<div class="cliente-resultado" data-fn="selecionarCliente" data-args=\'[' . 
                      (int)$row['id'] . ', ' . 
                      json_encode($row['nome'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ', ' . 
-                     json_encode($row['telefone'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ')">';
+                     json_encode($row['telefone'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ']\'>';
                 
                 echo '<div class="d-flex justify-content-between align-items-start">';
                 echo '<div>';
@@ -99,7 +99,7 @@ if (strlen($nome) >= 2 || strlen($telefone) >= 2) {
             
             // Botão para criar novo cliente (opcional)
             echo '<div class="text-center mt-3">';
-            echo '<button class="btn btn-primary" onclick="criarNovoCliente(' . json_encode($nome, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ', ' . json_encode($telefone, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ')">';
+            echo '<button class="btn btn-primary" data-fn="criarNovoCliente" data-args=\'[' . json_encode($nome, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ', ' . json_encode($telefone, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ']\'>';
             echo '<i class="fas fa-user-plus"></i> Cadastrar Novo Cliente';
             echo '</button>';
             echo '</div>';
@@ -120,7 +120,7 @@ if (strlen($nome) >= 2 || strlen($telefone) >= 2) {
 mysqli_close($conn);
 ?>
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 function criarNovoCliente(nome, telefone) {
     if (confirm('Deseja cadastrar o cliente "' + nome + '" com telefone "' + telefone + '"?')) {
         // Redirecionar para página de cadastro ou fazer via AJAX

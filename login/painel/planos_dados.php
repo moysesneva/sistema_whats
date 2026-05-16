@@ -147,7 +147,7 @@ $res_plans = mysqli_query($conn, "SELECT * FROM planos_online ORDER BY id");
                         <button type="submit" name="update_feature" value="<?= $feat['id']; ?>" class="btn btn-sm btn-primary">
                           Salvar
                         </button>
-                        <button type="submit" name="delete_feature" value="<?= $feat['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Excluir esta funcionalidade?')">
+                        <button type="submit" name="delete_feature" value="<?= $feat['id']; ?>" class="btn btn-sm btn-danger" data-fn="__confirm" data-args='["Excluir esta funcionalidade?"]'>
                           Excluir
                         </button>
                       </td>

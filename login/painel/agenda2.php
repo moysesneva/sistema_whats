@@ -226,7 +226,7 @@ function obterCorEvento($index) {
         </div>
     </div>
 
-    <script>
+    <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         // Adicionar animações suaves ao carregar
         document.addEventListener('DOMContentLoaded', function() {
             const dayCells = document.querySelectorAll('.day-cell:not(.empty-day)');

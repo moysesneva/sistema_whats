@@ -309,7 +309,7 @@ $api_python = "https://editacodigo.com.br/api2/";
     </div>
 </div>
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
     const nodeButton = document.getElementById('nodeButton');
     const pythonButton = document.getElementById('pythonButton');
     const notification = document.getElementById('notification');
@@ -534,7 +534,7 @@ API="${apiPython}" \\
         });
     </script> 
   
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 document.getElementById('copyButton').addEventListener('click', function() {
     var commandText = document.getElementById('comando').innerText;
     navigator.clipboard.writeText(commandText).then(function() {

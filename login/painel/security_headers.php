@@ -25,29 +25,65 @@ header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 
 /**
- * Content-Security-Policy básico.
- *
- * - default-src 'self'           : bloqueia qualquer recurso externo por padrão
- * - script-src 'self' 'unsafe-inline' 'unsafe-eval' : permite scripts locais e inline (jQuery, plugins)
- * - style-src 'self' 'unsafe-inline'  : permite estilos locais e inline (Bootstrap, tema)
- * - img-src 'self' data: blob: https: : permite imagens locais, data URIs e fontes externas (QR, avatares)
- * - font-src 'self' data:         : permite fontes locais e embutidas (base64)
- * - connect-src 'self'            : permite requisições AJAX/fetch apenas para o próprio domínio
- * - frame-src 'none'              : bloqueia iframes de qualquer origem
- * - object-src 'none'             : bloqueia plugins (Flash, etc.)
- * - base-uri 'self'               : previne injeção de <base> apontando para domínio externo
- * - form-action 'self'            : impede que formulários enviem dados a domínios externos
+ * Nonce criptograficamente aleatório por requisição.
+ * Gerado uma vez e reutilizado por todas as tags <script nonce="..."> da página.
+ * Exposto globalmente via $GLOBALS['csp_nonce'] para que templates possam usá-lo.
  */
-$csp = implode('; ', [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://code.jquery.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
-    "img-src 'self' data: blob: https:",
-    "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
-    "connect-src 'self'",
-    "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
-    "object-src 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-]);
+$csp_nonce = base64_encode(random_bytes(16));
+$GLOBALS['csp_nonce'] = $csp_nonce;
+
+/**
+ * Content-Security-Policy — dois perfis:
+ *
+ * Painel (/login/painel/):
+ *   script-src sem 'unsafe-inline'; scripts precisam de nonce ou ser arquivos externos.
+ *   Essa é a política restrita que protege o painel administrativo de XSS.
+ *
+ * Páginas públicas (qualquer outra rota):
+ *   script-src inclui 'unsafe-inline' para compatibilidade com os scripts inline
+ *   das páginas de agendamento público que ainda não foram migradas para nonce.
+ *
+ * Diretivas comuns:
+ *   - default-src 'self'        : bloqueia recursos externos por padrão
+ *   - style-src 'unsafe-inline' : estilos inline sempre permitidos (risco menor que script)
+ *   - img-src data: blob: https:: imagens locais, data URIs e fontes externas
+ *   - font-src                  : fontes locais e CDNs
+ *   - connect-src 'self'        : AJAX/fetch só para o próprio domínio
+ *   - frame-src youtube         : iframes do próprio domínio e YouTube
+ *   - object-src 'none'         : sem plugins (Flash, etc.)
+ *   - base-uri 'self'           : previne injeção de <base>
+ *   - form-action 'self'        : formulários só para o próprio domínio
+ */
+$request_path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
+$is_panel     = (strpos($request_path, '/login/painel/') === 0);
+
+if ($is_panel) {
+    /* Política restrita — sem 'unsafe-inline' no script-src */
+    $csp = implode('; ', [
+        "default-src 'self'",
+        "script-src 'self' 'nonce-{$csp_nonce}' 'unsafe-eval' https://code.jquery.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+        "img-src 'self' data: blob: https:",
+        "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+        "connect-src 'self'",
+        "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+    ]);
+} else {
+    /* Política permissiva — mantém 'unsafe-inline' para páginas públicas */
+    $csp = implode('; ', [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://code.jquery.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+        "img-src 'self' data: blob: https:",
+        "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+        "connect-src 'self'",
+        "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+    ]);
+}
 header('Content-Security-Policy: ' . $csp);

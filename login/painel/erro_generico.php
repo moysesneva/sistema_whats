@@ -165,9 +165,9 @@
 <body>
     <div class="logo-wrap">
         <img
+            id="erro-generico-logo"
             src="/login/files/assets/images/logo.png"
             alt="MoysesNet"
-            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
         >
         <span class="logo-fallback">MoysesNet</span>
     </div>
@@ -200,8 +200,24 @@
         </div>
         <div class="card-footer">
             <span class="brand"><strong>MoysesNet</strong> — Sistema de Agendamento</span>
-            <button type="button" class="btn-retry" onclick="location.reload()">Tentar novamente</button>
+            <button type="button" id="erro-generico-retry">Tentar novamente</button>
         </div>
     </div>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+(function () {
+    var img = document.getElementById('erro-generico-logo');
+    if (img) {
+        img.addEventListener('error', function () {
+            img.style.display = 'none';
+            var fallback = img.nextElementSibling;
+            if (fallback) fallback.style.display = 'block';
+        });
+    }
+    var btn = document.getElementById('erro-generico-retry');
+    if (btn) {
+        btn.addEventListener('click', function () { window.location.reload(); });
+    }
+}());
+</script>
 </body>
 </html>

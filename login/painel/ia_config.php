@@ -350,7 +350,7 @@ include 'conn.php';
                                 echo "<form method='post' action='' style='display:inline;'>
                                         <input type='hidden' name='id_chave' value='{$row_chave['id']}'>
                                         <button type='submit' name='apagar_openai' class='btn btn-danger btn-sm' 
-                                                onclick='return confirm(\"Tem certeza que deseja apagar esta chave da OpenAI?\");'>
+                                                data-fn='__confirm' data-args='[\"Tem certeza que deseja apagar esta chave da OpenAI?\"]'>
                                             <i class='feather icon-trash'></i> Apagar
                                         </button>
                                       </form>";
@@ -358,7 +358,7 @@ include 'conn.php';
                                 echo "<form method='post' action='' style='display:inline;'>
                                         <input type='hidden' name='id_chave' value='{$row_chave['id']}'>
                                         <button type='submit' name='apagar_gemini' class='btn btn-danger btn-sm' 
-                                                onclick='return confirm(\"Tem certeza que deseja apagar esta chave da Gemini?\");'>
+                                                data-fn='__confirm' data-args='[\"Tem certeza que deseja apagar esta chave da Gemini?\"]'>
                                             <i class='feather icon-trash'></i> Apagar
                                         </button>
                                       </form>";
@@ -377,7 +377,7 @@ include 'conn.php';
     </div>
 </div>
 
-<script type="text/javascript">
+<script type="text/javascript" nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 document.addEventListener('DOMContentLoaded', function() {
     // Validação dos formulários
     var forms = document.querySelectorAll('form[method="post"]');

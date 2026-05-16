@@ -397,7 +397,7 @@ if($autorizado != 2){
         </h4>
     </div>
     
-    <form action="cadastrar_profissional_confirma.php" method="post" onsubmit="return validarCadastroProfissional()">
+    <form action="cadastrar_profissional_confirma.php" method="post" data-submit-fn="validarCadastroProfissional">
         
         <!-- Campo: Nome do Profissional -->
         <div class="form-group-enhanced">
@@ -510,7 +510,7 @@ if($autorizado != 2){
                     }
                     ?>
                 </select>
-                <button type="button" class="btn-add-specialty" onclick="abrirModalEspecialidade()" title="Adicionar nova especialidade">
+                <button type="button" class="btn-add-specialty" data-fn="abrirModalEspecialidade" title="Adicionar nova especialidade">
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
@@ -578,7 +578,7 @@ if($autorizado != 2){
                               data-especialidade="<?= $especialidade ?>" 
                               data-profissional-id="<?= $profissional_id ?>"
                               title="Clique para remover: <?= $especialidade ?>"
-                              onclick="removerEspecialidade('<?= $especialidade ?>', <?= $profissional_id ?>, '<?= $especialidade ?>')">
+                              data-fn="removerEspecialidade" data-args='["<?= $especialidade ?>", <?= $profissional_id ?>, "<?= $especialidade ?>"]'>
                             <?= $especialidade ?> <i class="fa fa-times ms-1"></i>
                         </span>
                         <?php
@@ -586,14 +586,14 @@ if($autorizado != 2){
                             }
                         }
                         ?>
-                        <button type="button" class="btn btn-primary-action btn-action" onclick="gerenciarEspecialidades(<?= $profissional_id ?>, '<?= addslashes($profissional_nome) ?>')" title="Adicionar Especialidade">
+                        <button type="button" class="btn btn-primary-action btn-action" data-fn="gerenciarEspecialidades" data-args='[<?= $profissional_id ?>, "<?= addslashes($profissional_nome) ?>"]' title="Adicionar Especialidade">
                             <i class="fa fa-plus"></i>
                         </button>
                     </td>
                     <td class="text-center">
                         <form action="deletar_profissional.php" method="post" class="d-inline">
                             <input type="hidden" name="id" value="<?= (int)$profissional_id ?>">
-                            <button type="submit" class="btn btn-danger-action btn-action" onclick="return confirm('Tem certeza que deseja excluir este profissional?')" title="Deletar Profissional">
+                            <button type="submit" class="btn btn-danger-action btn-action" data-fn="__confirm" data-args='["Tem certeza que deseja excluir este profissional?"]' title="Deletar Profissional">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </form>
@@ -641,7 +641,7 @@ if($autorizado != 2){
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn-enhanced" onclick="salvarNovaEspecialidade()">
+                <button type="button" class="btn-enhanced" data-fn="salvarNovaEspecialidade">
                     <i class="fas fa-save me-2"></i>Salvar
                 </button>
             </div>
@@ -691,7 +691,7 @@ if($autorizado != 2){
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                <button type="button" class="btn-enhanced" onclick="adicionarEspecialidadeProfissional()">
+                <button type="button" class="btn-enhanced" data-fn="adicionarEspecialidadeProfissional">
                     <i class="fas fa-plus me-2"></i>Adicionar
                 </button>
             </div>
@@ -699,7 +699,7 @@ if($autorizado != 2){
     </div>
 </div>
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 // Função para validar o formulário
 function validarCadastroProfissional() {
     var nome = document.getElementById('nomeProfissional').value;
@@ -796,7 +796,7 @@ function salvarNovaEspecialidade() {
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary" onclick="adicionarEspecialidadeProfissional()">Adicionar</button>
+                <button type="button" class="btn btn-primary" data-fn="adicionarEspecialidadeProfissional">Adicionar</button>
             </div>
         </div>
     </div>
@@ -832,7 +832,7 @@ function salvarNovaEspecialidade() {
 </style>
 
 <!-- JavaScript para gerenciar especialidades -->
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 function removerEspecialidade(especialidade, profissionalId, especialidadeNome) {
     // Confirmar se o usuário realmente quer remover
     if(confirm('Tem certeza que deseja remover a especialidade "' + especialidadeNome + '"?')) {
@@ -911,7 +911,7 @@ function adicionarEspecialidadeProfissional() {
 </script>
 
 <!-- JavaScript para gerenciar especialidades -->
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 function removerEspecialidade(especialidade, profissionalId, especialidadeNome) {
     // Confirmar se o usuário realmente quer remover
     if(confirm('Tem certeza que deseja remover a especialidade "' + especialidadeNome + '"?')) {
@@ -989,7 +989,7 @@ function adicionarEspecialidadeProfissional() {
 }
 </script>
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 function gerenciarEspecialidades(profissionalId, nomeProfissional) {
     $('#profissionalIdModal').val(profissionalId);
     $('#nomeProfissionalModal').text(nomeProfissional);

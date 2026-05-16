@@ -210,7 +210,7 @@ include 'header_auth.php';
 
 <?php
 $js_extra = '
-    <script>
+    <script nonce="' . ($GLOBALS['csp_nonce'] ?? '') . '">
         AOS.init({ once: true, duration: 700 });
 
         var input = document.querySelector("#telefone");

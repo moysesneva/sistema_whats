@@ -382,7 +382,7 @@ if ($res_funcao_atual && $res_funcao_atual->num_rows > 0) {
 .alert-info { border-color: #bee5eb; background-color: #d1ecf1; color: #0c5460; }
 </style>
 
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('button[value="desativar"]').forEach(function(btn) {
         btn.addEventListener('click', function(e) {

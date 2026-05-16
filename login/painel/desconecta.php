@@ -81,7 +81,7 @@ if($situacao == 'ativado'){
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
                     <!-- Botão "Não" redireciona para config_adm.php -->
-                    <button type="button" class="btn btn-secondary btn-lg" onclick="window.location.href='config_adm.php'">Não</button>
+                    <button type="button" class="btn btn-secondary btn-lg" data-fn="__navigate" data-args='["config_adm.php"]'>Não</button>
 
                     <!-- Botão "Sim" envia o POST para rest.php -->
                     <form action="desconecta_confirma.php" method="POST">
@@ -127,7 +127,7 @@ if($situacao == 'desativado'){
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
                     <!-- Botão "Não" redireciona para config_adm.php -->
-                    <button type="button" class="btn btn-secondary btn-lg" onclick="window.location.href='config_adm.php'">Não</button>
+                    <button type="button" class="btn btn-secondary btn-lg" data-fn="__navigate" data-args='["config_adm.php"]'>Não</button>
 
                     <!-- Botão "Sim" envia o POST para ativar_chatbot.php -->
                     <form action="ativar_chatbot.php" method="POST">
