@@ -19,6 +19,8 @@
 if (!defined('APP_ERROR_CONFIG_LOADED')) {
     define('APP_ERROR_CONFIG_LOADED', true);
 
+    require_once __DIR__ . '/security_headers.php';
+
     $_app_env = getenv('APP_ENV');
     $_is_dev  = ($_app_env === 'development' || $_app_env === 'dev');
 

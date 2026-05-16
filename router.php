@@ -39,6 +39,9 @@ if (strpos($uri, '/__mockup/') === 0) {
     exit;
 }
 
+// Cabeçalhos de segurança HTTP para todas as rotas públicas
+require_once __DIR__ . '/login/painel/security_headers.php';
+
 // Roteamento normal da aplicação PHP
 $path = parse_url($uri, PHP_URL_PATH);
 $file = __DIR__ . $path;
