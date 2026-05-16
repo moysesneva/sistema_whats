@@ -43,12 +43,12 @@ VaiPara('modo.php');
 }
 
 if($tipo == 1){
-VaiPara('config_adm.php');
+VaiPara('dashboard_adm.php');
 
 }
 
 if($tipo == 4){
-VaiPara('config_adm.php');
+VaiPara('dashboard_adm.php');
 
 }
 
