@@ -1,5 +1,8 @@
 <?php
-
+require_once __DIR__ . '/auth_guard.php';
+include 'conn.php';
+include 'funcoes.php';
+include 'estilo.php';
 
 $stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
 $stmt_busca_usuario->bind_param("s", $login);

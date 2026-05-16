@@ -32,8 +32,8 @@
 
     <!-- Configuração do aviso de expiração de sessão -->
     <script>
-    window.SESSION_TIMEOUT_SEC   = <?= (int) SESSION_TIMEOUT ?>;
-    window.SESSION_WARN_SEC      = <?= min(300, max(60, (int) SESSION_TIMEOUT - 60)) ?>;
+    window.SESSION_TIMEOUT_SEC   = <?= defined('SESSION_TIMEOUT') ? (int) SESSION_TIMEOUT : 1800 ?>;
+    window.SESSION_WARN_SEC      = <?= defined('SESSION_TIMEOUT') ? min(300, max(60, (int) SESSION_TIMEOUT - 60)) : 240 ?>;
     window.SESSION_KEEPALIVE_URL = 'api/keepalive.php';
     window.SESSION_LOGIN_URL     = 'login_adm.php?expirado=1';
     </script>
