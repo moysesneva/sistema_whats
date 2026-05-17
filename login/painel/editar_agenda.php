@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/auth_guard.php';
-session_start();
 include 'funcoes.php';
 
 if(!isset($_SESSION['login'])) {
@@ -47,10 +46,10 @@ if($autorizado != 2){
  VaiPara('desbloquar.php');
 }
 
+$css_extra = '<link rel="stylesheet" href="../files/assets/vendor/font-awesome-6/css/all.min.css">';
 ?>
 <?php include 'header.php'; ?>
 
-   <link rel="stylesheet" href="../files/assets/vendor/font-awesome-6/css/all.min.css">
 
    <div class="container mt-5">
     <h2 class="text-center">Gerenciar Agendamentos</h2>
@@ -74,8 +73,6 @@ if($autorizado != 2){
                 echo '<option value="' . (int)$row['id'] . '">' . htmlspecialchars($row['profissional_nome'], ENT_QUOTES, 'UTF-8') . ' - ' . htmlspecialchars($row['profissional_cargo'], ENT_QUOTES, 'UTF-8') . '</option>';
             }
 
-            // Fechar a conexão
-            mysqli_close($conn);
             ?>
         </select>
     </div>

@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/auth_guard.php';
-session_start();
 include 'funcoes.php';
 
 if(!isset($_SESSION['login'])) {
@@ -47,32 +46,18 @@ if($autorizado != 2){
  VaiPara('desbloquar.php');
 }
 
+$css_extra = '<link rel="stylesheet" href="../files/assets/vendor/font-awesome-6/css/all.min.css">';
 ?>
 <?php include 'header.php'; ?>
 
- <link rel="stylesheet" href="../files/assets/vendor/font-awesome-6/css/all.min.css">
 
    <?php
 
-// Função para conectar ao banco de dados
-function conectarDB() {
-    include 'conn.php';
-    return $conn;
-}
 
-// Obter o valor de 'login' da sessão ou de outro local
-if (isset($_SESSION['login'])) {
-    $login = $_SESSION['login'];
-} else {
-    // Se 'login' não estiver definido, redirecionar ou exibir uma mensagem de erro
-    die("Usuário não logado.");
-}
 
 // Obter a data selecionada pelo usuário ou usar a data atual como padrão
 $data_selecionada = $_GET['data'] ?? date('Y-m-d');
 
-// Preparar a consulta SQL para buscar agendamentos
-$conn = conectarDB();
 
 $stmt_ag2 = $conn->prepare("SELECT * FROM agendamento WHERE login = ? ORDER BY horario ASC");
 $stmt_ag2->bind_param("s", $login);

@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/auth_guard.php';
-session_start();
 include 'funcoes.php';
 
 if(!isset($_SESSION['login'])) {
@@ -47,10 +46,10 @@ if($autorizado != 2){
  VaiPara('desbloquar.php');
 }
 
+$css_extra = '<link rel="stylesheet" href="../files/assets/vendor/font-awesome-6/css/all.min.css">';
 ?>
 <?php include 'header.php'; ?>
 
-   <link rel="stylesheet" href="../files/assets/vendor/font-awesome-6/css/all.min.css">
 
 <!-- Menu de Navegação com botões personalizados -->
 <div class="navigation-section fade-in">

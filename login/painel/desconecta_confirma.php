@@ -1,7 +1,6 @@
 <?php
 $auth_ajax_mode = true;
 require_once __DIR__ . '/auth_guard.php';
-session_start();
 include 'funcoes.php';
 include 'conn.php';
 include 'api/api_funcao.php';

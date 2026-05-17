@@ -3,7 +3,6 @@ require_once __DIR__ . '/auth_guard.php';
 // ===================================
 // CONFIGURAÇÕES INICIAIS E SEGURANÇA
 // ===================================
-session_start();
 include 'funcoes.php';
 
 // Verificação de login

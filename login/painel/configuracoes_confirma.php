@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/auth_guard.php';
-session_start();
 $login = $_SESSION['login'];
 
 // 1. INCLUIR O ARQUIVO DE CONEXÃO

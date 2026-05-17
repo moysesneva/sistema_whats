@@ -1,7 +1,6 @@
 <?php
 $auth_ajax_mode = true;
 require_once __DIR__ . '/auth_guard.php';
-session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 // Em um ambiente real, você incluiria seu arquivo de conexão.

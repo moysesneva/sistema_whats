@@ -6,7 +6,6 @@ require_once __DIR__ . '/auth_guard.php';
 // ===================================
 // CONFIGURAÇÕES E SEGURANÇA
 // ===================================
-session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 include 'conn.php';

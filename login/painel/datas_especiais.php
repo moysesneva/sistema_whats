@@ -1,7 +1,5 @@
 <?php
 require_once __DIR__ . '/auth_guard.php';
-session_start();
-
 include 'funcoes.php';
 
 if(!isset($_SESSION['login'])) {
@@ -62,14 +60,6 @@ if (isset($_POST['deletar'])) {
 
    <!-- Formulário para solicitar confirmação de agendamento -->
 
-    <?php
-    // Função para conectar ao banco de dados
-    function conectarDB() {
-       include 'conn.php';
-        return $conn;
-    }
-    ?>
-
     <div class="page-container">
         <!-- Page Header -->
         <div class="page-header">
@@ -98,9 +88,6 @@ if (isset($_POST['deletar'])) {
                                 <select class="form-control form-control-modern" id="profissional" name="profissional" required data-change-fn="carregarDiasSemana">
                                     <option value="">Escolha um profissional</option>
                                     <?php
-                                    // Conexão com o banco de dados
-                                    $conn = conectarDB();
-
                                     // Consulta para obter os profissionais
                                     $stmt_de1 = $conn->prepare("SELECT * FROM profissional WHERE login = ?");
                                     $stmt_de1->bind_param("s", $login);
@@ -112,8 +99,6 @@ if (isset($_POST['deletar'])) {
                                         echo '<option value="' . (int)$row['id'] . '">' . htmlspecialchars($row['profissional_nome'], ENT_QUOTES, 'UTF-8') . ' - ' . htmlspecialchars($row['profissional_cargo'], ENT_QUOTES, 'UTF-8') . '</option>';
                                     }
 
-                                    // Fechar a conexão
-                                    mysqli_close($conn);
                                     ?>
                                 </select>
                             </div>
@@ -182,9 +167,6 @@ if (isset($_POST['deletar'])) {
                 <!-- Tabela de Resultados -->
                 <div class="table-responsive">
                     <?php
-                    // Conexão com o banco de dados
-                    $conn = conectarDB();
-
                     // Verificar se o login foi definido
                     $stmt_de2 = $conn->prepare("SELECT * FROM profissional WHERE login = ?");
                     $stmt_de2->bind_param("s", $login);
@@ -281,8 +263,6 @@ if (isset($_POST['deletar'])) {
                         echo '</div>';
                     }
 
-                    // Fechar conexão com o banco de dados
-                    mysqli_close($conn);
                     ?>
                 </div>
             </div>

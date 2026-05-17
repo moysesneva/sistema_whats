@@ -3,7 +3,6 @@
 // ARQUIVO: editar_profissional.php
 // ===============================================
 require_once __DIR__ . '/auth_guard.php';
-session_start();
 include 'funcoes.php';
 $login = $_SESSION['login'];
 include 'conn.php';

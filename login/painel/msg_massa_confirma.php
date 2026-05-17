@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/auth_guard.php';
-session_start();
 require_once 'conn.php';
 
 // Verificar se usuário está logado

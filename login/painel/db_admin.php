@@ -1,7 +1,6 @@
 <?php
 $auth_ajax_mode = true;
 require_once __DIR__ . '/auth_guard.php';
-session_start();
 if (!isset($_SESSION['login']) || !isset($_SESSION['autorizado']) || $_SESSION['autorizado'] != 2) {
     header('Location: login_adm.php');
     exit();
