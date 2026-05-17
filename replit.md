@@ -136,3 +136,4 @@ bash scripts/install-hooks.sh
 
 - Todas as instruções, sugestões e comunicações devem ser em **português brasileiro**.
 - Design: azul marinho `#001f3f` + laranja `#FF5500` (padrão Enam Impact Agency).
+- **Banco de dados**: sempre usar o banco externo Hostinger (`auth-db992.hstgr.io`). O MySQL local só sobe quando `DB_HOST` não estiver configurado.
