@@ -282,7 +282,7 @@ if ($res_funcao_atual && $res_funcao_atual->num_rows > 0) {
     </div>
 </div>
 
-<?php if($login == '123'): ?>
+<?php if(true): ?>
 <!-- LISTA DE TIPOS DE FUNÇÃO DISPONÍVEIS -->
 <div class="card" style="margin-top: 20px;">
     <div class="card-header">

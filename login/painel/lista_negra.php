@@ -85,14 +85,14 @@ if($autorizado != 2){
             return '55' . $telefone_limpo;
         }
         
-        // Se tem 9 dígitos, assume que faltou o DDD, adiciona um padrão (11 - SP)
+        // Se tem 9 dígitos, retorna o número como veio (sem adicionar DDD)
         if (strlen($telefone_limpo) == 9) {
-            return '5511' . $telefone_limpo;
+            return '55' . $telefone_limpo;
         }
         
-        // Se tem 8 dígitos, assume que faltou DDD, adiciona um padrão (11 - SP)
+        // Se tem 8 dígitos, retorna o número como veio (sem adicionar DDD)
         if (strlen($telefone_limpo) == 8) {
-            return '5511' . $telefone_limpo;
+            return '55' . $telefone_limpo;
         }
         
         // Para outros casos, tenta adicionar o código do Brasil

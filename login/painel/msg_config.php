@@ -556,12 +556,8 @@ $stmt->close();
                                 <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacao", "{telefone_cliente}"]'>📞 {telefone_cliente}</button>
                                 <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacao", "{serviço}"]'>🛠️ {serviço}</button>
                                 <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacao", "{preço_serviço}"]'>💰 {preço_serviço}</button>
-                                <?php if($oculto){?>
                                 <button type="button" class="btn btn-modern btn-tag" data-fn="inserirCampo" data-args='["mensagemConfirmacao", "{link_agendamento}"]'>🔗 {link_agendamento}</button>
                             </div>
-                            <?php
-                                }
-                                ?>
                             <div class="text-center mt-2">
                                 <button type="button" class="btn btn-modern btn-model" data-fn="carregarModeloConfirmacao">✨ Carregar Modelo</button>
                             </div>

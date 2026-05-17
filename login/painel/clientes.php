@@ -212,7 +212,6 @@ $stmt_cli = $conn->prepare("SELECT * FROM clientes WHERE usuario_api = ? ORDER B
                 <div class="modal-body">
                     <input type="hidden" name="acao" value="adicionar">
                     <input type="hidden" name="usuario_api" value="<?php echo htmlspecialchars($usuario_api, ENT_QUOTES, 'UTF-8'); ?>">
-                    <input type="hidden" name="id_cliente" value="<?php echo (int)$id_cliente; ?>">
                     
                     <div class="form-group">
                         <label for="nome">Nome do Cliente</label>
