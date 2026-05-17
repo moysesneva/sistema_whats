@@ -1,222 +1,240 @@
 <?php
 require_once __DIR__ . '/auth_guard.php';
-session_start();
 include 'funcoes.php';
 
-if(!isset($_SESSION['login'])) {
-VaiPara('login.php');
-} 
-#$_SESSION['tipo_menu'] = 1;
+if (!isset($_SESSION['login'])) VaiPara('login.php');
 $login = $_SESSION['login'];
 
 include 'conn.php';
-include 'config_dados.php';
-
 include 'estilo.php';
-
 include 'css_de_icones.php';
 
-if (isset($_GET['pagina_nome'])) {
-$pagina_nome_recebe = $_GET['pagina_nome'];
-}else{
-$pagina_nome_recebe = 0;    
+$pagina_nome_recebe = isset($_GET['pagina_nome']) ? (int)$_GET['pagina_nome'] : 0;
+
+$stmt_u = $conn->prepare("SELECT * FROM login WHERE login = ?");
+$stmt_u->bind_param("s", $login);
+$stmt_u->execute();
+$q_u = $stmt_u->get_result();
+$stmt_u->close();
+
+while ($r = $q_u->fetch_array()) {
+    $nome       = Priletra($r['nome']);
+    $img_perfil = $r['perfil_img'];
+    $autorizado = $r['autorizado'];
+    $tipo       = $r['tipo'];
 }
 
-$stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
-$stmt_busca_usuario->bind_param("s", $login);
-$stmt_busca_usuario->execute();
-$query_busca_usuario = $stmt_busca_usuario->get_result();
-$total_busca_usuario = $query_busca_usuario->num_rows;
-
-while($rows_usuarios = $query_busca_usuario->fetch_array()) {
-    $nome  = Priletra($rows_usuarios['nome']);
-    $img_perfil  = $rows_usuarios['perfil_img'];
-    $autorizado  = $rows_usuarios['autorizado'];
-    $tipo  = $rows_usuarios['tipo'];
-
-}
-#####DEFINIMOS QUE  O TIPO DO MENU
-## 1 É O ADM
-## 2 É  O USUARIO
 include 'menu.php';
 
-if($total_busca_usuario != 1){
-    VaiPara('login.php');
+if ($q_u->num_rows < 1) VaiPara('login.php');
+if ($autorizado != 2)   VaiPara('desbloquar.php');
+
+include 'bloqueio.php';
+
+// Data selecionada — sanitizada
+$data_selecionada = '';
+if (isset($_GET['data'])) {
+    $d = DateTime::createFromFormat('Y-m-d', $_GET['data']);
+    if ($d && $d->format('Y-m-d') === $_GET['data']) {
+        $data_selecionada = $_GET['data'];
+    }
 }
-if($autorizado != 2){
- VaiPara('desbloquar.php');
+if (!$data_selecionada) $data_selecionada = date('Y-m-d');
+
+// Busca id do profissional
+$id_profissional = 0;
+$stmt_bp = $conn->prepare("SELECT id FROM profissional WHERE telefone = ?");
+$stmt_bp->bind_param("s", $login);
+$stmt_bp->execute();
+$r_bp = $stmt_bp->get_result()->fetch_assoc();
+$stmt_bp->close();
+if ($r_bp) $id_profissional = (int)$r_bp['id'];
+
+// Busca agendamentos do dia
+$agendamentos = [];
+if ($id_profissional > 0) {
+    $stmt_ag = $conn->prepare("SELECT * FROM agendamento WHERE id_profissional = ? AND data = ? ORDER BY horario ASC");
+    $stmt_ag->bind_param("is", $id_profissional, $data_selecionada);
+    $stmt_ag->execute();
+    $res_ag = $stmt_ag->get_result();
+    $stmt_ag->close();
+    while ($row = $res_ag->fetch_assoc()) {
+        $agendamentos[] = $row;
+    }
 }
 
+$total_ag = count($agendamentos);
+
+$dia_semana = (int)date('w', strtotime($data_selecionada));
+$nomes_dias = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+$data_fmt   = $nomes_dias[$dia_semana] . ', ' . date('d/m/Y', strtotime($data_selecionada));
+
+// Navegação de dia
+$dia_ant = date('Y-m-d', strtotime($data_selecionada . ' -1 day'));
+$dia_prox = date('Y-m-d', strtotime($data_selecionada . ' +1 day'));
+$mes_atual = date('n', strtotime($data_selecionada));
+$ano_atual = date('Y', strtotime($data_selecionada));
+
+$css_extra = '
+<link rel="stylesheet" type="text/css" href="../files/assets/icon/font-awesome/css/font-awesome.min.css">
+<style>
+/* ── Cabeçalho do dia ── */
+.dia-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+.dia-titulo { font-size: 20px; font-weight: 800; color: #001f3f; }
+.dia-sub    { font-size: 13px; color: #888; margin-top: 2px; }
+.dia-nav    { display: flex; gap: 8px; align-items: center; }
+.dia-nav a  { display: flex; align-items: center; gap: 4px; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none; border: 1.5px solid #e0e4ef; color: #334; transition: background .15s; }
+.dia-nav a:hover { background: #f4f6fb; }
+.dia-nav a.hoje { background: #001f3f; color: #fff; border-color: #001f3f; }
+
+/* ── Filtro de data ── */
+.filtro-data { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid #e0e4ef; border-radius: 9px; padding: 6px 12px; }
+.filtro-data input { border: none; outline: none; font-size: 13px; color: #334; cursor: pointer; }
+.filtro-data button { background: #001f3f; color: #fff; border: none; border-radius: 6px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+/* ── Card de agendamento ── */
+.ag-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.07); margin-bottom: 14px; overflow: hidden; border-left: 4px solid #001f3f; transition: box-shadow .18s; }
+.ag-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.12); }
+.ag-card-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 10px; gap: 12px; }
+.ag-hora         { background: #001f3f; color: #fff; border-radius: 8px; padding: 6px 12px; font-size: 15px; font-weight: 800; flex-shrink: 0; }
+.ag-cliente      { font-size: 15px; font-weight: 700; color: #1a2340; }
+.ag-servico      { font-size: 12px; color: #888; margin-top: 1px; }
+.ag-card-body    { padding: 10px 18px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-top: 1px solid #f0f2f7; }
+.ag-acoes        { display: flex; gap: 8px; flex-wrap: wrap; }
+.ag-acoes a      { font-size: 12px; padding: 6px 12px; border-radius: 7px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.btn-wa-ag  { background: #d4f5e9; color: #1a7a4a; }
+.btn-wa-ag:hover { background: #b8ecd5; color: #1a7a4a; }
+.btn-cancel-ag { background: #fdecea; color: #c0392b; }
+.btn-cancel-ag:hover { background: #f9d6d3; color: #c0392b; }
+
+/* ── Badge status ── */
+.status-badge { border-radius: 20px; font-size: 11px; font-weight: 700; padding: 3px 10px; display: inline-flex; align-items: center; gap: 4px; }
+.status-conf    { background: #d4f5e9; color: #1a7a4a; }
+.status-pend    { background: #fff3cd; color: #856404; }
+.status-cancel  { background: #fdecea; color: #c0392b; }
+
+/* ── Estado vazio ── */
+.ag-vazio { text-align: center; padding: 60px 20px; color: #aaa; }
+.ag-vazio i { font-size: 52px; display: block; margin-bottom: 14px; opacity: .4; }
+.ag-vazio h5 { color: #888; margin-bottom: 6px; }
+
+/* ── Contador ── */
+.contador { background: #FF5500; color: #fff; border-radius: 20px; font-size: 12px; font-weight: 700; padding: 2px 10px; margin-left: 8px; }
+</style>';
+
+include 'header.php';
 ?>
-<?php include 'header.php'; ?>
 
- <link rel="stylesheet" href="../files/assets/vendor/font-awesome-6/css/all.min.css">
+<div class="container-fluid" style="padding:20px 24px;">
 
-   <?php
-
-// Função para conectar ao banco de dados
-function conectarDB() {
-    include 'conn.php';
-    return $conn;
-}
-
-// Obter o valor de 'login' da sessão ou de outro local
-if (isset($_SESSION['login'])) {
-    $login = $_SESSION['login'];
-} else {
-    // Se 'login' não estiver definido, redirecionar ou exibir uma mensagem de erro
-    die("Usuário não logado.");
-}
-
-// Obter a data selecionada pelo usuário ou usar a data atual como padrão
-$data_selecionada = $_GET['data'] ?? date('Y-m-d');
-
-// Preparar a consulta SQL para buscar agendamentos
-$conn = conectarDB();
-
-$stmt_bp2 = $conn->prepare("SELECT * FROM profissional WHERE telefone = ?");
-$stmt_bp2->bind_param("s", $login);
-$stmt_bp2->execute();
-$sql_busca_profs = $stmt_bp2->get_result();
-$total_busca_profs = $sql_busca_profs->num_rows;
-$stmt_bp2->close();
-
-while($rows_usuarios = $sql_busca_profs->fetch_array()) {
-    $id_profissional  = $rows_usuarios['id'];
-}
-
-$sql = "SELECT * FROM agendamento WHERE id_profissional = ? AND data = ? ORDER BY horario ASC";
-$stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "ss", $id_profissional, $data_selecionada);
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
-
-// Fechar a conexão após obter os resultados
-mysqli_close($conn);
-
-?>
-
-    <div class="page-container">
-        <a href="javascript:history.back()" class="back-button">
-            <span class="material-icons">arrow_back</span>
-            Voltar ao Calendário
-        </a>
-
-        <div class="header">
-            <h1>Agendamentos do Dia</h1>
-            
-            <form method="GET" action="" class="date-filter">
-                <label for="data">Selecione uma data:</label>
-                <input type="date" name="data" id="data" class="date-input" value="<?= htmlspecialchars($_GET['data'] ?? date('Y-m-d', ENT_QUOTES, 'UTF-8')) ?>">
-                <button type="submit" class="btn-search">
-                    <span class="material-icons">search</span>
-                    Buscar
-                </button>
-            </form>
-        </div>
-
-        <div class="appointments-container">
-            <div class="appointments-header">
-                <div class="date-display">
-                    <?php
-                    $data_formatada = date('d/m/Y', strtotime($data_selecionada));
-                    $dia_semana = date('w', strtotime($data_selecionada));
-                    $nomes_dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-                    echo $nomes_dias[$dia_semana] . ', ' . $data_formatada;
-                    ?>
-                </div>
-                <div class="appointments-count">
-                    <?php
-                    $total_agendamentos = mysqli_num_rows($result);
-                    echo $total_agendamentos . ' agendamento' . ($total_agendamentos != 1 ? 's' : '') . ' encontrado' . ($total_agendamentos != 1 ? 's' : '');
-                    ?>
-                </div>
+    <!-- Cabeçalho do dia -->
+    <div class="dia-header">
+        <div>
+            <div class="dia-titulo">
+                <i class="feather icon-calendar" style="color:#FF5500;"></i>
+                <?= htmlspecialchars($data_fmt, ENT_QUOTES, 'UTF-8') ?>
+                <span class="contador"><?= $total_ag ?></span>
             </div>
+            <div class="dia-sub">Agendamentos do dia — clique nos botões para navegar</div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <!-- Filtro de data -->
+            <form method="GET" style="display:flex;">
+                <div class="filtro-data">
+                    <i class="feather icon-calendar" style="color:#888; font-size:14px;"></i>
+                    <input type="date" name="data" value="<?= htmlspecialchars($data_selecionada, ENT_QUOTES, 'UTF-8') ?>">
+                    <button type="submit"><i class="feather icon-search"></i></button>
+                </div>
+            </form>
+            <!-- Navegação de dia -->
+            <div class="dia-nav">
+                <a href="?data=<?= $dia_ant ?>"><i class="feather icon-chevron-left"></i> Anterior</a>
+                <a href="?data=<?= date('Y-m-d') ?>" class="hoje"><i class="feather icon-home"></i> Hoje</a>
+                <a href="?data=<?= $dia_prox ?>">Próximo <i class="feather icon-chevron-right"></i></a>
+            </div>
+            <a href="agenda2_porf.php?m=<?= $mes_atual ?>&y=<?= $ano_atual ?>" class="btn btn-sm btn-outline-primary">
+                <i class="feather icon-grid"></i> Ver Calendário
+            </a>
+        </div>
+    </div>
 
-            <div class="appointments-grid">
-                <?php
-                // Verificar se há resultados
-                if (mysqli_num_rows($result) > 0) {
-                    // Loop através dos resultados
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        // Extrair os dados
-                        $id = $row['id'];
-                        $cliente_nome = $row['cliente_nome'];
-                        $servico = $row['profissional_cargo'];
-                        $profissional_nome = $row['profissional_nome'];
-                        $data = date('d/m/Y', strtotime($row['data']));
-                        $horario = $row['horario'];
-                        $cliente_telefone = preg_replace('/\D/', '', $row['cliente_telefone']);
-                        $whatsapp_link = "https://wa.me/" . $cliente_telefone;
-                        $status = $row['confirmacao'];
-                        
-                        // Definir status de confirmação
-                        if ($status == '1') {
-                            $confirmacao_class = 'status-confirmed';
-                            $confirmacao_text = 'Confirmado';
-                            $confirmacao_icon = 'check_circle';
-                        } elseif ($status == '2') {
-                            $confirmacao_class = 'status-not-confirmed';
-                            $confirmacao_text = 'Não Confirmado';
-                            $confirmacao_icon = 'cancel';
-                        } else {
-                            $confirmacao_class = 'status-no-response';
-                            $confirmacao_text = 'Sem Resposta';
-                            $confirmacao_icon = 'help';
-                        }
+    <!-- Lista de agendamentos -->
+    <?php if ($id_profissional <= 0): ?>
+    <div class="ag-vazio">
+        <i class="feather icon-alert-circle"></i>
+        <h5>Perfil não localizado</h5>
+        <p>Seu cadastro como profissional não foi encontrado. Fale com o administrador.</p>
+    </div>
+    <?php elseif (empty($agendamentos)): ?>
+    <div class="ag-vazio">
+        <i class="feather icon-calendar"></i>
+        <h5>Nenhum agendamento para este dia</h5>
+        <p>Use os botões acima para navegar para outro dia.</p>
+        <a href="agenda2_porf.php?m=<?= $mes_atual ?>&y=<?= $ano_atual ?>" class="btn btn-sm btn-primary mt-2">
+            <i class="feather icon-grid"></i> Ver Calendário do Mês
+        </a>
+    </div>
+    <?php else: ?>
+    <?php foreach ($agendamentos as $row):
+        $tel_clean = preg_replace('/\D/', '', $row['cliente_telefone'] ?? '');
+        $wa_link   = 'https://wa.me/' . (str_starts_with($tel_clean, '55') ? $tel_clean : '55' . $tel_clean);
+        $conf      = (int)$row['confirmacao'];
 
-                        echo '<div class="appointment-card">';
-                        
-                        echo '<div class="appointment-header">';
-                        echo '<div class="client-info">';
-                        echo '<div class="client-name">' . htmlspecialchars($cliente_nome, ENT_QUOTES, 'UTF-8') . '</div>';
-                        echo '<div class="service-name">' . htmlspecialchars($servico, ENT_QUOTES, 'UTF-8') . '</div>';
-                        echo '</div>';
-                        echo '<div class="appointment-time">';
-                        echo '<span class="material-icons">schedule</span>';
-                        echo htmlspecialchars($horario, ENT_QUOTES, 'UTF-8');
-                        echo '</div>';
-                        echo '</div>';
+        if ($conf == 1) {
+            $status_class = 'status-conf';
+            $status_txt   = 'Confirmado';
+            $status_icon  = 'icon-check-circle';
+            $border_cor   = '#27ae60';
+        } elseif ($conf == 2) {
+            $status_class = 'status-cancel';
+            $status_txt   = 'Cancelado';
+            $status_icon  = 'icon-x-circle';
+            $border_cor   = '#e74c3c';
+        } else {
+            $status_class = 'status-pend';
+            $status_txt   = 'Pendente';
+            $status_icon  = 'icon-clock';
+            $border_cor   = '#e67e22';
+        }
+    ?>
+    <div class="ag-card" style="border-left-color:<?= $border_cor ?>;">
+        <div class="ag-card-header">
+            <span class="ag-hora" style="background:<?= $border_cor ?>;"><i class="feather icon-clock" style="font-size:12px;"></i> <?= htmlspecialchars($row['horario'], ENT_QUOTES, 'UTF-8') ?></span>
+            <div style="flex:1; min-width:0;">
+                <div class="ag-cliente"><?= htmlspecialchars($row['cliente_nome'] ?? '—', ENT_QUOTES, 'UTF-8') ?></div>
+                <div class="ag-servico"><?= htmlspecialchars($row['profissional_cargo'] ?? '', ENT_QUOTES, 'UTF-8') ?></div>
+            </div>
+            <span class="status-badge <?= $status_class ?>">
+                <i class="feather <?= $status_icon ?>" style="font-size:11px;"></i> <?= $status_txt ?>
+            </span>
+        </div>
+        <div class="ag-card-body">
+            <div style="font-size:12px; color:#888;">
+                <i class="feather icon-phone" style="font-size:11px;"></i> <?= htmlspecialchars($row['cliente_telefone'] ?? '—', ENT_QUOTES, 'UTF-8') ?>
+                <?php if (!empty($row['duracao_minutos'])): ?>
+                &nbsp;· <i class="feather icon-clock" style="font-size:11px;"></i> <?= (int)$row['duracao_minutos'] ?> min
+                <?php endif; ?>
+                <?php if (!empty($row['valor_servico']) && $row['valor_servico'] > 0): ?>
+                &nbsp;· <i class="feather icon-dollar-sign" style="font-size:11px;"></i> R$ <?= number_format((float)$row['valor_servico'], 2, ',', '.') ?>
+                <?php endif; ?>
+            </div>
+            <div class="ag-acoes">
+                <?php if ($tel_clean): ?>
+                <a href="<?= $wa_link ?>" target="_blank" class="btn-wa-ag">
+                    <i class="fa fa-whatsapp"></i> WhatsApp
+                </a>
+                <?php endif; ?>
+                <?php if ($conf != 2): ?>
+                <a href="cancelar_agendamento.php?id=<?= (int)$row['id'] ?>" class="btn-cancel-ag" data-fn="__confirm" data-args='["Tem certeza que deseja cancelar este agendamento?"]'>
+                    <i class="feather icon-x"></i> Cancelar
+                </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    <?php endforeach; ?>
+    <?php endif; ?>
 
-                        echo '<div class="appointment-details">';
-                        echo '<div class="detail-item">';
-                        echo '<span class="material-icons detail-icon">person</span>';
-                        echo '<span class="detail-text">Profissional: ' . htmlspecialchars($profissional_nome, ENT_QUOTES, 'UTF-8') . '</span>';
-                        echo '</div>';
-                        echo '<div class="detail-item">';
-                        echo '<span class="material-icons detail-icon">event</span>';
-                        echo '<span class="detail-text">Data: ' . $data . '</span>';
-                        echo '</div>';
-                        echo '</div>';
-
-                        echo '<div class="appointment-actions">';
-                        echo '<div class="status-badge ' . $confirmacao_class . '">';
-                        echo '<span class="material-icons" style="font-size: 16px; margin-right: 5px;">' . $confirmacao_icon . '</span>';
-                        echo $confirmacao_text;
-                        echo '</div>';
-                        
-                        echo '<div class="action-buttons">';
-                        echo '<a href="' . htmlspecialchars($whatsapp_link, ENT_QUOTES, 'UTF-8') . '" target="_blank" class="btn-whatsapp">';
-                        echo '<span class="material-icons">chat</span>';
-                        echo 'WhatsApp';
-                        echo '</a>';
-                        echo '<a href="cancelar_agendamento.php?id=' . $id . '" class="btn-cancel" data-fn="__confirm" data-args=\'["Tem certeza que deseja cancelar este agendamento?"]\'>';
-                        echo '<span class="material-icons">cancel</span>';
-                        echo 'Cancelar';
-                        echo '</a>';
-                        echo '</div>';
-                        echo '</div>';
-                        
-                        echo '</div>';
-                    }
-                } else {
-                    // Se não houver agendamentos
-                    echo '<div class="no-appointments">';
-                    echo '<div class="material-icons no-appointments-icon">event_busy</div>';
-                    echo '<h3>Nenhum agendamento encontrado</h3>';
-                    echo '<p>Não há agendamentos para esta data.</p>';
-                    echo '</div>';
-                }
-                ?>
+</div>
 
 <?php include 'footer.php'; ?>
