@@ -47,6 +47,50 @@ if (empty($_diag_log_file)) {
 }
 
 // -----------------------------------------------------------------------
+// Variáveis de ambiente — definição e leitura
+// -----------------------------------------------------------------------
+
+$_env_groups = [
+    'Banco de Dados' => [
+        ['name' => 'DB_HOST',    'required' => false, 'secret' => false, 'default' => 'localhost',           'desc' => 'Host do MySQL'],
+        ['name' => 'DB_USER',    'required' => false, 'secret' => false, 'default' => 'root',                'desc' => 'Usuário do banco'],
+        ['name' => 'DB_PASS',    'required' => false, 'secret' => true,  'default' => null,                  'desc' => 'Senha do banco'],
+        ['name' => 'DB_NAME',    'required' => false, 'secret' => false, 'default' => 'agendamento',         'desc' => 'Nome do banco'],
+    ],
+    'Aplicação' => [
+        ['name' => 'APP_ENV',           'required' => false, 'secret' => false, 'default' => null,                   'desc' => 'Ambiente (dev / produção)'],
+        ['name' => 'PHP_ERROR_LOG',     'required' => false, 'secret' => false, 'default' => '/tmp/php_errors.log',  'desc' => 'Caminho do log de erros PHP'],
+        ['name' => 'API_WEBHOOK_TOKEN', 'required' => true,  'secret' => true,  'default' => null,                   'desc' => 'Token secreto da API / webhook'],
+    ],
+    'Limpeza de Logs e Uploads' => [
+        ['name' => 'LOG_MAX_AGE_DAYS',         'required' => false, 'secret' => false, 'default' => '7',    'desc' => 'Idade máxima dos logs (dias)'],
+        ['name' => 'LOG_MAX_SIZE_MB',          'required' => false, 'secret' => false, 'default' => '10',   'desc' => 'Tamanho máximo do log de erros (MB)'],
+        ['name' => 'CLEANUP_COOLDOWN_SECONDS', 'required' => false, 'secret' => false, 'default' => '30',   'desc' => 'Intervalo mínimo entre limpezas (s)'],
+        ['name' => 'UPLOADS_MAX_AGE_SECONDS',  'required' => false, 'secret' => false, 'default' => '3600', 'desc' => 'Idade máxima de uploads temporários (s)'],
+        ['name' => 'DB_FAILURES_MAX_SIZE_MB',  'required' => false, 'secret' => false, 'default' => '1',    'desc' => 'Tamanho máximo do log de falhas do banco (MB)'],
+        ['name' => 'DB_FAILURES_MAX_AGE_DAYS', 'required' => false, 'secret' => false, 'default' => '30',   'desc' => 'Idade máxima do log de falhas do banco (dias)'],
+    ],
+];
+
+/**
+ * Retorna o status de uma variável de ambiente:
+ *   'set'     — definida com valor não-vazio
+ *   'default' — não definida, mas tem valor padrão (opcional)
+ *   'missing' — não definida e obrigatória (ou sem padrão)
+ */
+function _env_status(string $name, bool $required, ?string $default): string
+{
+    $val = getenv($name);
+    if ($val !== false && $val !== '') {
+        return 'set';
+    }
+    if (!$required && $default !== null) {
+        return 'default';
+    }
+    return 'missing';
+}
+
+// -----------------------------------------------------------------------
 // CSRF token para proteção do formulário de limpeza
 // -----------------------------------------------------------------------
 
@@ -212,19 +256,34 @@ function tipo_badge_class(string $tipo): string
 .log-table .msg-cell { max-width: 420px; word-break: break-word; }
 .no-failures { text-align: center; padding: 40px 20px; color: #aaa; }
 .no-failures i { font-size: 40px; color: #ccc; display: block; margin-bottom: 12px; }
-.php-error-log-pre {
-    background: #0d1117;
-    color: #e6edf3;
-    font-size: 12px;
-    line-height: 1.6;
-    padding: 16px 20px;
-    border-radius: 0 0 10px 10px;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    word-break: break-all;
-    max-height: 500px;
-    overflow-y: auto;
-}
+    .php-error-log-pre {
+        background: #0d1117;
+        color: #e6edf3;
+        font-size: 12px;
+        line-height: 1.6;
+        padding: 16px 20px;
+        border-radius: 0 0 10px 10px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+    .env-group { border-bottom: 1px solid #f0f0f0; }
+    .env-group:last-child { border-bottom: none; }
+    .env-group-title {
+        background: #f4f6f9;
+        padding: 8px 16px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #001f3f;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        border-bottom: 1px solid #e8eaf0;
+    }
+    .env-table td, .env-table th { font-size: 13px; vertical-align: middle; padding: 7px 12px; }
+    .env-name { background: #f0f4f8; color: #001f3f; font-size: 12px; padding: 2px 6px; border-radius: 3px; }
+    .env-value { background: #f8f9fa; color: #333; font-size: 12px; padding: 2px 6px; border-radius: 3px; word-break: break-all; }
 </style>
 
 <div class="container-fluid">
@@ -318,6 +377,70 @@ function tipo_badge_class(string $tipo): string
                 Remova ou altere <code>APP_ENV</code> para ativar o log em arquivo em produção.
             </div>
             <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Card: Variáveis de Ambiente -->
+    <div class="card diag-card mb-4">
+        <div class="card-header">
+            <span><i class="feather icon-sliders"></i> Variáveis de Ambiente</span>
+        </div>
+        <div class="card-body p-0">
+            <?php foreach ($_env_groups as $_grp_name => $_grp_vars): ?>
+            <div class="env-group">
+                <div class="env-group-title"><?= htmlspecialchars($_grp_name, ENT_QUOTES, 'UTF-8') ?></div>
+                <table class="table table-sm env-table mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="width:200px;">Variável</th>
+                            <th>Descrição</th>
+                            <th style="width:120px;">Status</th>
+                            <th>Valor / Padrão</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($_grp_vars as $_v):
+                        $_st  = _env_status($_v['name'], $_v['required'], $_v['default']);
+                        $_raw = getenv($_v['name']);
+                    ?>
+                        <tr class="<?= ($_st === 'missing' && $_v['required']) ? 'table-danger' : '' ?>">
+                            <td><code class="env-name"><?= htmlspecialchars($_v['name'], ENT_QUOTES, 'UTF-8') ?></code></td>
+                            <td class="text-muted" style="font-size:12px;"><?= htmlspecialchars($_v['desc'], ENT_QUOTES, 'UTF-8') ?></td>
+                            <td>
+                                <?php if ($_st === 'set'): ?>
+                                    <span class="badge badge-success"><i class="feather icon-check"></i> configurada</span>
+                                <?php elseif ($_st === 'default'): ?>
+                                    <span class="badge badge-secondary">usando padrão</span>
+                                <?php else: ?>
+                                    <?php if ($_v['required']): ?>
+                                        <span class="badge badge-danger"><i class="feather icon-alert-triangle"></i> ausente (obrigatória)</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-secondary">ausente</span>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </td>
+                            <td style="font-size:12px;">
+                                <?php if ($_v['secret']): ?>
+                                    <?php if ($_st === 'set'): ?>
+                                        <span class="text-muted"><i class="feather icon-lock" style="font-size:11px;"></i> <em>configurado</em></span>
+                                    <?php else: ?>
+                                        <span class="text-muted">—</span>
+                                    <?php endif; ?>
+                                <?php elseif ($_st === 'set'): ?>
+                                    <code class="env-value"><?= htmlspecialchars($_raw, ENT_QUOTES, 'UTF-8') ?></code>
+                                <?php elseif ($_st === 'default'): ?>
+                                    <code class="env-value text-muted"><?= htmlspecialchars($_v['default'], ENT_QUOTES, 'UTF-8') ?></code>
+                                    <span class="text-muted" style="font-size:11px;">(padrão)</span>
+                                <?php else: ?>
+                                    <span class="text-muted">—</span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 
