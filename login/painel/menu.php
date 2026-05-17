@@ -28,10 +28,18 @@ if (!empty($funcao)) {
 }
 
 // Se funcao está vazio OU não bateu com nenhum item de menu,
-// cai para menu por tipo de usuário (evita sidebar vazia por dado incorreto no campo modo_atuante)
+// cai para um fallback inteligente por tipo de usuário
 if ($total_menu == 0) {
-    $stmt_menu2 = $conn->prepare("SELECT * FROM menu WHERE tipo = ? ORDER BY ordem ASC");
-    $stmt_menu2->bind_param("s", $tipo);
+    if ($tipo == 2) {
+        // Tipo 2: usa "Agendamento" como funcao padrão (evita duplicatas no menu)
+        $funcao_fallback = 'Agendamento';
+        $stmt_menu2 = $conn->prepare("SELECT * FROM menu WHERE funcao IS NOT NULL AND funcao != '' AND FIND_IN_SET(?, funcao) > 0 ORDER BY ordem ASC");
+        $stmt_menu2->bind_param("s", $funcao_fallback);
+    } else {
+        // Outros tipos: usa o tipo direto
+        $stmt_menu2 = $conn->prepare("SELECT * FROM menu WHERE tipo = ? ORDER BY ordem ASC");
+        $stmt_menu2->bind_param("s", $tipo);
+    }
     $stmt_menu2->execute();
     $query_menu = $stmt_menu2->get_result();
     $total_menu = $query_menu->num_rows;
