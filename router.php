@@ -56,6 +56,36 @@ if ($path !== '/' && file_exists($file) && !is_dir($file)) {
 // Página não encontrada (404) para caminhos inexistentes
 if ($path !== '/' && !file_exists($file)) {
     http_response_code(404);
+
+    // Registra o acesso 404 no log de acessos bloqueados
+    (function () {
+        $log_file = __DIR__ . '/login/painel/logs/not_found.log';
+        $logs_dir = dirname($log_file);
+        if (!is_dir($logs_dir)) {
+            @mkdir($logs_dir, 0755, true);
+        }
+        $max_bytes = max(1, (int) (getenv('LOG_MAX_SIZE_MB') ?: 10)) * 1024 * 1024;
+        if (is_file($log_file) && filesize($log_file) > $max_bytes) {
+            @file_put_contents($log_file, '');
+        }
+        $forwarded = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
+        $ip = $forwarded !== ''
+            ? trim(explode(',', $forwarded)[0])
+            : ($_SERVER['REMOTE_ADDR'] ?? 'desconhecido');
+        $url = ($_SERVER['REQUEST_SCHEME'] ?? 'http') . '://'
+             . ($_SERVER['HTTP_HOST'] ?? 'localhost')
+             . ($_SERVER['REQUEST_URI'] ?? '/');
+        $entrada = json_encode([
+            'ts'     => date('Y-m-d H:i:s'),
+            'ip'     => $ip,
+            'url'    => $url,
+            'method' => $_SERVER['REQUEST_METHOD'] ?? 'GET',
+            'motivo' => 'pagina_nao_encontrada',
+            'ua'     => substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 300),
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        @file_put_contents($log_file, $entrada . "\n", FILE_APPEND | LOCK_EX);
+    })();
+
     require __DIR__ . '/login/painel/erro_404.php';
     exit;
 }

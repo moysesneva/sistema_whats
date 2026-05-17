@@ -44,8 +44,9 @@ $csrf_token = $_SESSION['csrf_authlog'];
 // Limpar log se solicitado
 // -----------------------------------------------------------------------
 
-$log_file     = __DIR__ . '/logs/auth_blocked.log';
-$api_log_file = __DIR__ . '/logs/api_blocked.log';
+$log_file          = __DIR__ . '/logs/auth_blocked.log';
+$api_log_file      = __DIR__ . '/logs/api_blocked.log';
+$not_found_log     = __DIR__ . '/logs/not_found.log';
 $msg_acao = '';
 $msg_acao_tipo = 'success';
 
@@ -54,7 +55,7 @@ if (
     isset($_POST['csrf_token']) && hash_equals($csrf_token, $_POST['csrf_token'])
 ) {
     $erros = 0;
-    foreach ([$log_file, $api_log_file] as $__f) {
+    foreach ([$log_file, $api_log_file, $not_found_log] as $__f) {
         if (is_file($__f)) {
             if (@file_put_contents($__f, '') === false) {
                 $erros++;
@@ -86,7 +87,7 @@ $total_1h  = 0;
 $total_24h = 0;
 $agora     = time();
 
-foreach ([$log_file, $api_log_file] as $__arquivo_log) {
+foreach ([$log_file, $api_log_file, $not_found_log] as $__arquivo_log) {
     if (!is_file($__arquivo_log)) continue;
     $linhas = file($__arquivo_log, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     if ($linhas === false) continue;
@@ -130,6 +131,7 @@ function motivo_badge(string $motivo): string
         'token_ausente'        => ['danger',   'Token ausente'],
         'token_invalido'       => ['danger',   'Token inválido'],
         'token_nao_configurado'=> ['secondary','Token não configurado'],
+        'pagina_nao_encontrada'=> ['info',     'Página não encontrada (404)'],
     ];
     if (isset($map[$motivo])) {
         [$cor, $label] = $map[$motivo];
@@ -249,6 +251,9 @@ function motivo_badge(string $motivo): string
                         <option value="token_invalido"        <?= $filtro_motivo === 'token_invalido'        ? 'selected' : '' ?>>Token inválido</option>
                         <option value="token_nao_configurado" <?= $filtro_motivo === 'token_nao_configurado' ? 'selected' : '' ?>>Token não configurado</option>
                     </optgroup>
+                    <optgroup label="Páginas inexistentes">
+                        <option value="pagina_nao_encontrada" <?= $filtro_motivo === 'pagina_nao_encontrada' ? 'selected' : '' ?>>Página não encontrada (404)</option>
+                    </optgroup>
                 </select>
             </div>
             <div class="mb-2">
@@ -326,6 +331,12 @@ function motivo_badge(string $motivo): string
                             <td><?= motivo_badge($e['motivo'] ?? '') ?></td>
                             <td class="url-cell">
                                 <?= htmlspecialchars($e['url'] ?? '-', ENT_QUOTES, 'UTF-8') ?>
+                                <?php if (!empty($e['ua'])): ?>
+                                <br><small class="text-muted" style="font-size:11px;word-break:break-all;" title="User-Agent">
+                                    <i class="feather icon-monitor" style="font-size:10px;"></i>
+                                    <?= htmlspecialchars($e['ua'], ENT_QUOTES, 'UTF-8') ?>
+                                </small>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -338,9 +349,11 @@ function motivo_badge(string $motivo): string
 
     <p class="text-muted" style="font-size:12px;">
         <i class="feather icon-info"></i>
-        Eventos de painel (sessão inválida) são registrados em <code>logs/auth_blocked.log</code>; eventos de webhook (token inválido) em <code>logs/api_blocked.log</code>.
-        Ambos são exibidos aqui em ordem mais recente primeiro. <strong>Token ausente</strong> / <strong>Token inválido</strong> indicam chamadas ao webhook sem autenticação correta;
-        <strong>Sem sessão</strong> / <strong>Sessão expirada</strong> indicam acessos ao painel sem login válido.
+        Eventos de painel (sessão inválida) são registrados em <code>logs/auth_blocked.log</code>; eventos de webhook (token inválido) em <code>logs/api_blocked.log</code>;
+        acessos a URLs inexistentes (404) em <code>logs/not_found.log</code>.
+        Todos são exibidos aqui em ordem mais recente primeiro. <strong>Token ausente</strong> / <strong>Token inválido</strong> indicam chamadas ao webhook sem autenticação correta;
+        <strong>Sem sessão</strong> / <strong>Sessão expirada</strong> indicam acessos ao painel sem login válido;
+        <strong>Página não encontrada (404)</strong> indica acesso a URL inexistente no sistema — inclui IP, URL e user agent.
     </p>
 </div>
 
