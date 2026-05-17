@@ -42,7 +42,7 @@ while($rows_usuarios = $query_busca_usuario->fetch_array()) {
 include 'menu.php';
 
 if($total_busca_usuario != 1){
-    #VaiPara('login.php');
+    VaiPara('login.php');
 }
 if($autorizado != 2){
  VaiPara('desbloquar.php');

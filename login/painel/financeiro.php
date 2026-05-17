@@ -56,11 +56,7 @@ mysqli_stmt_execute($stmt_mod);
 $query = mysqli_stmt_get_result($stmt_mod);
 $total_financeiro = mysqli_num_rows($query);
 
-if($total_financeiro == 0){
-    
-   VaiPara('sem_financas.php');
-    
-}
+// Não redireciona quando não há dados — a página exibe estado vazio
 ?>
 <?php include 'header.php'; ?>
 
@@ -160,10 +156,7 @@ mysqli_stmt_execute($stmt_financeiro);
 $query_financeiro = mysqli_stmt_get_result($stmt_financeiro);
 $total_encontrados = $query_financeiro ? mysqli_num_rows($query_financeiro) : 0;
 
-if($total_encontrados == 0){
-    
-VaiPara('sem_financas_mes.php');    
-}
+// Não redireciona quando filtro retorna zero resultados — exibe estado vazio na própria página
 
 // Query para evolução mensal (últimos 12 meses)
 $stmt_evolucao = mysqli_prepare($conn, "SELECT 

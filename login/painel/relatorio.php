@@ -138,22 +138,37 @@ $sql_agendamentos = $sql_agendamentos_base;
                                             <!-- Dashboard de Estatísticas -->
                                             <div class="stats-grid">
                                                 <?php
-                                                $stmt_total = $conn->prepare("SELECT COUNT(*) as total FROM agendamento WHERE data BETWEEN ? AND ? AND usuario_api = ?");
-                                                $stmt_total->bind_param("sss", $filtro_data_inicio, $filtro_data_fim, $usuario_api);
+                                                // Estatísticas respeitam o mesmo filtro de profissional da tabela
+                                                $stat_sql_extra = $filtro_profissional > 0 ? " AND id_profissional = ?" : "";
+
+                                                $stmt_total = $conn->prepare("SELECT COUNT(*) as total FROM agendamento WHERE data BETWEEN ? AND ? AND usuario_api = ?$stat_sql_extra");
+                                                if ($filtro_profissional > 0) {
+                                                    $stmt_total->bind_param("sssi", $filtro_data_inicio, $filtro_data_fim, $usuario_api, $filtro_profissional);
+                                                } else {
+                                                    $stmt_total->bind_param("sss", $filtro_data_inicio, $filtro_data_fim, $usuario_api);
+                                                }
                                                 $stmt_total->execute();
                                                 $total_agendamentos = $stmt_total->get_result()->fetch_assoc()['total'];
                                                 $stmt_total->close();
 
                                                 $conf_val = 1;
-                                                $stmt_confirmados = $conn->prepare("SELECT COUNT(*) as total FROM agendamento WHERE data BETWEEN ? AND ? AND confirmacao = ? AND usuario_api = ?");
-                                                $stmt_confirmados->bind_param("ssis", $filtro_data_inicio, $filtro_data_fim, $conf_val, $usuario_api);
+                                                $stmt_confirmados = $conn->prepare("SELECT COUNT(*) as total FROM agendamento WHERE data BETWEEN ? AND ? AND confirmacao = ? AND usuario_api = ?$stat_sql_extra");
+                                                if ($filtro_profissional > 0) {
+                                                    $stmt_confirmados->bind_param("ssisi", $filtro_data_inicio, $filtro_data_fim, $conf_val, $usuario_api, $filtro_profissional);
+                                                } else {
+                                                    $stmt_confirmados->bind_param("ssis", $filtro_data_inicio, $filtro_data_fim, $conf_val, $usuario_api);
+                                                }
                                                 $stmt_confirmados->execute();
                                                 $total_confirmados = $stmt_confirmados->get_result()->fetch_assoc()['total'];
                                                 $stmt_confirmados->close();
 
                                                 $pend_val = 0;
-                                                $stmt_pendentes = $conn->prepare("SELECT COUNT(*) as total FROM agendamento WHERE data BETWEEN ? AND ? AND confirmacao = ? AND usuario_api = ?");
-                                                $stmt_pendentes->bind_param("ssis", $filtro_data_inicio, $filtro_data_fim, $pend_val, $usuario_api);
+                                                $stmt_pendentes = $conn->prepare("SELECT COUNT(*) as total FROM agendamento WHERE data BETWEEN ? AND ? AND confirmacao = ? AND usuario_api = ?$stat_sql_extra");
+                                                if ($filtro_profissional > 0) {
+                                                    $stmt_pendentes->bind_param("ssisi", $filtro_data_inicio, $filtro_data_fim, $pend_val, $usuario_api, $filtro_profissional);
+                                                } else {
+                                                    $stmt_pendentes->bind_param("ssis", $filtro_data_inicio, $filtro_data_fim, $pend_val, $usuario_api);
+                                                }
                                                 $stmt_pendentes->execute();
                                                 $total_pendentes = $stmt_pendentes->get_result()->fetch_assoc()['total'];
                                                 $stmt_pendentes->close();

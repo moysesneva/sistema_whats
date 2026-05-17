@@ -155,14 +155,20 @@ include 'conn.php';
                             // Exibe os módulos
                             if ($resultado && mysqli_num_rows($resultado) > 0) {
                                 while ($modulo = mysqli_fetch_assoc($resultado)) {
-                                    // Define a cor do badge baseado no tipo
-                                    $badge_class = '';
-                                 
+                                    // Define a cor e nome do badge baseado no tipo
+                                    $tipo_val = $modulo['tipo'] ?? '';
+                                    switch ((string)$tipo_val) {
+                                        case '1': $badge_class = 'badge-primary';   $tipo_nome = 'Função';    break;
+                                        case '2': $badge_class = 'badge-success';   $tipo_nome = 'Extra';     break;
+                                        case '3': $badge_class = 'badge-warning';   $tipo_nome = 'Premium';   break;
+                                        default:  $badge_class = 'badge-secondary'; $tipo_nome = $tipo_val ?: 'Módulo'; break;
+                                    }
+
                                     echo '<div class="modulo-item p-2 bg-light mb-2 rounded">';
                                         echo '<div class="d-flex justify-content-between align-items-center">';
                                             echo '<div>';
                                                 echo '<span>' . htmlspecialchars($modulo['nome_modulo'], ENT_QUOTES, 'UTF-8') . '</span>';
-                                                echo '<br><small class="badge ' . $badge_class . '">' . $tipo_nome . '</small>';
+                                                echo '<br><small class="badge ' . $badge_class . '">' . htmlspecialchars($tipo_nome, ENT_QUOTES, 'UTF-8') . '</small>';
                                             echo '</div>';
                                             echo '<form method="post" class="d-inline">';
                                                 echo '<input type="hidden" name="remover_modulo" value="' . $modulo['id'] . '">';
@@ -249,29 +255,18 @@ include 'conn.php';
                                 while ($modulo2 = mysqli_fetch_assoc($resultado2)) {
                                     // Define a cor do badge baseado no tipo
                                     $badge_class = '';
-                                    switch($modulo2['tipo']) {
-                                        case '1':
-                                            $badge_class = 'badge-success';
-                                  
-                                            break;
-                                        case '2':
-                                            $badge_class = 'badge-info';
-                                          
-                                            break;
-                                        case '3':
-                                            $badge_class = 'badge-warning';
-                                            
-                                            break;
-                                        default:
-                                            $badge_class = 'badge-secondary';
-                                           $modulo2['tipo'];
+                                    switch((string)$modulo2['tipo']) {
+                                        case '1': $badge_class = 'badge-primary';   $tipo_nome2 = 'Função';   break;
+                                        case '2': $badge_class = 'badge-success';   $tipo_nome2 = 'Extra';    break;
+                                        case '3': $badge_class = 'badge-warning';   $tipo_nome2 = 'Premium';  break;
+                                        default:  $badge_class = 'badge-secondary'; $tipo_nome2 = $modulo2['tipo'] ?: 'Módulo'; break;
                                     }
-                                    
+
                                     echo '<div class="modulo-item p-2 bg-light mb-2 rounded">';
                                         echo '<div class="d-flex justify-content-between align-items-center">';
                                             echo '<div>';
                                                 echo '<span>' . htmlspecialchars($modulo2['nome_modulo'], ENT_QUOTES, 'UTF-8') . '</span>';
-                                                echo '<br><small class="badge ' . $badge_class . '">' . $tipo_nome . '</small>';
+                                                echo '<br><small class="badge ' . $badge_class . '">' . htmlspecialchars($tipo_nome2, ENT_QUOTES, 'UTF-8') . '</small>';
                                             echo '</div>';
                                             echo '<form method="post" class="d-inline">';
                                                 echo '<input type="hidden" name="remover_modulo" value="' . $modulo2['id'] . '">';
@@ -356,14 +351,19 @@ include 'conn.php';
                             // Exibe os módulos
                             if ($resultado3 && mysqli_num_rows($resultado3) > 0) {
                                 while ($modulo3 = mysqli_fetch_assoc($resultado3)) {
-                                    // Define a cor do badge baseado no tipo
-                                    $badge_class = '';
-                                   
+                                    // Define a cor e nome do badge baseado no tipo
+                                    switch((string)$modulo3['tipo']) {
+                                        case '1': $badge_class = 'badge-primary';   $tipo_nome3 = 'Função';   break;
+                                        case '2': $badge_class = 'badge-success';   $tipo_nome3 = 'Extra';    break;
+                                        case '3': $badge_class = 'badge-warning';   $tipo_nome3 = 'Premium';  break;
+                                        default:  $badge_class = 'badge-secondary'; $tipo_nome3 = $modulo3['tipo'] ?: 'Módulo'; break;
+                                    }
+
                                     echo '<div class="modulo-item p-2 bg-light mb-2 rounded">';
                                         echo '<div class="d-flex justify-content-between align-items-center">';
                                             echo '<div>';
                                                 echo '<span>' . htmlspecialchars($modulo3['nome_modulo'], ENT_QUOTES, 'UTF-8') . '</span>';
-                                                echo '<br><small class="badge ' . $badge_class . '">' . $tipo_nome . '</small>';
+                                                echo '<br><small class="badge ' . $badge_class . '">' . htmlspecialchars($tipo_nome3, ENT_QUOTES, 'UTF-8') . '</small>';
                                             echo '</div>';
                                             echo '<form method="post" class="d-inline">';
                                                 echo '<input type="hidden" name="remover_modulo" value="' . $modulo3['id'] . '">';

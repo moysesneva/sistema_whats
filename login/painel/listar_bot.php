@@ -83,9 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php $css_extra = '    <link rel="stylesheet" type="text/css" href="../files/assets/icon/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="../files/assets/vendor/toastr/toastr.min.css">
-    <link rel="stylesheet" type="text/css" href="../files/assets/icon/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" type="text/css" href="../files/assets/vendor/toastr/toastr.min.css">'; ?>
 <?php include 'header.php'; ?>
 
