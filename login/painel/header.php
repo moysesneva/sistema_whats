@@ -177,9 +177,12 @@ if (isset($tipo) && in_array($tipo, [1, 4])) {
     unset($_dbf_log, $_dbf_recente);
 }
 ?>
-<?php if (isset($tipo) && in_array($tipo, [1, 4])) include __DIR__ . '/disk_warning_banner.php'; ?>
 <?php
-if (isset($tipo) && in_array($tipo, [1, 4]) && empty(getenv('API_WEBHOOK_TOKEN'))):
+require_once __DIR__ . '/disk_warning_config.php';
+if (isset($tipo) && in_array($tipo, DISK_WARNING_ROLES)) include __DIR__ . '/disk_warning_banner.php';
+?>
+<?php
+if (isset($tipo) && in_array($tipo, API_TOKEN_WARNING_ROLES) && empty(getenv('API_WEBHOOK_TOKEN'))):
 ?>
 <div id="api-token-warning-banner"
      style="margin:16px 16px 0;padding:14px 18px;background:#fff3cd;border:1px solid #ffc107;border-left:5px solid #FF5500;border-radius:6px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">

@@ -4,9 +4,7 @@
 // Exibe um alerta descartável se o uso total monitorado ultrapassar o limiar.
 // -----------------------------------------------------------------------
 
-if (!defined('DISK_WARN_THRESHOLD_MB')) {
-    define('DISK_WARN_THRESHOLD_MB', 50);
-}
+require_once __DIR__ . '/disk_warning_config.php';
 
 function _disk_banner_dir_size(string $path): int
 {
