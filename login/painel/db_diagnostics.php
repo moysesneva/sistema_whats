@@ -56,7 +56,7 @@ if (empty($_SESSION['csrf_dbdiag'])) {
 $csrf_token = $_SESSION['csrf_dbdiag'];
 
 // -----------------------------------------------------------------------
-// Limpar log se solicitado
+// Limpar log de falhas de banco se solicitado
 // -----------------------------------------------------------------------
 
 $log_file  = __DIR__ . '/logs/db_failures.log';
@@ -68,8 +68,49 @@ if (
 ) {
     if (is_file($log_file)) {
         file_put_contents($log_file, '');
-        $msg_acao = 'Log limpo com sucesso.';
+        $msg_acao = 'Log de falhas de banco limpo com sucesso.';
     }
+}
+
+// -----------------------------------------------------------------------
+// Limpar log de erros PHP se solicitado
+// -----------------------------------------------------------------------
+
+$msg_acao_php = '';
+
+if (
+    !$_diag_is_dev &&
+    isset($_POST['limpar_log_php']) && $_POST['limpar_log_php'] === '1' &&
+    isset($_POST['csrf_token']) && hash_equals($csrf_token, $_POST['csrf_token'])
+) {
+    if (is_file($_diag_log_file)) {
+        $fp = fopen($_diag_log_file, 'a');
+        if ($fp !== false) {
+            if (flock($fp, LOCK_EX)) {
+                ftruncate($fp, 0);
+                flock($fp, LOCK_UN);
+            }
+            fclose($fp);
+        }
+        $msg_acao_php = 'Log de erros PHP limpo com sucesso.';
+    }
+}
+
+// -----------------------------------------------------------------------
+// Leitura das últimas linhas do log de erros PHP
+// -----------------------------------------------------------------------
+
+$_php_log_linhas   = [];
+$_php_log_existe   = !$_diag_is_dev && is_file($_diag_log_file);
+$_php_log_tam      = $_php_log_existe ? filesize($_diag_log_file) : 0;
+$_php_log_max_show = 50;
+
+if ($_php_log_existe) {
+    $todas = file($_diag_log_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($todas !== false && count($todas) > 0) {
+        $_php_log_linhas = array_slice($todas, -$_php_log_max_show);
+    }
+    unset($todas);
 }
 
 // -----------------------------------------------------------------------
@@ -171,6 +212,19 @@ function tipo_badge_class(string $tipo): string
 .log-table .msg-cell { max-width: 420px; word-break: break-word; }
 .no-failures { text-align: center; padding: 40px 20px; color: #aaa; }
 .no-failures i { font-size: 40px; color: #ccc; display: block; margin-bottom: 12px; }
+.php-error-log-pre {
+    background: #0d1117;
+    color: #e6edf3;
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 16px 20px;
+    border-radius: 0 0 10px 10px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 500px;
+    overflow-y: auto;
+}
 </style>
 
 <div class="container-fluid">
@@ -183,6 +237,14 @@ function tipo_badge_class(string $tipo): string
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="feather icon-check-circle" style="margin-right:6px;"></i>
         <?= htmlspecialchars($msg_acao, ENT_QUOTES, 'UTF-8') ?>
+        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($msg_acao_php): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="feather icon-check-circle" style="margin-right:6px;"></i>
+        <?= htmlspecialchars($msg_acao_php, ENT_QUOTES, 'UTF-8') ?>
         <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
     </div>
     <?php endif; ?>
@@ -236,15 +298,11 @@ function tipo_badge_class(string $tipo): string
                 <i class="feather icon-info" style="color:#FF5500;margin-right:6px;"></i>
                 <strong>Arquivo de log:</strong>
                 <code style="word-break:break-all;"><?= htmlspecialchars($_diag_log_file, ENT_QUOTES, 'UTF-8') ?></code>
-                <?php
-                $log_existe = is_file($_diag_log_file);
-                $log_tam    = $log_existe ? filesize($_diag_log_file) : 0;
-                ?>
                 &nbsp;
-                <?php if ($log_existe): ?>
+                <?php if ($_php_log_existe): ?>
                     <span class="badge badge-success">existe</span>
                     <span class="text-muted" style="font-size:12px;">
-                        &mdash; <?= number_format($log_tam / 1024, 1) ?> KB
+                        &mdash; <?= number_format($_php_log_tam / 1024, 1) ?> KB
                     </span>
                 <?php else: ?>
                     <span class="badge badge-secondary">arquivo ainda não criado</span>
@@ -262,6 +320,50 @@ function tipo_badge_class(string $tipo): string
             <?php endif; ?>
         </div>
     </div>
+
+    <!-- Card: Conteúdo recente do log de erros PHP -->
+    <?php if (!$_diag_is_dev && $_php_log_existe): ?>
+    <div class="card diag-card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>
+                <i class="feather icon-terminal"></i> Últimas linhas do log de erros PHP
+                <?php if (count($_php_log_linhas) > 0): ?>
+                    <small style="font-weight:400;opacity:.8;">
+                        (<?= count($_php_log_linhas) === $_php_log_max_show ? 'últimas ' . $_php_log_max_show : count($_php_log_linhas) ?> linhas)
+                    </small>
+                <?php endif; ?>
+            </span>
+            <?php if (count($_php_log_linhas) > 0): ?>
+            <form method="post" style="margin:0;" data-confirm="Limpar o log de erros PHP?">
+                <input type="hidden" name="limpar_log_php" value="1">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
+                <button type="submit" class="btn btn-sm btn-outline-light">
+                    <i class="feather icon-trash-2"></i> Limpar log
+                </button>
+            </form>
+            <?php endif; ?>
+        </div>
+        <div class="card-body p-0">
+            <?php if (!$_php_log_existe): ?>
+            <div class="no-failures">
+                <i class="feather icon-file-text"></i>
+                Arquivo de log ainda não foi criado. Nenhum erro registrado até o momento.
+            </div>
+            <?php elseif (empty($_php_log_linhas)): ?>
+            <div class="no-failures">
+                <i class="feather icon-check-circle"></i>
+                O arquivo de log existe, mas está vazio.
+            </div>
+            <?php else: ?>
+            <pre class="php-error-log-pre mb-0"><?php
+                foreach ($_php_log_linhas as $linha) {
+                    echo htmlspecialchars($linha, ENT_QUOTES, 'UTF-8') . "\n";
+                }
+            ?></pre>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- Contadores -->
     <div class="row mb-3">
