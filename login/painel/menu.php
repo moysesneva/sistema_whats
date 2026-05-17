@@ -12,24 +12,34 @@ $total = $query->num_rows;
 if($total){
 while($rows_usuarios = $query->fetch_array()) {
     $funcao = $rows_usuarios['modo_atuante'];
-}   
+}
 
-$stmt_menu = $conn->prepare("SELECT * FROM menu WHERE funcao IS NOT NULL AND funcao != '' AND FIND_IN_SET(?, funcao) > 0 ORDER BY ordem ASC");
-$stmt_menu->bind_param("s", $funcao);
-$stmt_menu->execute();
-$query_menu = $stmt_menu->get_result();
-$total_menu = $query_menu->num_rows;
-$stmt_menu->close();
+if (!empty($funcao)) {
+    // Usuário tem função definida: filtra menu pela coluna funcao
+    $stmt_menu = $conn->prepare("SELECT * FROM menu WHERE funcao IS NOT NULL AND funcao != '' AND FIND_IN_SET(?, funcao) > 0 ORDER BY ordem ASC");
+    $stmt_menu->bind_param("s", $funcao);
+    $stmt_menu->execute();
+    $query_menu = $stmt_menu->get_result();
+    $total_menu = $query_menu->num_rows;
+    $stmt_menu->close();
+} else {
+    // Sem função definida: fallback para menu por tipo de usuário
+    $stmt_menu2 = $conn->prepare("SELECT * FROM menu WHERE tipo = ? ORDER BY ordem ASC");
+    $stmt_menu2->bind_param("s", $tipo);
+    $stmt_menu2->execute();
+    $query_menu = $stmt_menu2->get_result();
+    $total_menu = $query_menu->num_rows;
+    $stmt_menu2->close();
+}
 }else{
-    
+
 $stmt_menu2 = $conn->prepare("SELECT * FROM menu WHERE tipo = ? ORDER BY ordem ASC");
 $stmt_menu2->bind_param("s", $tipo);
 $stmt_menu2->execute();
 $query_menu = $stmt_menu2->get_result();
 $total_menu = $query_menu->num_rows;
 $stmt_menu2->close();
-    
-    
+
 }
 $stmt_menu_login->close();
 $pagina_atual = basename($_SERVER['PHP_SELF']); // Ex: "agenda.php"

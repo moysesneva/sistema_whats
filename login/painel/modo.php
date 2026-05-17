@@ -185,7 +185,7 @@ if ($res_funcao_atual && $res_funcao_atual->num_rows > 0) {
 
 <!-- INFORMAÇÃO DO PLANO ATUAL -->
 <div class="alert alert-info" role="alert">
-    <i class="feather icon-info"></i> <strong>Plano Ativo:</strong> <?php echo strtoupper($plano); ?> | <strong>Usuário:</strong> <?php echo htmlspecialchars($login, ENT_QUOTES); ?>
+    <i class="feather icon-info"></i> <strong>Plano Ativo:</strong> <?php echo $plano ? strtoupper($plano) : '<span style="opacity:.6;font-style:italic;">Sem plano definido</span>'; ?> | <strong>Usuário:</strong> <?php echo htmlspecialchars($login, ENT_QUOTES); ?>
 </div>
 
 <!-- STATUS ATUAL DO ROBÔ -->
