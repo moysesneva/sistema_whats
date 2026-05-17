@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/auth_guard.php';
-session_start();
 include 'funcoes.php';
 
 if(!isset($_SESSION['login'])) {
@@ -67,16 +66,11 @@ $filtro_data_fim = isset($_GET['data_fim']) ? $_GET['data_fim'] : date('Y-m-d', 
 $filtro_profissional = isset($_GET['profissional']) ? $_GET['profissional'] : '';
 $filtro_confirmacao = isset($_GET['confirmacao']) ? $_GET['confirmacao'] : '';
 
-// Query base com prepared statements
+// Query base com prepared statements (id_profissional já filtra para este profissional)
 $sql_agendamentos = "SELECT * FROM agendamento WHERE data BETWEEN ? AND ? AND id_profissional = ?";
 $tipos_ag = "ssi";
 $params_ag = [$filtro_data_inicio, $filtro_data_fim, $id_profissional];
 
-if ($filtro_profissional) {
-    $sql_agendamentos .= " AND id_profissional = ?";
-    $tipos_ag .= "i";
-    $params_ag[] = (int)$filtro_profissional;
-}
 if ($filtro_confirmacao !== '') {
     $sql_agendamentos .= " AND confirmacao = ?";
     $tipos_ag .= "s";
@@ -229,10 +223,14 @@ $stmt_ag->close();
                                                         </thead>
                                                         <tbody>
                                                             <?php 
-                                                            // Reiniciar a query para exibir os resultados (mantendo a lógica original)
-                                                            $query_agendamentos = mysqli_query($conn, $sql_agendamentos);
-                                                            
-                                                            while($row = mysqli_fetch_array($query_agendamentos)) { 
+                                                            // Re-executa via prepared statement (não é possível usar a string com ? diretamente)
+                                                            $stmt_ag2 = $conn->prepare($sql_agendamentos);
+                                                            $stmt_ag2->bind_param($tipos_ag, ...$params_ag);
+                                                            $stmt_ag2->execute();
+                                                            $query_agendamentos = $stmt_ag2->get_result();
+                                                            $stmt_ag2->close();
+
+                                                            while($row = $query_agendamentos->fetch_array()) { 
                                                             ?>
                                                                 <tr>
                                                                     <td><strong><?= date('d/m/Y', strtotime($row['data'])) ?></strong></td>

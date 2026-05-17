@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/auth_guard.php';
-session_start();
 include 'funcoes.php';
 
 if(!isset($_SESSION['login'])) {
@@ -69,12 +68,9 @@ mysqli_stmt_execute($stmt_ag);
 $query = mysqli_stmt_get_result($stmt_ag);
 $total_financeiro = mysqli_num_rows($query);
 
-if($total_financeiro == 0){
-    
-   VaiPara('sem_financas.php');
-    
-}
+// Não redireciona — página exibe estado vazio
 ?>
+
 <?php include 'header.php'; ?>
 
 <?php
