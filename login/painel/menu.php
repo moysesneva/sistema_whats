@@ -14,6 +14,9 @@ while($rows_usuarios = $query->fetch_array()) {
     $funcao = $rows_usuarios['modo_atuante'];
 }
 
+$query_menu = null;
+$total_menu  = 0;
+
 if (!empty($funcao)) {
     // Usuário tem função definida: filtra menu pela coluna funcao
     $stmt_menu = $conn->prepare("SELECT * FROM menu WHERE funcao IS NOT NULL AND funcao != '' AND FIND_IN_SET(?, funcao) > 0 ORDER BY ordem ASC");
@@ -22,8 +25,11 @@ if (!empty($funcao)) {
     $query_menu = $stmt_menu->get_result();
     $total_menu = $query_menu->num_rows;
     $stmt_menu->close();
-} else {
-    // Sem função definida: fallback para menu por tipo de usuário
+}
+
+// Se funcao está vazio OU não bateu com nenhum item de menu,
+// cai para menu por tipo de usuário (evita sidebar vazia por dado incorreto no campo modo_atuante)
+if ($total_menu == 0) {
     $stmt_menu2 = $conn->prepare("SELECT * FROM menu WHERE tipo = ? ORDER BY ordem ASC");
     $stmt_menu2->bind_param("s", $tipo);
     $stmt_menu2->execute();
