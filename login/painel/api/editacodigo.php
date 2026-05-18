@@ -383,25 +383,33 @@ function gerarQrcode($servidor, $porta, $user_id, $token) {
     // ⚠️ Desativa verificação SSL (se usar IP com certificado autoassinado)
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 20);
 
     $response = curl_exec($ch);
 
     if (curl_errno($ch)) {
         $error = curl_error($ch);
+        $errno = curl_errno($ch);
         curl_close($ch);
-        return "❌ Erro no cURL: $error";
+        return "Erro cURL ($errno): $error";
     }
 
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+
+    if (empty($response)) {
+        return "Erro: VPS não retornou resposta (HTTP $http_code). Verifique se o serviço está rodando.";
+    }
 
     $data = json_decode($response, true);
 
     if (isset($data['qrcode'])) {
-        return $data['qrcode']; // ✅ Retorna só o QR direto
+        return $data['qrcode'];
     } elseif (isset($data['error'])) {
-        return "❌ Erro API: " . $data['error'];
+        return "Erro API: " . $data['error'];
     } else {
-        return "❌ Resposta inválida ou vazia: " . json_encode($data);
+        return "Erro: resposta inesperada do VPS: " . substr(strip_tags($response), 0, 200);
     }
 }
 

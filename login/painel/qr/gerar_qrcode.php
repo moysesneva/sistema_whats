@@ -100,12 +100,13 @@ exit();
 #$qrcode = print_r($qrcode);
 #$qrcode = $qrcode['qrcode'];
 #salvaTXT($qrcode);
- if (strpos($qrcode, 'Erro') !== false){
-
- $imagemErro = 'qr/nqr.png'; // Substitua pelo caminho da imagem de erro
-        echo '<img src="' . $imagemErro . '" class="img-fluid mx-auto d-block" alt="Erro ao gerar QR Code">';
-
-}else{
+if (stripos($qrcode, 'Erro') !== false || stripos($qrcode, 'Error') !== false) {
+    echo '<div class="alert alert-danger text-left mt-3" style="font-size:13px;">'
+        . '<strong><i class="feather icon-alert-triangle"></i> Falha ao gerar QR Code:</strong><br>'
+        . nl2br(htmlspecialchars($qrcode, ENT_QUOTES, 'UTF-8'))
+        . '<br><br><small>Verifique se o serviço no VPS está online e se o IP/porta em Configurações está correto.</small>'
+        . '</div>';
+} else {
     $nome_arquivo = $user_id . "-temp.png";
 
 $caminho_temporario = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $nome_arquivo;

@@ -285,7 +285,7 @@ if($situacao != 'ativado'){
                                         <i class="feather icon-smartphone m-r-5"></i>
                                         Conectar Dispositivo
                                     </h6>
-                                    <button type="button" class="btn btn-light btn-lg shadow-sm" id="btnGerarQRCode" 
+                                    <button type="button" class="btn btn-light btn-lg shadow-sm" id="btnGerarQRCode"
                                         style="border-radius: 10px; font-weight: 600; transition: all 0.3s ease;">
                                         <i class="feather icon-refresh-cw m-r-10"></i>
                                         Gerar QR Code
@@ -293,6 +293,19 @@ if($situacao != 'ativado'){
                                     <p class="text-white-50 mt-2 mb-0 small">
                                         Escaneie o código para conectar
                                     </p>
+                                </div>
+                                <!-- Resultado inline (sem modal) -->
+                                <div id="qrCodeInline" style="display:none; margin-top:20px; padding:20px; background:#fff; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,.12);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                        <strong style="color:#001f3f; font-size:1rem;">QR Code da Instância</strong>
+                                        <button type="button" id="btnFecharQR" style="background:none;border:none;font-size:1.3rem;color:#999;cursor:pointer;line-height:1;">&times;</button>
+                                    </div>
+                                    <div id="qrCodeContainer" class="text-center"></div>
+                                    <div class="text-center mt-3">
+                                        <button type="button" class="btn btn-primary btn-sm" id="btnRefreshQR">
+                                            <i class="feather icon-refresh-cw"></i> Atualizar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <?php } ?>
@@ -369,74 +382,47 @@ if($situacao != 'ativado'){
 
 
 
-    <!-- Modal para exibir o QR Code -->
-    <div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-md" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="qrCodeModalLabel">QR Code da Instância</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center">
-                    <div id="qrCodeContainer">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="sr-only">Carregando...</span>
-                        </div>
-                        <p class="mt-2">Carregando QR Code...</p>
-                    </div>
-                    <div class="mt-3">
-                        <p class="text-muted">Escaneie este QR Code com seu WhatsApp para conectar sua instância</p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-primary" id="btnRefreshQR">
-                        <i class="feather icon-refresh-cw"></i> Atualizar QR Code
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 <?php
 ob_start();
 ?>
 <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 (function () {
-    var usuarioApi = <?= json_encode($usuario_api ?? '') ?>;
-    var endpointQr = 'qr/gerar_qrcode.php?usuario=' + encodeURIComponent(usuarioApi);
+    var usuarioApi  = <?= json_encode($usuario_api ?? '') ?>;
+    var endpointQr  = 'qr/gerar_qrcode.php?usuario=' + encodeURIComponent(usuarioApi);
+    var painelInline = document.getElementById('qrCodeInline');
+    var container    = document.getElementById('qrCodeContainer');
+
+    function mostrarPainel() {
+        if (painelInline) painelInline.style.display = 'block';
+    }
+    function ocultarPainel() {
+        if (painelInline) painelInline.style.display = 'none';
+    }
 
     function carregarQr() {
-        var container = document.getElementById('qrCodeContainer');
         if (!container) return;
+        mostrarPainel();
         container.innerHTML =
             '<div class="text-center p-3">' +
             '<div class="spinner-border text-primary" role="status"><span class="sr-only">Carregando...</span></div>' +
-            '<p class="mt-2 text-muted">Gerando QR Code...</p></div>';
+            '<p class="mt-2 text-muted">Gerando QR Code... aguarde até 20s</p></div>';
 
         fetch(endpointQr, { credentials: 'same-origin' })
             .then(function (r) { return r.text(); })
             .then(function (html) { container.innerHTML = html; })
             .catch(function () {
                 container.innerHTML =
-                    '<p class="text-danger text-center mt-3">Erro ao conectar com o servidor. Verifique se o VPS está online.</p>';
+                    '<p class="text-danger text-center mt-3"><i class="feather icon-alert-triangle"></i> Erro ao conectar com o servidor. Verifique se o VPS está online.</p>';
             });
     }
 
     var btnGerar   = document.getElementById('btnGerarQRCode');
     var btnRefresh = document.getElementById('btnRefreshQR');
+    var btnFechar  = document.getElementById('btnFecharQR');
 
-    if (btnGerar) {
-        btnGerar.addEventListener('click', function () {
-            $('#qrCodeModal').modal('show');
-            carregarQr();
-        });
-    }
-    if (btnRefresh) {
-        btnRefresh.addEventListener('click', carregarQr);
-    }
+    if (btnGerar)   btnGerar.addEventListener('click', carregarQr);
+    if (btnRefresh) btnRefresh.addEventListener('click', carregarQr);
+    if (btnFechar)  btnFechar.addEventListener('click', ocultarPainel);
 }());
 </script>
 <?php

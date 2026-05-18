@@ -76,7 +76,15 @@
                             <li class="user-profile header-notification">
                                 <div class="dropdown-primary dropdown">
                                     <div class="dropdown-toggle" data-toggle="dropdown">
-                                        <img src="<?=$img_perfil;?>" class="img-radius" alt="User-Profile-Image">
+                                        <?php if (!empty($img_perfil)): ?>
+                                        <img src="<?= htmlspecialchars($img_perfil, ENT_QUOTES, 'UTF-8') ?>"
+                                             class="img-radius"
+                                             alt="User-Profile-Image"
+                                             onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';">
+                                        <span class="img-radius" style="display:none;width:40px;height:40px;background:#FF5500;color:#fff;font-weight:700;font-size:16px;align-items:center;justify-content:center;border-radius:50%;"><?= strtoupper(mb_substr($nome ?? 'A', 0, 1, 'UTF-8')); ?></span>
+                                        <?php else: ?>
+                                        <span class="img-radius" style="display:inline-flex;width:40px;height:40px;background:#FF5500;color:#fff;font-weight:700;font-size:16px;align-items:center;justify-content:center;border-radius:50%;"><?= strtoupper(mb_substr($nome ?? 'A', 0, 1, 'UTF-8')); ?></span>
+                                        <?php endif; ?>
                                         <span><?=$nome?></span>
                                         <i class="feather icon-chevron-down"></i>
                                     </div>
