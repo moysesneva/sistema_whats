@@ -11,20 +11,22 @@ if($fator == 'editapy'){
 /**
  * Função para abrir a instância (modo padrão)
  */
-function abrir_instancia($user_id,$servidor,$porta,$token) {
-    $url = "{$servidor}:{$porta}/";
+function abrir_instancia($user_id, $servidor, $porta, $token) {
+    $url = "https://{$servidor}:{$porta}/";
     $payload = [
         "action"  => "AbrirInstancia",
         "usuario" => $user_id,
-        "token"   => $token
-     
+        "token"   => $token,
     ];
 
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json", "Accept: application/json"]);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 
     $response = curl_exec($ch);
     if (curl_errno($ch)) {
@@ -39,20 +41,22 @@ function abrir_instancia($user_id,$servidor,$porta,$token) {
 /**
  * Função para abrir a instância em modo terminal (headless)
  */
-function abrir_instancia_terminal($user_id, $servidor,$porta,$token)  {
-    global $servidor, $porta, $token;
-    $url = "{$servidor}:{$porta}/";
+function abrir_instancia_terminal($user_id, $servidor, $porta, $token) {
+    $url = "https://{$servidor}:{$porta}/";
     $payload = [
         "action"  => "AbrirInstanciaTerminal",
         "usuario" => $user_id,
-        "token"   => $token
+        "token"   => $token,
     ];
 
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json", "Accept: application/json"]);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 
     $response = curl_exec($ch);
     if (curl_errno($ch)) {
@@ -67,20 +71,22 @@ function abrir_instancia_terminal($user_id, $servidor,$porta,$token)  {
 /**
  * Função para fechar a instância
  */
-function fechar_instancia($user_id,$servidor,$porta,$token) {
-    global $servidor, $porta, $token;
-    $url = "{$servidor}:{$porta}/";
+function fechar_instancia($user_id, $servidor, $porta, $token) {
+    $url = "https://{$servidor}:{$porta}/";
     $payload = [
         "action"  => "FecharInstancia",
         "usuario" => $user_id,
-        "token"   => $token
+        "token"   => $token,
     ];
 
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json", "Accept: application/json"]);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 
     $response = curl_exec($ch);
     if (curl_errno($ch)) {
@@ -94,21 +100,23 @@ function fechar_instancia($user_id,$servidor,$porta,$token) {
 
 
 #(driver, user_id, servidor, token=None)
-function puxar_img($user_id,$servidor,$pagina_recebe,$porta,$token)  {
-    global $servidor, $porta, $token;
-    $url = "{$servidor}:{$porta}/";
+function puxar_img($user_id, $servidor, $pagina_recebe, $porta, $token) {
+    $url = "https://{$servidor}:{$porta}/";
     $payload = [
-        "action"  => "PuxaImg",
-        "usuario" => $user_id,
-        "token"   => $token,
-        "pagina_recebe"   => $pagina_recebe
+        "action"        => "PuxaImg",
+        "usuario"       => $user_id,
+        "token"         => $token,
+        "pagina_recebe" => $pagina_recebe,
     ];
 
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json", "Accept: application/json"]);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 
     $response = curl_exec($ch);
     if (curl_errno($ch)) {
@@ -122,44 +130,35 @@ function puxar_img($user_id,$servidor,$pagina_recebe,$porta,$token)  {
 ?>
 
 <?php
-function atualizarClassesGlobais($servidor,$porta, $user_id,$token) {
-    // Dados da requisição em formato JSON
+function atualizarClassesGlobais($servidor, $porta, $user_id, $token) {
     $data = array(
         "action"  => "AtualizarClasses",
-        "usuario" => "todos", // Para atualizar todos os usuários ativos
-         "usuario" => $user_id,
-        "token"   => $token
-
-
+        "usuario" => $user_id,
+        "token"   => $token,
     );
 
-    //$payload = json_encode($data);
-     $url = "{$servidor}:{$porta}/";
-    // Inicializa a sessão cURL com a URL do seu servidor
-     $payload = json_encode($data);
-    
-    // Inicializa a sessão cURL com a URL do seu servidor
+    $url     = "https://{$servidor}:{$porta}/";
+    $payload = json_encode($data);
+
     $ch = curl_init($url);
-    
-    // Configurações da requisição
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
         'Content-Type: application/json',
-        'Content-Length: ' . strlen($payload)
+        'Accept: application/json',
+        'Content-Length: ' . strlen($payload),
     ));
-    
-    // Executa a requisição
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+
     $response = curl_exec($ch);
-    
-    // Verifica se houve algum erro
     if (curl_errno($ch)) {
         $error_msg = curl_error($ch);
         curl_close($ch);
         return "Erro ao atualizar classes: " . $error_msg;
     }
-    
     curl_close($ch);
     return $response;
 }
@@ -171,41 +170,49 @@ function atualizarClassesGlobais($servidor,$porta, $user_id,$token) {
  //* Função para requisitar o QR Code de uma instância pelo bot.py via cURL.
 
 function gerarQrcode($servidor, $porta, $user_id, $token) {
-    // Define a carga útil com a ação, usuário e token
     $payload = [
         "action"  => "GerarQrcode",
         "usuario" => $user_id,
         "token"   => $token
     ];
- $url = "{$servidor}:{$porta}/";
+    $url = "https://{$servidor}:{$porta}/";
 
-    // Inicializa a sessão cURL
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        "Content-Type: application/json"
+        "Content-Type: application/json",
+        "Accept: application/json",
     ]);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 
-    // Executa a requisição
     $response = curl_exec($ch);
-    $error = curl_error($ch);
+    if (curl_errno($ch)) {
+        $error = curl_error($ch);
+        curl_close($ch);
+        return "Erro cURL: " . $error;
+    }
     curl_close($ch);
 
-    // Retorna a resposta ou o erro, se houver
-    if ($error) {
-        return "Erro cURL: " . $error;
+    $data = json_decode($response, true);
+    if (isset($data['qrcode'])) {
+        return $data['qrcode'];
+    } elseif (isset($data['status']) && in_array(strtolower((string)$data['status']), ['connected', 'open'])) {
+        return 'Já conectado';
+    } elseif (isset($data['error'])) {
+        return "Erro API: " . $data['error'];
     } else {
-        return $response;
+        return "Erro resposta: " . substr((string)$response, 0, 200);
     }
 }
 ?>
 
 <?php
 
-function enviarMensagem($servidor,$porta , $user_id, $token, $telefone, $msg, $id_msg) {
-    // Monta o payload conforme esperado pelo bot.py
+function enviarMensagem($servidor, $porta, $user_id, $token, $telefone, $msg, $id_msg) {
     $payload = [
         'action'  => 'EnviarMsg',
         'usuario' => $user_id,
@@ -213,31 +220,28 @@ function enviarMensagem($servidor,$porta , $user_id, $token, $telefone, $msg, $i
         'message' => [
             'telefone' => $telefone,
             'msg'      => $msg,
-            'id_msg'   => $id_msg
-        ]
+            'id_msg'   => $id_msg,
+        ],
     ];
-     $url = "{$servidor}:{$porta}/";
+    $url = "https://{$servidor}:{$porta}/";
 
-    // Inicializa a sessão cURL
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json'
-    ]);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Accept: application/json']);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    
-    // Executa a requisição e captura a resposta
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+
     $response = curl_exec($ch);
     $error    = curl_error($ch);
     curl_close($ch);
-    
-    // Retorna a resposta ou uma mensagem de erro
+
     if ($error) {
         return "Curl Error: " . $error;
-    } else {
-        return $response;
     }
+    return $response;
 }
 /*
 // Exemplo de uso:
@@ -256,10 +260,7 @@ echo "Resposta do bot: " . $resultado;
 
 
 function enviarMensagemMidia($servidor, $porta, $user_id, $token, $telefone, $media_url, $tipo, $msg, $id_msg) {
-    // Monta a URL usando as variáveis $servidor e $porta
-    $url = "{$servidor}:{$porta}/";
-
-    // Monta o payload conforme esperado pelo bot.py
+    $url = "https://{$servidor}:{$porta}/";
     $payload = [
         'action'  => 'EnviarMsgMidia',
         'usuario' => $user_id,
@@ -269,30 +270,27 @@ function enviarMensagemMidia($servidor, $porta, $user_id, $token, $telefone, $me
             'url'      => $media_url,
             'tipo'     => $tipo,
             'msg'      => $msg,
-            'id_msg'   => $id_msg
-        ]
+            'id_msg'   => $id_msg,
+        ],
     ];
 
-    // Inicializa e configura a sessão cURL
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json'
-    ]);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Accept: application/json']);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 
-    // Executa a requisição e obtém a resposta
     $response = curl_exec($ch);
-    $error = curl_error($ch);
+    $error    = curl_error($ch);
     curl_close($ch);
 
-    // Retorna a resposta ou a mensagem de erro
     if ($error) {
         return "Curl Error: " . $error;
-    } else {
-        return $response;
     }
+    return $response;
 }
 
 
@@ -304,40 +302,36 @@ function enviarMensagemMidia($servidor, $porta, $user_id, $token, $telefone, $me
 
 <?php
 
-function EscreverEnquete($servidor,$porta , $user_id, $token, $telefone, $enquete, $id_msg) {
-    // Monta o payload conforme esperado pelo bot.py
+function EscreverEnquete($servidor, $porta, $user_id, $token, $telefone, $enquete, $id_msg) {
+    $url = "https://{$servidor}:{$porta}/";
     $payload = [
         'action'  => 'EscreverEnquete',
         'usuario' => $user_id,
         'token'   => $token,
         'message' => [
             'telefone' => $telefone,
-            'enquete'      => $enquete,
-            'id_msg'   => $id_msg
-        ]
+            'enquete'  => $enquete,
+            'id_msg'   => $id_msg,
+        ],
     ];
-     $url = "{$servidor}:{$porta}/";
 
-    // Inicializa a sessão cURL
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json'
-    ]);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Accept: application/json']);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    
-    // Executa a requisição e captura a resposta
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+
     $response = curl_exec($ch);
     $error    = curl_error($ch);
     curl_close($ch);
-    
-    // Retorna a resposta ou uma mensagem de erro
+
     if ($error) {
         return "Curl Error: " . $error;
-    } else {
-        return $response;
     }
+    return $response;
 }
 /*
 // Exemplo de uso:

@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/auth_guard.php';
-include 'conn.php';
-include 'funcoes.php';
-include 'estilo.php';
+include_once 'conn.php';
+include_once 'funcoes.php';
+include_once 'estilo.php';
 
 $stmt_busca_usuario = $conn->prepare("SELECT * FROM login WHERE login = ?");
 $stmt_busca_usuario->bind_param("s", $login);
@@ -32,7 +32,7 @@ $query_config = mysqli_query($conn, $sql_config);
 $total_config = mysqli_num_rows($query_config);
 
 while($rows_config = mysqli_fetch_array($query_config)) {
-    $servidor  = Priletra($rows_config['ip_vps']);
+    $servidor  = preg_replace('#^https?://#i', '', trim($rows_config['ip_vps']));
     $porta  = $rows_config['porta'];
     $nova_porta  = $rows_config['nova_porta'];
     $token  = $rows_config['chave'];
@@ -400,6 +400,46 @@ if($situacao != 'ativado'){
         </div>
     </div>
 
-    <!-- Scripts -->
+<?php
+ob_start();
+?>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+(function () {
+    var usuarioApi = <?= json_encode($usuario_api ?? '') ?>;
+    var endpointQr = 'qr/gerar_qrcode.php?usuario=' + encodeURIComponent(usuarioApi);
 
-<?php include 'footer.php'; ?>
+    function carregarQr() {
+        var container = document.getElementById('qrCodeContainer');
+        if (!container) return;
+        container.innerHTML =
+            '<div class="text-center p-3">' +
+            '<div class="spinner-border text-primary" role="status"><span class="sr-only">Carregando...</span></div>' +
+            '<p class="mt-2 text-muted">Gerando QR Code...</p></div>';
+
+        fetch(endpointQr, { credentials: 'same-origin' })
+            .then(function (r) { return r.text(); })
+            .then(function (html) { container.innerHTML = html; })
+            .catch(function () {
+                container.innerHTML =
+                    '<p class="text-danger text-center mt-3">Erro ao conectar com o servidor. Verifique se o VPS está online.</p>';
+            });
+    }
+
+    var btnGerar   = document.getElementById('btnGerarQRCode');
+    var btnRefresh = document.getElementById('btnRefreshQR');
+
+    if (btnGerar) {
+        btnGerar.addEventListener('click', function () {
+            $('#qrCodeModal').modal('show');
+            carregarQr();
+        });
+    }
+    if (btnRefresh) {
+        btnRefresh.addEventListener('click', carregarQr);
+    }
+}());
+</script>
+<?php
+$js_extra = ob_get_clean();
+include 'footer.php';
+?>

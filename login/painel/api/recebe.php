@@ -185,7 +185,7 @@ $query_config = mysqli_query($conn, $sql_config);
 $total_config = mysqli_num_rows($query_config);
 
 while($rows_config = mysqli_fetch_array($query_config)) {
-    $servidor  = $rows_config['ip_vps'];
+    $servidor  = preg_replace('#^https?://#i', '', trim($rows_config['ip_vps']));
     $porta  = $rows_config['porta'];
     $nova_porta  = $rows_config['nova_porta'];
     $token_bd  = $rows_config['chave'];
@@ -200,7 +200,7 @@ while($rows_config = mysqli_fetch_array($query_config)) {
     
 ///buscar configuracoes de login
 #$sql_busca_usuario = "SELECT * FROM login WHERE usuario_api = '$usuario_api'AND (tipo = '2' OR tipo = '1')";
-$stmt_bu = $conn->prepare("SELECT * FROM login WHERE usuario_api = ? AND tipo = '2'");
+$stmt_bu = $conn->prepare("SELECT * FROM login WHERE usuario_api = ? AND (tipo = '2' OR tipo = '1')");
 $stmt_bu->bind_param("s", $usuario_api);
 $stmt_bu->execute();
 $query_busca_usuario = $stmt_bu->get_result();
@@ -247,10 +247,15 @@ $total_busca_clientes = $query_busca_clientes->num_rows;
 $stmt_buc->close();
 
 while($rows_clientes = $query_busca_clientes->fetch_array()) {
-    $id_agendamento = $rows_clientes['id_agendamento'];
-    $situacao = $rows_clientes['situacao'];
-    $nome = $rows_clientes['nome'];
-    $time_reposta = $rows_clientes['time_resposta'];
+    $id_agendamento   = $rows_clientes['id_agendamento'];
+    $situacao         = $rows_clientes['situacao'];
+    $nome             = $rows_clientes['nome'];
+    $time_reposta     = $rows_clientes['time_resposta'];
+    $modo_atendimento = $rows_clientes['modo_atendimento'] ?? 'ia';
+    $depto_atual      = $rows_clientes['depto_atual'] ?? null;
+    $atendente_atual  = $rows_clientes['atendente_atual'] ?? null;
+    $cliente_id_db    = $rows_clientes['id'] ?? null;
+    $depto_pendente   = isset($rows_clientes['depto_pendente']) ? (int)$rows_clientes['depto_pendente'] : 0;
 }
 
 }///if (isset($_POST['codigo'])){
@@ -286,7 +291,7 @@ if (isset($data['de']) && strtolower(trim($data['de'])) == 'sim') {
 
 
 // Verifica se o tempo já expirou
-if (strtotime($time_reposta) >= strtotime($dataHoraAtual)) {
+if (strtotime($time_resposta) >= strtotime($dataHoraAtual)) {
     // Tempo expirou, encerra o processo
     exit();
 }
@@ -321,19 +326,9 @@ if ((isset($data['telefone']) && $data['texto'] )) {
 
     
     
-$input = file_get_contents('php://input');
-$data = json_decode($input, true);
-
-$telefone      = trim($data['telefone'] ?? 'desconhecido');
-$telefone = preg_replace('/\D/', '', $telefone);
-
-$msg           = trim($data['texto'] ?? '');
-$id            = trim($data['id_mensagem'] ?? '');
-$de            = trim($data['de'] ?? '');
-$usuario_api   = trim($data['usuario'] ?? '');
-$timestamp     = trim($data['timestamp'] ?? time());
-$user_id   = $usuario_api ;
-$token   = 'NOME_Victor_Teste_CPF_010101';
+// Variáveis já lidas no início do script — não reler php://input (stream consumido)
+$user_id = $usuario_api;
+$token   = $token_bd;
 
 
 
@@ -562,6 +557,235 @@ if (isset($msg)) {
 
 
 
+
+// ── HORÁRIO DE ATENDIMENTO HUMANO ───────────────────────────────────────────
+// Seg–Sex 08h–18h | Sáb 08h–12h | Dom/Fer: fechado
+// Fora do horário: bloqueia transferência para fila e avisa o cliente.
+function dentro_horario_atendimento(): bool {
+    $agora = new DateTime('now', new DateTimeZone('America/Campo_Grande'));
+    $dow   = (int)$agora->format('N'); // 1=seg … 7=dom
+    $hora  = (int)$agora->format('H') * 60 + (int)$agora->format('i'); // minutos desde meia-noite
+    if ($dow >= 1 && $dow <= 5) return ($hora >= 480 && $hora < 1080); // 08:00–18:00
+    if ($dow === 6)             return ($hora >= 480 && $hora < 720);  // 08:00–12:00
+    return false; // domingo
+}
+
+// ── ROTEAMENTO MULTI-ATENDENTE ──────────────────────────────────────────────
+// Se o cliente existe e está em modo humano ou fila: salva mensagem e para aqui.
+if ($total_busca_clientes == 1 && isset($modo_atendimento) && $modo_atendimento !== 'ia') {
+    $hora_hist = date('Y-m-d H:i:s');
+    $stmt_ihm = $conn->prepare("INSERT INTO ia_historico (ia_msg, usuario_msg, telefone_usuario, usuario_api, login_historico, data_hora, tipo_remetente) VALUES ('', ?, ?, ?, '', ?, 'cliente')");
+    $stmt_ihm->bind_param("ssss", $msg, $telefone, $usuario_api, $hora_hist);
+    $stmt_ihm->execute();
+    $stmt_ihm->close();
+    exit; // Não aciona a IA — aguarda atendente humano
+}
+
+// Verifica se alguma palavra-chave de departamento foi acionada.
+// Aplica tanto para clientes existentes em modo IA ($total_busca_clientes == 1)
+// quanto para novos contatos ($total_busca_clientes == 0), de forma que "falar com atendente"
+// funcione mesmo na primeira mensagem.
+$transferido_depto = false;
+$eh_modo_ia = ($total_busca_clientes == 1 && isset($modo_atendimento) && $modo_atendimento === 'ia');
+$eh_novo    = ($total_busca_clientes == 0);
+$fora_do_horario = !dentro_horario_atendimento();
+
+if (($eh_modo_ia || $eh_novo) && !empty($msg)) {
+    $stmt_deps = $conn->prepare("SELECT id, nome, palavras_chave, msg_transferencia, notificar_atendentes, proximo_atendente FROM departamentos WHERE usuario_api=? AND ativo=1 AND palavras_chave IS NOT NULL AND palavras_chave != ''");
+    $stmt_deps->bind_param("s", $usuario_api);
+    $stmt_deps->execute();
+    $res_deps = $stmt_deps->get_result();
+    $stmt_deps->close();
+    while ($dep_row = $res_deps->fetch_assoc()) {
+        $palavras  = array_map('trim', explode(',', strtolower($dep_row['palavras_chave'])));
+        $msg_lower = mb_strtolower($msg, 'UTF-8');
+        foreach ($palavras as $pal) {
+            if ($pal !== '' && mb_strpos($msg_lower, $pal) !== false) {
+                // ── Fora do horário: bot conduz em modo SPIN, não transfere agora ────────
+                if ($fora_do_horario) {
+                    $hora_spin = date('Y-m-d H:i:s');
+                    if ($eh_novo) {
+                        // Cria cliente em modo IA com depto_pendente registrado
+                        $id_agenda_spin = strtoupper(dechex(mt_rand(0, 0xFFFF)));
+                        $stmt_ins_spin = $conn->prepare("INSERT INTO clientes (telefone, usuario_api, time_atendimento, id_agendamento, modo_atendimento, depto_pendente) VALUES (?, ?, ?, ?, 'ia', ?)");
+                        $stmt_ins_spin->bind_param("ssssi", $telefone, $usuario_api, $hora_spin, $id_agenda_spin, $dep_row['id']);
+                        $stmt_ins_spin->execute();
+                        $stmt_ins_spin->close();
+                        $cliente_id_db = (int)$conn->insert_id;
+                    } elseif (!empty($cliente_id_db)) {
+                        // Cliente já existente: registra depto_pendente e mantém modo IA
+                        $stmt_upd_spin = $conn->prepare("UPDATE clientes SET depto_pendente=?, modo_atendimento='ia', time_atendimento=? WHERE id=? AND usuario_api=?");
+                        $stmt_upd_spin->bind_param("isis", $dep_row['id'], $hora_spin, $cliente_id_db, $usuario_api);
+                        $stmt_upd_spin->execute();
+                        $stmt_upd_spin->close();
+                    }
+                    // Salva mensagem do cliente no histórico
+                    $stmt_ihm_spin = $conn->prepare("INSERT INTO ia_historico (usuario_msg, telefone_usuario, usuario_api, data_hora, tipo_remetente) VALUES (?, ?, ?, ?, 'cliente')");
+                    $stmt_ihm_spin->bind_param("ssss", $msg, $telefone, $usuario_api, $hora_spin);
+                    $stmt_ihm_spin->execute();
+                    $stmt_ihm_spin->close();
+                    // Mensagem de introdução: informa fora do horário e apresenta a Ana
+                    $msg_intro_spin = "Olá! 😊 Nosso horário de atendimento humano é *segunda a sexta das 8h às 18h* e *sábados das 8h às 12h*.\n\nMas não se preocupe — *Ana*, nossa assistente virtual, está disponível agora e pode te ajudar com todas as informações sobre matrícula! Para começar, pode me contar um pouco sobre você?";
+                    $stmt_ev_spin = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+                    $stmt_ev_spin->bind_param("sss", $telefone, $msg_intro_spin, $usuario_api);
+                    $stmt_ev_spin->execute();
+                    $id_spin = (int)$conn->insert_id;
+                    $stmt_ev_spin->close();
+                    enviarMensagem($servidor, $porta, $usuario_api, $token_bd, $telefone, $msg_intro_spin, $id_spin);
+                    // Salva mensagem de introdução no histórico como mensagem da IA
+                    $stmt_ih_spin = $conn->prepare("INSERT INTO ia_historico (ia_msg, telefone_usuario, usuario_api, data_hora, tipo_remetente) VALUES (?, ?, ?, ?, 'ia')");
+                    $stmt_ih_spin->bind_param("ssss", $msg_intro_spin, $telefone, $usuario_api, $hora_spin);
+                    $stmt_ih_spin->execute();
+                    $stmt_ih_spin->close();
+                    exit; // Aguarda próxima mensagem do lead para iniciar SPIN
+                }
+                // ─────────────────────────────────────────────────────────────────────
+                $hora_hist = date('Y-m-d H:i:s');
+                if ($eh_novo) {
+                    // Novo contato: criar registro de cliente já em modo 'fila'
+                    $id_agenda = strtoupper(dechex(mt_rand(0, 0xFFFF)));
+                    $stmt_ins_c = $conn->prepare("INSERT INTO clientes (telefone, usuario_api, time_atendimento, id_agendamento, modo_atendimento, depto_atual) VALUES (?, ?, ?, ?, 'fila', ?)");
+                    $stmt_ins_c->bind_param("ssssi", $telefone, $usuario_api, $hora_hist, $id_agenda, $dep_row['id']);
+                    $stmt_ins_c->execute();
+                    $novo_cli_id = mysqli_insert_id($conn);
+                    $stmt_ins_c->close();
+                    // Salva a mensagem do cliente no histórico
+                    $stmt_ihm_n = $conn->prepare("INSERT INTO ia_historico (ia_msg, usuario_msg, telefone_usuario, usuario_api, login_historico, data_hora, tipo_remetente) VALUES ('', ?, ?, ?, '', ?, 'cliente')");
+                    $stmt_ihm_n->bind_param("ssss", $msg, $telefone, $usuario_api, $hora_hist);
+                    $stmt_ihm_n->execute();
+                    $stmt_ihm_n->close();
+                } elseif (!empty($cliente_id_db)) {
+                    // Cliente existente em modo IA: persiste a mensagem que acionou a transferência
+                    $hora_trig = date('Y-m-d H:i:s');
+                    $stmt_ihm_e = $conn->prepare("INSERT INTO ia_historico (ia_msg, usuario_msg, telefone_usuario, usuario_api, login_historico, data_hora, tipo_remetente) VALUES ('', ?, ?, ?, '', ?, 'cliente')");
+                    $stmt_ihm_e->bind_param("ssss", $msg, $telefone, $usuario_api, $hora_trig);
+                    $stmt_ihm_e->execute();
+                    $stmt_ihm_e->close();
+                    // Muda para fila
+                    $stmt_upd_t = $conn->prepare("UPDATE clientes SET modo_atendimento='fila', depto_atual=?, atendente_atual=NULL WHERE id=? AND usuario_api=?");
+                    $stmt_upd_t->bind_param("iis", $dep_row['id'], $cliente_id_db, $usuario_api);
+                    $stmt_upd_t->execute();
+                    $stmt_upd_t->close();
+                }
+                // ── Round-robin: pré-atribui lead ao próximo atendente (se dept configurado) ──
+                if (!empty($dep_row['proximo_atendente'])) {
+                    $_rr_atual  = $dep_row['proximo_atendente'];
+                    $_rr_cli_id = $eh_novo ? (int)($novo_cli_id ?? 0) : (int)($cliente_id_db ?? 0);
+                    if ($_rr_cli_id > 0) {
+                        // Descobre o próximo da fila (outro atendente vinculado ao depto)
+                        $_s_rr = $conn->prepare("SELECT login_atendente FROM atendentes_depto WHERE depto_id=? AND usuario_api=? AND login_atendente != ? ORDER BY id ASC LIMIT 1");
+                        if ($_s_rr) {
+                            $_s_rr->bind_param("iss", $dep_row['id'], $usuario_api, $_rr_atual);
+                            $_s_rr->execute();
+                            $_r_rr = $_s_rr->get_result();
+                            $_s_rr->close();
+                            $_rr_proximo = ($_r_rr && $_r_rr->num_rows > 0) ? $_r_rr->fetch_assoc()['login_atendente'] : $_rr_atual;
+                        } else {
+                            $_rr_proximo = $_rr_atual;
+                        }
+                        // Pré-atribui o cliente ao atendente atual
+                        $conn->query("UPDATE clientes SET atendente_atual='" . $conn->real_escape_string($_rr_atual) . "' WHERE id=" . $_rr_cli_id . " AND usuario_api='" . $conn->real_escape_string($usuario_api) . "'");
+                        // Avança o ponteiro (otimista: só atualiza se ainda for o mesmo valor)
+                        $conn->query("UPDATE departamentos SET proximo_atendente='" . $conn->real_escape_string($_rr_proximo) . "' WHERE id=" . (int)$dep_row['id'] . " AND proximo_atendente='" . $conn->real_escape_string($_rr_atual) . "'");
+                        unset($_s_rr, $_r_rr, $_rr_proximo, $_rr_cli_id, $_rr_atual);
+                    }
+                }
+                // Envia mensagem de transferência para o cliente
+                // Fora do horário: substitui pela mensagem de aviso (lead entra na fila silenciosamente)
+                if ($fora_do_horario) {
+                    $msg_transf = "Recebemos sua mensagem! 😊 Nosso horário de atendimento humano é *segunda a sexta das 8h às 18h* e *sábados das 8h às 12h*.\n\nSua conversa foi registrada e nosso atendente entrará em contato assim que retornar. 🕐";
+                    $_notif_notificar_override = 0; // Suprime notificação WhatsApp ao atendente
+                } else {
+                    $msg_transf = !empty($dep_row['msg_transferencia'])
+                        ? $dep_row['msg_transferencia']
+                        : 'Aguarde, vou transferir você para um de nossos atendentes. Em breve retornaremos! 😊';
+                }
+                $stmt_ev_t = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+                $stmt_ev_t->bind_param("sss", $telefone, $msg_transf, $usuario_api);
+                $stmt_ev_t->execute();
+                $id_msg_t = mysqli_insert_id($conn);
+                $stmt_ev_t->close();
+                enviarMensagem($servidor, $porta, $user_id, $token_bd, $telefone, $msg_transf, $id_msg_t);
+                // Salva resposta de transferência no histórico
+                $hora_hist2 = date('Y-m-d H:i:s');
+                $stmt_ih_t = $conn->prepare("INSERT INTO ia_historico (ia_msg, usuario_msg, telefone_usuario, usuario_api, login_historico, data_hora, tipo_remetente) VALUES (?, '', ?, ?, '', ?, 'ia')");
+                $stmt_ih_t->bind_param("ssss", $msg_transf, $telefone, $usuario_api, $hora_hist2);
+                $stmt_ih_t->execute();
+                $stmt_ih_t->close();
+                // Captura dados do depto para notificar atendentes logo após os loops
+                $_notif_depto_id     = (int)$dep_row['id'];
+                $_notif_depto_nome   = $dep_row['nome'];
+                // Fora do horário: suprime notificação WhatsApp (atendente vê na fila ao abrir o painel)
+                $_notif_notificar    = isset($_notif_notificar_override) ? 0 : (int)($dep_row['notificar_atendentes'] ?? 1);
+                $_notif_cli_tel      = $telefone;
+                $_notif_cli_nome     = isset($nome) && $nome !== '' ? $nome : $telefone;
+                $transferido_depto = true;
+                break 2; // Sai dos dois loops
+            }
+        }
+    }
+}
+// ── Notificação WhatsApp para atendentes do setor (tarefa #141) ──────────────
+if ($transferido_depto && !empty($_notif_depto_id) && !empty($_notif_notificar)) {
+    // Busca atendentes do setor que têm telefone_notif cadastrado e estão ativos
+    $_stmt_nat = $conn->prepare(
+        "SELECT l.telefone_notif FROM atendentes_depto ad
+         INNER JOIN login l ON l.login = ad.login_atendente
+         WHERE ad.depto_id=? AND ad.usuario_api=?
+           AND l.autorizado='2'
+           AND l.telefone_notif IS NOT NULL
+           AND l.telefone_notif != ''
+         LIMIT 20"
+    );
+    if ($_stmt_nat) {
+        $_stmt_nat->bind_param("is", $_notif_depto_id, $usuario_api);
+        $_stmt_nat->execute();
+        $_res_nat = $_stmt_nat->get_result();
+        $_stmt_nat->close();
+        $_msg_notif = "🔔 *Nova conversa na fila!*\n*Setor:* {$_notif_depto_nome}\n*Cliente:* {$_notif_cli_nome}\n\nAcesse o painel para atender.";
+        while ($_row_nat = $_res_nat->fetch_assoc()) {
+            $_tel_at = preg_replace('/\D/', '', $_row_nat['telefone_notif']);
+            if (strlen($_tel_at) >= 10) {
+                $_stmt_env = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
+                if ($_stmt_env) {
+                    $_stmt_env->bind_param("sss", $_tel_at, $_msg_notif, $usuario_api);
+                    $_stmt_env->execute();
+                    $_id_env = mysqli_insert_id($conn);
+                    $_stmt_env->close();
+                    enviarMensagem($servidor, $porta, $user_id, $token_bd, $_tel_at, $_msg_notif, $_id_env);
+                }
+            }
+        }
+        unset($_res_nat, $_msg_notif, $_row_nat, $_tel_at, $_stmt_env, $_id_env);
+    }
+    unset($_stmt_nat, $_notif_depto_id, $_notif_depto_nome, $_notif_notificar, $_notif_cli_tel, $_notif_cli_nome);
+}
+if ($transferido_depto) exit;
+// ── FIM ROTEAMENTO MULTI-ATENDENTE ──────────────────────────────────────────
+
+// ── SPIN Selling: augmenta o prompt quando lead está em modo fora do horário ─
+// Carrega depto_pendente se necessário
+if (!isset($depto_pendente)) $depto_pendente = 0;
+
+if ($depto_pendente > 0 && $fora_do_horario) {
+    // Busca nome do departamento para contextualizar o SPIN
+    $stmt_dn = $conn->prepare("SELECT nome FROM departamentos WHERE id=? AND usuario_api=?");
+    $stmt_dn->bind_param("is", $depto_pendente, $usuario_api);
+    $stmt_dn->execute();
+    $res_dn = $stmt_dn->get_result();
+    $stmt_dn->close();
+    $nome_depto_spin = ($res_dn && $res_dn->num_rows > 0) ? $res_dn->fetch_assoc()['nome'] : '';
+
+    $IA_prompt .= "\n\n--- INSTRUÇÃO ESPECIAL (MODO FORA DO HORÁRIO) ---\n"
+        . "Você está atendendo um lead que solicitou falar com a equipe humana do setor \"{$nome_depto_spin}\", mas estamos fora do horário de atendimento presencial.\n"
+        . "Seu papel agora é conduzir a conversa usando a metodologia SPIN Selling: faça perguntas curtas e objetivas que explorem a Situação, o Problema, a Implicação e a Necessidade de solução do lead, com o objetivo de guiá-lo em direção à matrícula.\n"
+        . "Regras:\n"
+        . "- Use APENAS informações contidas no seu prompt — não invente dados, valores ou datas.\n"
+        . "- Faça no máximo uma pergunta por mensagem.\n"
+        . "- Seja calorosa, objetiva e focada em entender as necessidades do lead.\n"
+        . "- Quando a conversa chegar a uma conclusão natural (lead demonstrou interesse claro, pediu para ser contactado, ou encerrou a conversa), inclua EXATAMENTE este marcador no FINAL da sua última mensagem (sem exibi-lo ao usuário, sem espaço antes ou depois): [##TRANSFERIR##]\n"
+        . "--- FIM DA INSTRUÇÃO ESPECIAL ---";
+}
 
 if($creditos > 0){
 ////se o cliente nao existe

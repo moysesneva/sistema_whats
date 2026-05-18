@@ -112,22 +112,47 @@
                             <ul class="pcoded-item pcoded-left-item">
 
 <?php
+// ── Badge de fila para atendentes (tipo=3 ou tipo=2 MultiAtendente) ──────────
+$_fila_badge = 0;
+if (isset($tipo, $usuario_api, $login) && ($tipo === '3' || ($tipo === '2' && ($udata['modo_atuante'] ?? '') === 'MultiAtendente'))) {
+    // Departamentos do atendente
+    $_at_deptos = [];
+    $_sfd = $conn->prepare("SELECT depto_id FROM atendentes_depto WHERE login_atendente=? AND usuario_api=? LIMIT 20");
+    if ($_sfd) {
+        $_sfd->bind_param("ss", $login, $usuario_api);
+        $_sfd->execute();
+        $_rfd = $_sfd->get_result();
+        $_sfd->close();
+        while ($_rd = $_rfd->fetch_assoc()) $_at_deptos[] = (int)$_rd['depto_id'];
+    }
+    if (!empty($_at_deptos)) {
+        $_in = implode(',', $_at_deptos);
+        $_rq = $conn->query("SELECT COUNT(*) AS n FROM clientes WHERE usuario_api='" . $conn->real_escape_string($usuario_api) . "' AND modo_atendimento='fila' AND depto_atual IN ($_in)");
+        if ($_rq) $_fila_badge = (int)$_rq->fetch_assoc()['n'];
+    }
+    unset($_at_deptos, $_sfd, $_rfd, $_rd, $_in, $_rq);
+}
+
 if ($total_menu > 0) {
     while ($row_menu = mysqli_fetch_array($query_menu)) {
-        $id             = $row_menu['id'];
-        $menu_nome      = $row_menu['menu'];
+        $id               = $row_menu['id'];
+        $menu_nome        = $row_menu['menu'];
         $menu_pagina_menu = $row_menu['menu_pagina'];
-        $icone_menu     = $row_menu['icone_menu'];
+        $icone_menu       = $row_menu['icone_menu'];
 
-        if ($id == $pagina_nome_recebe) {
-            echo '<li class="pcoded-hasmenu active">';
-        } else {
-            echo '<li class="pcoded-hasmenu">';
+        $badge_html = '';
+        if ($menu_pagina_menu === 'atendentes.php' && $_fila_badge > 0) {
+            $badge_html = ' <span id="menu-fila-badge" style="background:#FF5500;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;vertical-align:middle;min-width:18px;display:inline-block;text-align:center;">' . $_fila_badge . '</span>';
+        } elseif ($menu_pagina_menu === 'atendentes.php') {
+            // Badge vazio mas presente no DOM para update via JS
+            $badge_html = ' <span id="menu-fila-badge" style="display:none;background:#FF5500;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;vertical-align:middle;min-width:18px;text-align:center;"></span>';
         }
+
+        echo ($id == $pagina_nome_recebe) ? '<li class="pcoded-hasmenu active">' : '<li class="pcoded-hasmenu">';
         echo '
             <a href="' . $menu_pagina_menu . '?pagina_nome=' . $id . '">
                 <span class="pcoded-micon"><i class="' . $icone_menu . '"></i></span>
-                <span class="pcoded-mtext">' . $menu_nome . '</span>
+                <span class="pcoded-mtext">' . $menu_nome . $badge_html . '</span>
             </a>
         </li>';
     }
@@ -202,4 +227,83 @@ if (isset($tipo) && in_array($tipo, API_TOKEN_WARNING_ROLES) && empty(getenv('AP
             aria-label="Fechar aviso">&times;</button>
 </div>
 <script src="../files/assets/js/api-token-warning.js"></script>
+<?php endif; ?>
+<?php
+// Badge global de fila: polling JS para atendentes em qualquer página do painel
+$_is_atendente_badge = isset($tipo) && ($tipo === '3' || ($tipo === '2' && ($udata['modo_atuante'] ?? '') === 'MultiAtendente'));
+$_pagina_atual_badge = basename($_SERVER['PHP_SELF'] ?? '');
+// Só injeta se for atendente e NÃO estiver em atendentes.php (que tem seu próprio polling)
+if ($_is_atendente_badge && $_pagina_atual_badge !== 'atendentes.php'):
+?>
+<script>
+(function() {
+    'use strict';
+    var _filaGlobal = <?= (int)$_fila_badge ?>;  // valor inicial do servidor
+    var API_CONTAGEM = '../api/atendente_acao.php?acao=contagem_fila';
+
+    function tocarAlertaGlobal() {
+        try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            [0, 0.18, 0.36].forEach(function(t) {
+                var osc = ctx.createOscillator();
+                var gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = 880;
+                gain.gain.setValueAtTime(0.35, ctx.currentTime + t);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.25);
+                osc.start(ctx.currentTime + t);
+                osc.stop(ctx.currentTime + t + 0.25);
+            });
+        } catch(e) {}
+    }
+
+    function mostrarToastGlobal(n) {
+        var toast = document.getElementById('toast-fila-global');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast-fila-global';
+            toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#001f3f;color:#fff;padding:14px 20px;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.25);font-size:14px;z-index:9999;display:flex;align-items:center;gap:10px;cursor:pointer;max-width:320px;';
+            toast.onclick = function() { window.location.href = 'atendentes.php'; };
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = '<span style="font-size:22px;color:#FF5500;">🔔</span><span><strong>' + n + ' conversa' + (n > 1 ? 's' : '') + ' na fila</strong><br><small style="opacity:.8;">Clique para atender</small></span>';
+        toast.style.opacity = '1';
+        toast.style.display = 'flex';
+        clearTimeout(toast._t);
+        toast._t = setTimeout(function() { toast.style.opacity = '0'; setTimeout(function(){ toast.style.display='none'; }, 400); }, 6000);
+    }
+
+    function atualizarBadgeGlobal(n) {
+        var badge = document.getElementById('menu-fila-badge');
+        if (badge) {
+            if (n > 0) { badge.textContent = n; badge.style.display = 'inline-block'; }
+            else { badge.style.display = 'none'; }
+        }
+        var base = document.title.replace(/^\[\d+\]\s*/, '');
+        document.title = n > 0 ? '[' + n + '] ' + base : base;
+    }
+
+    function pollFila() {
+        fetch(API_CONTAGEM, { credentials: 'same-origin' })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (!data.ok) return;
+                var n = parseInt(data.fila) || 0;
+                if (_filaGlobal >= 0 && n > _filaGlobal) {
+                    tocarAlertaGlobal();
+                    mostrarToastGlobal(n);
+                }
+                _filaGlobal = n;
+                atualizarBadgeGlobal(n);
+            })
+            .catch(function() {});
+    }
+
+    // Primeira chamada após 3s (aguarda DOM pronto), depois a cada 10s
+    setTimeout(pollFila, 3000);
+    setInterval(pollFila, 10000);
+})();
+</script>
 <?php endif; ?>

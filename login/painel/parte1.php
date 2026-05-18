@@ -541,10 +541,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             { id: 'feature_description',   label: 'Descrição do Benefício' }
         ];
 
-        // Destaca campos importantes que já estão em branco ao carregar a página
-        camposImportantes.forEach(function(campo) {
-            var el = document.getElementById(campo.id);
-            if (!el || el.value.trim() !== '') return;
+        // Aplica o destaque de campo vazio (badge amarelo) a um elemento
+        function destacarCampoVazio(el) {
+            if (el.classList.contains('campo-vazio-destaque')) return;
             el.classList.add('campo-vazio-destaque');
             var badge = document.createElement('span');
             badge.className = 'campo-vazio-badge';
@@ -557,6 +556,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     el.removeEventListener('input', limpar);
                 }
             });
+        }
+
+        // Destaca campos importantes que já estão em branco ao carregar a página
+        camposImportantes.forEach(function(campo) {
+            var el = document.getElementById(campo.id);
+            if (!el || el.value.trim() !== '') return;
+            destacarCampoVazio(el);
         });
 
         document.querySelector('form').addEventListener('submit', function(e) {
@@ -577,16 +583,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 );
                 if (!confirmou) {
                     e.preventDefault();
-                    // Destaca os campos vazios
+                    // Destaca os campos vazios com o mesmo estilo do carregamento da página
                     camposImportantes.forEach(function(campo) {
                         var el = document.getElementById(campo.id);
                         if (el && el.value.trim() === '') {
-                            el.classList.add('is-invalid');
-                            el.addEventListener('input', function() {
-                                if (el.value.trim() !== '') {
-                                    el.classList.remove('is-invalid');
-                                }
-                            }, { once: true });
+                            destacarCampoVazio(el);
                         }
                     });
                     // Rola até o primeiro campo vazio

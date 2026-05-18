@@ -199,11 +199,109 @@ PREPARE __stmt FROM @__sql;
 EXECUTE __stmt;
 DEALLOCATE PREPARE __stmt;
 
+-- Cooldown de limpeza manual configurável pelo painel (idempotente via prepared statement)
+SET @__col_exists = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'config'
+      AND COLUMN_NAME  = 'cleanup_cooldown_seconds'
+);
+SET @__sql = IF(@__col_exists = 0,
+    'ALTER TABLE `config` ADD COLUMN `cleanup_cooldown_seconds` INT(11) NOT NULL DEFAULT 30',
+    'SELECT 1'
+);
+PREPARE __stmt FROM @__sql;
+EXECUTE __stmt;
+DEALLOCATE PREPARE __stmt;
+
+-- Thresholds de limpeza de log configuráveis pelo painel (idempotente)
+SET @__col_log_age = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'config'
+      AND COLUMN_NAME  = 'cleanup_log_max_age_days'
+);
+SET @__sql_log_age = IF(@__col_log_age = 0,
+    'ALTER TABLE `config` ADD COLUMN `cleanup_log_max_age_days` INT(11) DEFAULT NULL',
+    'SELECT 1'
+);
+PREPARE __stmt FROM @__sql_log_age;
+EXECUTE __stmt;
+DEALLOCATE PREPARE __stmt;
+
+SET @__col_log_mb = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'config'
+      AND COLUMN_NAME  = 'cleanup_log_max_size_mb'
+);
+SET @__sql_log_mb = IF(@__col_log_mb = 0,
+    'ALTER TABLE `config` ADD COLUMN `cleanup_log_max_size_mb` INT(11) DEFAULT NULL',
+    'SELECT 1'
+);
+PREPARE __stmt FROM @__sql_log_mb;
+EXECUTE __stmt;
+DEALLOCATE PREPARE __stmt;
+
+SET @__col_upl = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'config'
+      AND COLUMN_NAME  = 'cleanup_uploads_max_age_sec'
+);
+SET @__sql_upl = IF(@__col_upl = 0,
+    'ALTER TABLE `config` ADD COLUMN `cleanup_uploads_max_age_sec` INT(11) DEFAULT NULL',
+    'SELECT 1'
+);
+PREPARE __stmt FROM @__sql_upl;
+EXECUTE __stmt;
+DEALLOCATE PREPARE __stmt;
+
+SET @__col_dbf_mb = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'config'
+      AND COLUMN_NAME  = 'cleanup_db_failures_max_mb'
+);
+SET @__sql_dbf_mb = IF(@__col_dbf_mb = 0,
+    'ALTER TABLE `config` ADD COLUMN `cleanup_db_failures_max_mb` INT(11) DEFAULT NULL',
+    'SELECT 1'
+);
+PREPARE __stmt FROM @__sql_dbf_mb;
+EXECUTE __stmt;
+DEALLOCATE PREPARE __stmt;
+
+SET @__col_dbf_days = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'config'
+      AND COLUMN_NAME  = 'cleanup_db_failures_max_days'
+);
+SET @__sql_dbf_days = IF(@__col_dbf_days = 0,
+    'ALTER TABLE `config` ADD COLUMN `cleanup_db_failures_max_days` INT(11) DEFAULT NULL',
+    'SELECT 1'
+);
+PREPARE __stmt FROM @__sql_dbf_days;
+EXECUTE __stmt;
+DEALLOCATE PREPARE __stmt;
+
 -- Diagnóstico do banco de dados no menu admin (idempotente via INSERT IGNORE)
 INSERT IGNORE INTO `menu` (`id`, `menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`) VALUES (50, 'Diagnóstico BD', 'db_diagnostics.php', '1', '8.5', 'fa fa-database', 'adm,adm_install');
 
 -- Log de acessos bloqueados no menu admin (idempotente via INSERT IGNORE)
 INSERT IGNORE INTO `menu` (`id`, `menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`) VALUES (51, 'Acessos Bloqueados', 'auth_log.php', '1', '8.6', 'feather icon-shield', 'adm,adm_install');
+
+-- Diagnóstico unificado do sistema no menu admin — tipo 1 (adm) e tipo 4 (adm_install)
+-- Idempotente: só insere se a página ainda não existir no menu para aquele tipo.
+INSERT INTO `menu` (`menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`)
+SELECT 'Diagnóstico do Sistema', 'diagnostico_sistema.php', '1', '8.4', 'feather icon-activity', 'adm,adm_install'
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `menu` WHERE `menu_pagina` = 'diagnostico_sistema.php' AND `tipo` = '1');
+
+INSERT INTO `menu` (`menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`)
+SELECT 'Diagnóstico do Sistema', 'diagnostico_sistema.php', '4', '8.4', 'feather icon-activity', 'adm_install'
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `menu` WHERE `menu_pagina` = 'diagnostico_sistema.php' AND `tipo` = '4');
 
 -- Logo MoysesNet (Modelo 1 Hexágono) — persiste após reinício
 UPDATE `estilo` SET
@@ -212,3 +310,166 @@ UPDATE `estilo` SET
   `icon_site`    = 'img/logo-moysesnet-icon.svg',
   `titulo`       = 'MoysesNet'
 WHERE id = (SELECT MIN(id) FROM (SELECT id FROM estilo) t);
+
+-- ============================================================
+-- BLOCO MULTI ATENDENTE: tabelas e colunas do sistema de
+-- departamentos e atendimento humano (idempotente)
+-- ============================================================
+
+-- Tabela de departamentos
+CREATE TABLE IF NOT EXISTS `departamentos` (
+  `id`               int(11)      NOT NULL AUTO_INCREMENT,
+  `usuario_api`      varchar(255) NOT NULL DEFAULT '',
+  `nome`             varchar(255) NOT NULL DEFAULT '',
+  `descricao`        text         DEFAULT NULL,
+  `palavras_chave`   text         DEFAULT NULL COMMENT 'CSV de palavras que acionam transferência',
+  `msg_transferencia` text        DEFAULT NULL COMMENT 'Msg enviada ao cliente ao ser transferido',
+  `ativo`            tinyint(1)   NOT NULL DEFAULT 1,
+  `criado_em`        timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabela de vínculo atendente ↔ departamento
+CREATE TABLE IF NOT EXISTS `atendentes_depto` (
+  `id`               int(11)      NOT NULL AUTO_INCREMENT,
+  `login_atendente`  varchar(255) NOT NULL DEFAULT '',
+  `depto_id`         int(11)      NOT NULL,
+  `usuario_api`      varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_atendente_depto` (`login_atendente`, `depto_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Coluna modo_atendimento na tabela clientes (ia | fila | humano)
+SET @__col_modo = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'clientes'
+      AND COLUMN_NAME  = 'modo_atendimento'
+);
+SET @__sql_modo = IF(@__col_modo = 0,
+    "ALTER TABLE `clientes` ADD COLUMN `modo_atendimento` VARCHAR(20) NOT NULL DEFAULT 'ia'",
+    'SELECT 1'
+);
+PREPARE __stmt FROM @__sql_modo;
+EXECUTE __stmt;
+DEALLOCATE PREPARE __stmt;
+
+-- Coluna depto_atual na tabela clientes
+SET @__col_depto = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'clientes'
+      AND COLUMN_NAME  = 'depto_atual'
+);
+SET @__sql_depto = IF(@__col_depto = 0,
+    'ALTER TABLE `clientes` ADD COLUMN `depto_atual` INT(11) DEFAULT NULL',
+    'SELECT 1'
+);
+PREPARE __stmt FROM @__sql_depto;
+EXECUTE __stmt;
+DEALLOCATE PREPARE __stmt;
+
+-- Coluna atendente_atual na tabela clientes
+SET @__col_atend = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'clientes'
+      AND COLUMN_NAME  = 'atendente_atual'
+);
+SET @__sql_atend = IF(@__col_atend = 0,
+    'ALTER TABLE `clientes` ADD COLUMN `atendente_atual` VARCHAR(255) DEFAULT NULL',
+    'SELECT 1'
+);
+PREPARE __stmt FROM @__sql_atend;
+EXECUTE __stmt;
+DEALLOCATE PREPARE __stmt;
+
+-- Coluna login_historico em ia_historico (já existe na schema, garante)
+SET @__col_lh = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'ia_historico'
+      AND COLUMN_NAME  = 'login_historico'
+);
+SET @__sql_lh = IF(@__col_lh = 0,
+    "ALTER TABLE `ia_historico` ADD COLUMN `login_historico` VARCHAR(255) NOT NULL DEFAULT ''",
+    'SELECT 1'
+);
+PREPARE __stmt FROM @__sql_lh;
+EXECUTE __stmt;
+DEALLOCATE PREPARE __stmt;
+
+-- Coluna tipo_remetente em ia_historico (ia | atendente | cliente)
+SET @__col_tr = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'ia_historico'
+      AND COLUMN_NAME  = 'tipo_remetente'
+);
+SET @__sql_tr = IF(@__col_tr = 0,
+    "ALTER TABLE `ia_historico` ADD COLUMN `tipo_remetente` VARCHAR(20) NOT NULL DEFAULT 'ia'",
+    'SELECT 1'
+);
+PREPARE __stmt FROM @__sql_tr;
+EXECUTE __stmt;
+DEALLOCATE PREPARE __stmt;
+
+-- Itens de menu: painel do atendente (modo_atuante = MultiAtendente, tipo=2)
+INSERT INTO `menu` (`menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`)
+SELECT 'Minhas Conversas', 'atendentes.php', '2', '1.0', 'feather icon-message-circle', 'MultiAtendente'
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `menu` WHERE `menu_pagina` = 'atendentes.php' AND `tipo` = '2');
+
+INSERT INTO `menu` (`menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`)
+SELECT 'Sair', 'sair.php', '2', '9.0', 'feather icon-log-out', 'MultiAtendente'
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `menu` WHERE `menu_pagina` = 'sair.php' AND `funcao` LIKE '%MultiAtendente%');
+
+-- Itens de menu: atendentes humanos tipo=3 (menu baseado em tipo, sem modo_atuante)
+INSERT INTO `menu` (`menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`)
+SELECT 'Minhas Conversas', 'atendentes.php', '3', '1.0', 'feather icon-message-circle', 'MultiAtendente'
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `menu` WHERE `menu_pagina` = 'atendentes.php' AND `tipo` = '3');
+
+INSERT INTO `menu` (`menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`)
+SELECT 'Sair', 'sair.php', '3', '9.0', 'feather icon-log-out', 'adm,Agendamento,Atendimento,prof,MultiAtendente'
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `menu` WHERE `menu_pagina` = 'sair.php' AND `tipo` = '3');
+
+-- Itens de menu: admin (Departamentos, Fila Geral)
+INSERT INTO `menu` (`menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`)
+SELECT 'Departamentos', 'departamentos.php', '1', '9.1', 'feather icon-users', 'adm'
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `menu` WHERE `menu_pagina` = 'departamentos.php' AND `tipo` = '1');
+
+INSERT INTO `menu` (`menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`)
+SELECT 'Fila de Atendimento', 'fila_geral.php', '1', '9.2', 'feather icon-list', 'adm'
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `menu` WHERE `menu_pagina` = 'fila_geral.php' AND `tipo` = '1');
+
+INSERT INTO `menu` (`menu`, `menu_pagina`, `tipo`, `ordem`, `icone_menu`, `funcao`)
+SELECT 'Gerenciar Equipe', 'gerenciar_equipe.php', '1', '9.3', 'feather icon-users', 'adm'
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `menu` WHERE `menu_pagina` = 'gerenciar_equipe.php' AND `tipo` = '1');
+
+-- ── Tarefa #141: Notificação WhatsApp para atendentes ───────────────────────
+-- Número WhatsApp do atendente para receber alertas de nova conversa na fila
+ALTER TABLE `login` ADD COLUMN IF NOT EXISTS `telefone_notif` VARCHAR(20) NOT NULL DEFAULT '' AFTER `email`;
+
+-- Flag por departamento: 1 = notifica atendentes ao entrar na fila, 0 = silencioso
+ALTER TABLE `departamentos` ADD COLUMN IF NOT EXISTS `notificar_atendentes` TINYINT(1) NOT NULL DEFAULT 1;
+
+-- Login do próximo atendente a receber lead no round-robin comercial (NULL = sem revezamento)
+ALTER TABLE `departamentos` ADD COLUMN IF NOT EXISTS `proximo_atendente` VARCHAR(100) DEFAULT NULL;
+
+-- ── Coluna depto_pendente: departamento solicitado fora do horário (SPIN) ─────
+ALTER TABLE `clientes` ADD COLUMN IF NOT EXISTS `depto_pendente` INT(11) DEFAULT NULL;
+
+-- ── Tarefa Dashboard Leads + Horário de Atendimento ──────────────────────────
+-- Item de menu para o Dashboard de Leads (admin)
+INSERT IGNORE INTO menu (menu, menu_pagina, tipo, ordem, icone_menu, funcao)
+VALUES ('Dashboard Leads', 'dashboard_leads.php', '1', '9.25', 'fa fa-bar-chart', 'adm');
+
+-- ============================================================
+-- FIM DO BLOCO MULTI ATENDENTE
+-- ============================================================

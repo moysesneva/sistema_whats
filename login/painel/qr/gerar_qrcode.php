@@ -24,7 +24,7 @@ $query_config = mysqli_query($conn, $sql_config);
 $total_config = mysqli_num_rows($query_config);
 
 while($rows_config = mysqli_fetch_array($query_config)) {
-    $servidor  = Priletra($rows_config['ip_vps']);
+    $servidor  = preg_replace('#^https?://#i', '', trim($rows_config['ip_vps']));
     $porta  = $rows_config['porta'];
     $nova_porta  = $rows_config['nova_porta'];
     $token  = $rows_config['chave'];
@@ -63,6 +63,13 @@ function salvaTXT($string, $nomeArquivo = 'saida.txt') {
 
 
 $qrcode = gerarQrcode($servidor, $porta, $user_id, $token);
+
+// Se instância não existe, cria automaticamente e tenta gerar QR novamente
+if (stripos((string)$qrcode, 'não encontrada') !== false || stripos((string)$qrcode, 'not found') !== false) {
+    abrir_instancia_terminal($user_id, $servidor, $porta, $token);
+    sleep(3);
+    $qrcode = gerarQrcode($servidor, $porta, $user_id, $token);
+}
 #echo $qrcode ;
 #exit();
 #trim($qrcode);

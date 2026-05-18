@@ -1,0 +1,80 @@
+Aqui está a estrutura do **Departamento Financeiro** isolada e detalhada de ponta a ponta. Esta configuração foi desenhada especificamente para funcionar de forma autônoma (via conexões de API nas pontas), utilizando apenas os seus três pilares de infraestrutura: **Central moysesnet.com** (WhatsApp), **CRM cnabox.com.br** e suas **Planilhas Excel** (incluindo o processamento de Extratos Bancários brutos).
+# 💰 Estrutura Completa: Departamento Financeiro Inteligente
+O núcleo financeiro opera com **3 Agentes Especialistas** focados em precisão de dados, conformidade e redução de inadimplência, coordenados por um **Supervisor Financeiro**.
+```
+                       [ Upload de Extratos (OFX/CSV/PDF) ]
+                       [ Demandas de Clientes (moysesnet) ]
+                                       │
+                                       ▼
+                             ┌───────────────────┐
+                             │SUPERVISOR FINANC. │ (Orquestrador)
+                             └─────────┬─────────┘
+                                       │
+          ┌────────────────────────────┼────────────────────────────┐
+          ▼                            ▼                            ▼
+┌───────────────────┐        ┌───────────────────┐        ┌───────────────────┐
+│ AGENTE AUDITOR    │        │ AGENTE CONCILIADOR│        │  AGENTE COBRADOR  │
+│    DE EXTRATOS    │        │  (Baixas/Suporte) │        │  (Régua/Acordos)  │
+└───────────────────┘        └───────────────────┘        └───────────────────┘
+          │                            │                            │
+          └────────────────────────────┼────────────────────────────┘
+                                       ▼
+                             ┌───────────────────┐
+                             │  AGENTE ANALISTA  │ (DRE e Auditoria)
+                             └───────────────────┘
+
+```
+## 🤖 Definição e Papéis dos Agentes Financeiros
+### 1. Supervisor Financeiro (O Orquestrador)
+ * **Função:** Atuar como a triagem de back-office do financeiro. Ele lê os inputs (arquivos de extrato inseridos no sistema, comprovantes enviados por clientes ou solicitações de segunda via) e direciona para o agente especialista.
+ * **Diretriz Operacional:** Nunca interage com o cliente final. Sua função é puramente garantir que o fluxo de dados chegue ao agente correto sem duplicação de tarefas.
+### 2. Agente Auditor de Extratos (Entradas e Saídas Bancárias)
+ * **Função:** Processar o extrato bancário bruto (OFX, CSV ou PDF) das contas PJ da escola (locais e Wise), funcionando como os "olhos" financeiros do enxame.
+ * **Comportamento com o Excel:**
+   * **Tratamento de Saídas:** Identifica automaticamente os débitos automáticos e tarifas (ex: Energisa, Sanesul, taxas bancárias, repasses de franquia CNA) e faz o lançamento direto nas linhas de despesas da sua planilha de Fluxo de Caixa.
+   * **Tratamento de Entradas:** Limpa e estrutura os dados de créditos recebidos (Data, Valor exato, Nome/CNPJ do pagador e ID da transação) e repassa essa lista limpa para o *Agente Conciliador*.
+### 3. Agente Conciliador (Baixas, Validação e Emissão)
+ * **Função:** Liquidar as contas a receber e atender demandas transacionais dos clientes na central.
+ * **Comportamento com o Excel e CNA Box:** Recebe as entradas validadas pelo *Auditor de Extratos* (ou lê via OCR uma imagem de comprovante que o cliente enviou voluntariamente no WhatsApp). Ele busca a parcela correspondente na planilha de "Mensalidades a Receber":
+   * Encontrando o par exato, altera o status para "Pago" no Excel.
+   * Acessa o CRM CNA Box e atualiza o histórico financeiro do aluno.
+ * **Comportamento com o moysesnet.com:** Envia uma mensagem automática na central confirmando o recebimento: *"Obrigado! Confirmamos o recebimento da sua mensalidade referente ao mês X."* Caso o cliente peça uma 2ª via de boleto ou chave Pix, este agente gera o código baseado nos dados do Excel e envia no chat.
+### 4. Agente Cobrador (Gestão de Inadimplência e Acordos)
+ * **Função:** Rodar a régua de cobrança ativa e negociar valores em atraso de forma estritamente profissional e humanizada.
+ * **Comportamento com o Excel:** Diariamente, varre as planilhas de controle buscando parcelas vencidas. Consulta a aba "Parâmetros de Renegociação" para saber exatamente quais são os limites permitidos de desconto de juros e parcelamento (ex: máximo de 3x no cartão ou isenção de multa para pagamento em 24h).
+ * **Comportamento com o CNA Box:** Checa se o aluno está ativo ou trancado para ajustar o tom da mensagem.
+ * **Comportamento com o moysesnet.com:** Dispara as réguas correspondentes:
+   * *Atraso Leve (1 a 7 dias):* Lembrete cordial com o código Copia e Cola do Pix.
+   * *Atraso Médio (15 dias):* Notificação de pendência oferecendo facilitação de pagamento.
+   * *Negociação:* Se o cliente responder tentando negociar, o agente usa os limites da planilha para formular propostas direto no WhatsApp e fechar o acordo.
+### 5. Agente Analista Financeiro (Auditoria e DRE)
+ * **Função:** Agente analítico de fechamento (não interage com clientes). Ele consolida e audita a saúde do caixa.
+ * **Comportamento com o Excel:** Atualiza diariamente o Demonstrativo de Resultado (DRE) e calcula os indicadores macro: faturamento bruto, inadimplência real por unidade (Vivendas vs. Itanhangá) e ticket médio.
+ * **Ação de Auditoria:** Cruza o número de contratos ativos listados no CNA Box com os recebimentos efetivos no Excel para apontar discrepâncias (ex: alunos frequentando aulas sem lançamento financeiro correspondente).
+## 🔄 Fluxo de Processamento de Ponta a Ponta: A Conciliação Diária
+Para entender o enxame em ação sem gatilhos externos, veja como um pagamento é processado e liquidado de ponta a ponta:
+```
+[ Extrato Bancário Gerado ]
+          │
+          ▼
+1. Agente Auditor lê o extrato ──► Identifica entrada de R$ 450,00 de "Pedro Souza"
+          │
+          ▼
+2. Agente Conciliador assume ────► Localiza "Pedro Souza" na Planilha Excel e no CNA Box
+          │
+          ├──────────────────────► [Sucesso] Altera para "PAGO" no Excel e CNA Box
+          │                                   └─► Dispara confirmação no moysesnet.com
+          │
+          ▼
+3. [Cenário de Conflito] ────────► Se o valor não bater ou o nome for desconhecido:
+                                  Acessa o moysesnet.com e busca nas conversas dos últimos
+                                  3 dias quem prometeu pagar R$ 450,00 ou enviou aquele print.
+                                  - Se achar: Faz a baixa e vincula ao aluno correto.
+                                  - Se falhar: Move para a aba "Auditoria Humana" no Excel.
+
+```
+## 🛡️ Alavancas de Segurança e Transbordo para Gestão Humana
+Como lida com o dinheiro da operação, o enxame financeiro possui travas rígidas de interrupção. O atendimento é congelado e repassado imediatamente para os gestores humanos (como a Sra. Lucimar) nas seguintes situações:
+ * **Pedidos de Desconto Extra-Regra:** Se o cliente exigir uma condição de parcelamento ou perdão de juros que não esteja expressamente autorizada na planilha Excel de parâmetros.
+ * **Contestação de Valores:** Se o responsável pelo aluno afirmar que já pagou (enviando um comprovante antigo) e acusar a escola de erro de cobrança.
+ * **Inconsistência Bancária Inexplicável:** Se o *Agente Auditor de Extratos* detectar saídas de valores altos não identificadas ou entradas repetidas sem origem rastreável, o sistema gera uma linha vermelha de alerta na planilha gerencial e cessa as automações de cobrança daquele bloco até a validação humana.

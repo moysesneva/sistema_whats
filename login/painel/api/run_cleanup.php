@@ -40,11 +40,62 @@ if (!$r || $r['autorizado'] != 2 || !in_array((int) $r['tipo'], [1, 4])) {
 $base = __DIR__;
 
 // -----------------------------------------------------------------------
+// Lê thresholds: banco de dados > env var > padrão embutido
+// (valor salvo no painel tem prioridade sobre variável de ambiente)
+// -----------------------------------------------------------------------
+
+/**
+ * Resolve um threshold numérico na ordem: banco > env var > padrão.
+ * O valor salvo no painel tem prioridade sobre a variável de ambiente.
+ */
+function _cleanup_threshold(string $envKey, ?int $dbVal, int $default): int
+{
+    if ($dbVal !== null && $dbVal > 0) {
+        return $dbVal;
+    }
+    $env = getenv($envKey);
+    if ($env !== false && (int) $env > 0) {
+        return (int) $env;
+    }
+    return $default;
+}
+
+// Tenta ler do banco (colunas adicionadas pelo banco_fix.sql)
+$_db_cfg = [];
+try {
+    $__r = $conn->query(
+        "SELECT cleanup_log_max_age_days, cleanup_log_max_size_mb,
+                cleanup_uploads_max_age_sec,
+                cleanup_db_failures_max_mb, cleanup_db_failures_max_days
+         FROM config LIMIT 1"
+    );
+    if ($__r) {
+        $_db_cfg = $__r->fetch_assoc() ?: [];
+    }
+} catch (\Throwable $__e) {
+    // colunas ainda não existem — sem problema, usa padrão
+}
+
+// -----------------------------------------------------------------------
 // Cooldown — evita execuções duplicadas em rápida sucessão
 // (leitura + verificação + escrita são atômicas via flock)
 // -----------------------------------------------------------------------
 
-$cooldownSec  = max(1, (int) (getenv('CLEANUP_COOLDOWN_SECONDS') ?: 30));
+// Lê o cooldown do banco de dados (configurado pelo painel), com fallback para env var e padrão 30s.
+$cooldownSec = null;
+$r_cd = $conn->query("SELECT cleanup_cooldown_seconds FROM config LIMIT 1");
+if ($r_cd) {
+    $row_cd = $r_cd->fetch_assoc();
+    if ($row_cd && isset($row_cd['cleanup_cooldown_seconds'])) {
+        $v_cd = (int) $row_cd['cleanup_cooldown_seconds'];
+        if ($v_cd >= 5 && $v_cd <= 3600) {
+            $cooldownSec = $v_cd;
+        }
+    }
+}
+if ($cooldownSec === null) {
+    $cooldownSec = max(1, (int) (getenv('CLEANUP_COOLDOWN_SECONDS') ?: 30));
+}
 $cooldownFile = $base . '/cleanup_cooldown.json';
 $lockFile     = $base . '/cleanup_cooldown.lock';
 
@@ -83,18 +134,23 @@ flock($lockFp, LOCK_UN);
 fclose($lockFp);
 
 // -----------------------------------------------------------------------
-// Configurações (mesmas usadas pelos scripts shell)
+// Configurações (banco de dados > env var > padrão embutido)
 // -----------------------------------------------------------------------
 
-$maxDias  = max(1, (int) (getenv('LOG_MAX_AGE_DAYS')  ?: 7));
-$maxMb    = max(1, (int) (getenv('LOG_MAX_SIZE_MB')   ?: 10));
+$maxDias  = max(1, _cleanup_threshold('LOG_MAX_AGE_DAYS',
+    isset($_db_cfg['cleanup_log_max_age_days']) ? (int) $_db_cfg['cleanup_log_max_age_days'] : null, 7));
+$maxMb    = max(1, _cleanup_threshold('LOG_MAX_SIZE_MB',
+    isset($_db_cfg['cleanup_log_max_size_mb']) ? (int) $_db_cfg['cleanup_log_max_size_mb'] : null, 10));
 $maxBytes = $maxMb * 1024 * 1024;
 
-$uploadsMaxAge = max(1, (int) (getenv('UPLOADS_MAX_AGE_SECONDS') ?: 3600));
+$uploadsMaxAge = max(1, _cleanup_threshold('UPLOADS_MAX_AGE_SECONDS',
+    isset($_db_cfg['cleanup_uploads_max_age_sec']) ? (int) $_db_cfg['cleanup_uploads_max_age_sec'] : null, 3600));
 
-$dbFailuresMaxMb   = max(1, (int) (getenv('DB_FAILURES_MAX_SIZE_MB')  ?: 1));
+$dbFailuresMaxMb   = max(1, _cleanup_threshold('DB_FAILURES_MAX_SIZE_MB',
+    isset($_db_cfg['cleanup_db_failures_max_mb']) ? (int) $_db_cfg['cleanup_db_failures_max_mb'] : null, 1));
 $dbFailuresMaxBytes = $dbFailuresMaxMb * 1024 * 1024;
-$dbFailuresMaxAge  = max(1, (int) (getenv('DB_FAILURES_MAX_AGE_DAYS') ?: 30));
+$dbFailuresMaxAge  = max(1, _cleanup_threshold('DB_FAILURES_MAX_AGE_DAYS',
+    isset($_db_cfg['cleanup_db_failures_max_days']) ? (int) $_db_cfg['cleanup_db_failures_max_days'] : null, 30));
 
 $logsDir      = $base . '/logs';
 $painelLogsDir = dirname($base) . '/logs';
@@ -118,9 +174,6 @@ $limiteModif = time() - ($maxDias * 86400);
 
 if (is_dir($logsDir)) {
     foreach (glob($logsDir . '/*.{log,txt}', GLOB_BRACE) as $arquivo) {
-        if (basename($arquivo) === 'admin_actions.log') {
-            continue;
-        }
         if (is_file($arquivo) && filemtime($arquivo) < $limiteModif) {
             if (unlink($arquivo)) {
                 $removidosLogs++;
@@ -198,6 +251,26 @@ if (is_file($dbFailuresLog)) {
     }
 }
 
+// -----------------------------------------------------------------------
+// Rotação de admin_actions.log (truncar se ultrapassar LOG_MAX_SIZE_MB)
+// -----------------------------------------------------------------------
+
+$adminActionsLogPath   = $logsDir . '/admin_actions.log';
+$adminActionsAction    = 'none';
+
+if (is_file($adminActionsLogPath) && filesize($adminActionsLogPath) > $maxBytes) {
+    $fp = fopen($adminActionsLogPath, 'a');
+    if ($fp !== false) {
+        if (flock($fp, LOCK_EX)) {
+            ftruncate($fp, 0);
+            flock($fp, LOCK_UN);
+            $truncamentos++;
+            $adminActionsAction = 'truncado';
+        }
+        fclose($fp);
+    }
+}
+
 $statusLogs = json_encode([
     'ultima_varredura'              => $ts,
     'arquivos_removidos'            => $removidosLogs,
@@ -209,6 +282,7 @@ $statusLogs = json_encode([
     'db_failures_action'            => $dbFailuresAction,
     'db_failures_max_size_mb'       => $dbFailuresMaxMb,
     'db_failures_max_age_dias'      => $dbFailuresMaxAge,
+    'admin_actions_action'          => $adminActionsAction,
 ], JSON_UNESCAPED_UNICODE);
 
 file_put_contents($base . '/status_limpar_logs.json', $statusLogs);

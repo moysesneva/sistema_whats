@@ -33,19 +33,21 @@ if(isset($autorizado)){
 if($autorizado == 1){   
 $_SESSION['login'] = $login;
 $_SESSION['last_activity'] = time();
-Vaipara('desbloquear.php');
+session_write_close();
+VaiPara('desbloquear.php');
 }}
 
 if($total_busca_usuario  == 1){
 
 $_SESSION['login'] = $login;
 $_SESSION['last_activity'] = time();
+session_write_close();
 VaiPara($pagina);
 
 }#if($total_busca_usuario  == 1){
 if($total_busca_usuario  == 0){
 
-VaiPara('login.php?erro=login');
+VaiPara('login_adm.php?erro=login');
 
 }#if($total_busca_usuario  == 1){
 
@@ -120,12 +122,15 @@ $stmt_update->bind_param("s", $login);
 $query = $stmt_update->execute();
 $stmt_update->close();
 if($query){
-VaiPara($pagina);       
+session_write_close();
+header('Location: ' . $pagina);
+exit;
 }
 
 
 }else{
-        VaiPara('desbloquear.php?erro=code');
+        header('Location: desbloquear.php?erro=code');
+        exit;
 }
 
 

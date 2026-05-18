@@ -20,14 +20,45 @@ _valid_int() {
     fi
 }
 
+# --- Lê overrides do JSON gravado pelo painel (env var > JSON > padrão) ---
+CLEANUP_JSON="$(dirname "$0")/../login/painel/api/cleanup_config.json"
+
+_json_val() {
+    local key="$1" default="$2"
+    if [ -f "$CLEANUP_JSON" ] && command -v grep >/dev/null 2>&1; then
+        local v
+        v=$(grep -o "\"${key}\":[[:space:]]*[0-9]*" "$CLEANUP_JSON" 2>/dev/null | grep -o '[0-9]*$')
+        if [[ "$v" =~ ^[0-9]+$ ]] && [ "$v" -gt 0 ]; then
+            echo "$v"
+            return
+        fi
+    fi
+    echo "$default"
+}
+
+# JSON (banco) > env var > padrão embutido
+# (valor salvo no painel tem prioridade sobre variável de ambiente)
+_resolve_thr() {
+    local envVal="$1" jsonKey="$2" default="$3"
+    local jsonVal
+    jsonVal=$(_json_val "$jsonKey" "")
+    if [[ "$jsonVal" =~ ^[0-9]+$ ]] && [ "$jsonVal" -gt 0 ]; then
+        echo "$jsonVal"
+    elif [[ "$envVal" =~ ^[0-9]+$ ]] && [ "$envVal" -gt 0 ]; then
+        echo "$envVal"
+    else
+        echo "$default"
+    fi
+}
+
 INTERVALO=$(_valid_int "${LOG_SWEEP_INTERVAL_SECONDS}" 86400)
-MAX_DAYS=$(_valid_int "${LOG_MAX_AGE_DAYS}" 7)
-MAX_MB=$(_valid_int "${LOG_MAX_SIZE_MB}" 10)
+MAX_DAYS=$(_resolve_thr "${LOG_MAX_AGE_DAYS}" "log_max_age_days" 7)
+MAX_MB=$(_resolve_thr "${LOG_MAX_SIZE_MB}" "log_max_size_mb" 10)
 MAX_BYTES=$(( MAX_MB * 1024 * 1024 ))
 
-DB_FAILURES_MAX_MB=$(_valid_int "${DB_FAILURES_MAX_SIZE_MB}" 1)
+DB_FAILURES_MAX_MB=$(_resolve_thr "${DB_FAILURES_MAX_SIZE_MB}" "db_failures_max_mb" 1)
 DB_FAILURES_MAX_BYTES=$(( DB_FAILURES_MAX_MB * 1024 * 1024 ))
-DB_FAILURES_MAX_AGE=$(_valid_int "${DB_FAILURES_MAX_AGE_DAYS}" 30)
+DB_FAILURES_MAX_AGE=$(_resolve_thr "${DB_FAILURES_MAX_AGE_DAYS}" "db_failures_max_days" 30)
 
 BASE="$(dirname "$0")/../login/painel/api"
 PAINEL_BASE="$(dirname "$0")/../login/painel"
@@ -37,6 +68,7 @@ SINGLE_LOGS=(
     "$BASE/log_recebidos.txt"
 )
 DB_FAILURES_LOG="$PAINEL_BASE/logs/db_failures.log"
+ADMIN_ACTIONS_LOG="$LOGS_DIR/admin_actions.log"
 STATUS_FILE="$BASE/status_limpar_logs.json"
 
 run_sweep() {
@@ -98,6 +130,17 @@ run_sweep() {
                 db_failures_action="erro_filtragem"
                 echo "[$ts] limpar_logs: AVISO — falha ao filtrar db_failures.log (arquivo mantido intacto)"
             fi
+        fi
+    fi
+
+    # --- Truncar admin_actions.log se ultrapassar LOG_MAX_SIZE_MB ---
+    if [ -f "$ADMIN_ACTIONS_LOG" ]; then
+        local aa_size
+        aa_size=$(wc -c < "$ADMIN_ACTIONS_LOG" 2>/dev/null || echo 0)
+        if [ "$aa_size" -gt "$MAX_BYTES" ]; then
+            : > "$ADMIN_ACTIONS_LOG"
+            truncados=$(( truncados + 1 ))
+            echo "[$ts] limpar_logs: admin_actions.log truncado (era ${aa_size} bytes, limite=${MAX_MB}MB)"
         fi
     fi
 

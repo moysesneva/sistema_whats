@@ -94,7 +94,7 @@ foreach ($usuarios_array as $usuario_api) {
     $total_config = mysqli_num_rows($query_config);
 
     while($rows_config = mysqli_fetch_array($query_config)) {
-        $servidor  = $rows_config['ip_vps'];
+        $servidor  = preg_replace('#^https?://#i', '', trim($rows_config['ip_vps']));
         $porta  = $rows_config['porta'];
         $nova_porta  = $rows_config['nova_porta'];
         $token  = $rows_config['chave'];
@@ -394,7 +394,7 @@ if (!$config) {
     $total_config = mysqli_num_rows($query_config);
 
     while($rows_config = mysqli_fetch_array($query_config)) {
-        $servidor  = $rows_config['ip_vps'];
+        $servidor  = preg_replace('#^https?://#i', '', trim($rows_config['ip_vps']));
         $porta  = $rows_config['porta'];
         $nova_porta  = $rows_config['nova_porta'];
         $token  = $rows_config['chave'];
@@ -421,7 +421,7 @@ if (!$config) {
 
 
 
-$servidor = $config['ip_vps'];
+$servidor = preg_replace('#^https?://#i', '', trim($config['ip_vps']));
 $porta    = $config['porta'];
 $token    = $config['chave'];
 // Define o webhook a partir da config, com um fallback
@@ -704,7 +704,7 @@ $sql_config = "SELECT * FROM config LIMIT 1";
 $query_config = mysqli_query($conn, $sql_config);
 $config = mysqli_fetch_assoc($query_config);
 
-$servidor = $config['ip_vps'];
+$servidor = preg_replace('#^https?://#i', '', trim($config['ip_vps']));
 $porta    = $config['porta'];
 $token    = $config['chave'];
 

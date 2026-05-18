@@ -1,0 +1,64 @@
+Para estruturar o departamento de **Coordenação Pedagógica** sob o modelo de **Enxame de Agentes IA (Swarm)**, o foco muda completamente: saem as regras de caixa e contratos e entram a **retenção de alunos (combate à evasão), o suporte metodológico e o controle de qualidade acadêmica**.
+Como as funções de secretaria e contratos ficaram no Administrativo, este enxame trabalhará como o braço direito do coordenador pedagógico humano (**Lucas**). Ele operará de forma autônoma (via conexões de API nas pontas) integrado diretamente ao CRM **cnabox.com.br**, à central **moysesnet.com** e às **Planilhas Excel** específicas do pedagógico (diários de classe, controle de faltas e cronogramas).
+# 📚 Estrutura Completa: Coordenação Pedagógica
+Este núcleo é composto por **2 Agentes Especialistas** coordenados por **1 Supervisor Pedagógico**, focados em garantir a excelência das aulas e blindar a escola contra a evasão de alunos.
+```
+                     [ Avisos de Faltas (Diário de Classe) ]
+                     [ Dúvidas de Alunos / Pais (moysesnet)]
+                                       │
+                                       ▼
+                             ┌───────────────────┐
+                             │SUPERVISOR PEDAGÓG.│ (Orquestrador)
+                             └─────────┬─────────┘
+                                       │
+                   ┌───────────────────┴───────────────────┐
+                   ▼                                       ▼
+         ┌───────────────────┐                   ┌───────────────────┐
+         │ AGENTE GUARDIÃO   │                   │ AGENTE DE SUPORTE │
+         │   (Retenção/Faltas)                   │   E NIVELAMENTO   │
+         └───────────────────┘                   └───────────────────┘
+                   │                                       │
+                   └───────────────────┬───────────────────┘
+                                       ▼
+                             ┌───────────────────┐
+                             │  AGENTE AUDITOR   │ (Desempenho Geral)
+                             └───────────────────┘
+
+```
+## 🤖 Definição e Papéis dos Agentes Pedagógicos
+### 1. Supervisor Pedagógico (O Orquestrador)
+ * **Função:** Analisar os inputs de cunho acadêmico que entram no sistema (mensagens de pais sobre desempenho, notificações de faltas inseridas pelos professores ou pedidos de mudança de turma) e delegar para o agente especialista correto.
+ * **Diretriz de Triagem:** Se a mensagem recebida for sobre boletos, pagamento ou problemas contratuais, ele repassa imediatamente para os fluxos do Financeiro ou Administrativo.
+### 2. Agente Guardião (Retenção de Alunos e Alerta de Evasão)
+ * **Função:** Monitorar a assiduidade dos alunos e intervir de forma humanizada e ágil ao menor sinal de desengajamento, operando tanto no CNA (Idiomas) quanto na Ctrl+Play (Tecnologia).
+ * **Comportamento com o Excel:** Varre diariamente as planilhas de "Diário de Classe/Frequência" preenchidas pelos professores.
+ * **Comportamento com o CNA Box:** Checa se o aluno já possui alguma ocorrência pedagógica registrada ou se tem um histórico de excelente desempenho.
+ * **Ação no moysesnet.com:** Se o aluno faltar a **2 aulas seguidas**, o agente dispara uma mensagem personalizada e acolhedora para o responsável no WhatsApp:
+   > *"Olá, tudo bem? Notamos que o [Nome do Aluno] faltou às duas últimas aulas de [Inglês/Programação]. O Lucas, nosso coordenador, pediu para checar se está tudo bem e lembrar que a presença dele é fundamental para não perder o ritmo da turma!"*
+   > 
+### 3. Agente de Suporte Metodológico e Nivelamento
+ * **Função:** Auxiliar no agendamento de testes de nivelamento (para novos alunos) e gerenciar o fluxo de aulas de recuperação de conteúdo.
+ * **Comportamento com o Excel:** Consulta a planilha de "Horários Disponíveis de Professores" e a agenda de salas para encontrar lacunas de atendimento.
+ * **Ação no moysesnet.com / CNA Box:**
+   * **Para novos alunos:** Quando o comercial fecha uma matrícula pendente de nivelamento, este agente interage com o aluno/pai para aplicar um pré-teste (via link/formulário) e agenda o teste definitivo na escola.
+   * **Para alunos com dificuldade:** Caso o responsável responda à mensagem do *Agente Guardião* dizendo que o filho está com dificuldades na matéria, este agente assume o chat, consulta os horários no Excel e agenda uma aula de apoio pedagógico (recuperação).
+### 4. Agente Auditor Pedagógico (Qualidade de Notas e Turmas)
+ * **Função:** Agente analítico de back-office. Avalia os dados consolidados da escola.
+ * **Comportamento com as Bases:** Cruza as notas das avaliações do CNA Box com o índice de faltas do Excel.
+ * **Ação:** Gera um relatório semanal para o coordenador humano (Lucas), apontando:
+   * Turmas com média de notas abaixo do esperado.
+   * Lista de alunos com frequência inferior a 75% (zona de risco de reprovação ou cancelamento).
+   * Professores com maior índice de faltas nas turmas.
+## 🔄 Fluxo de Ação Prática: O Combate à Evasão
+Veja como o enxame pedagógico blinda a retenção da escola de forma integrada:
+ 1. O professor fecha a pauta no **Excel** e o sistema identifica que o aluno "Vitor" faltou pela segunda vez na semana.
+ 2. O **Agente Guardião** entra em ação: busca o contato da mãe do Vitor no **CNA Box** e envia uma mensagem carinhosa pelo **moysesnet.com** lamentando a ausência.
+ 3. A mãe responde no WhatsApp: *"Ele está com muita dificuldade na matéria de tecnologia/idiomas e está desanimado de ir."*
+ 4. O **Supervisor Pedagógico** detecta o motivo (Dificuldade Pedagógica) e passa o caso para o **Agente de Suporte**.
+ 5. O Agente de Suporte consulta a planilha de horários dos professores, formula uma proposta de aula de apoio gratuita e responde: *"Entendemos perfeitamente, mãe! O Lucas (nosso coordenador) separou um horário de apoio nesta quinta-feira às 16h para o professor puxar o conteúdo com ele. Podemos confirmar?"*
+ 6. A mãe aceita. O agente registra o agendamento no Excel, cria a observação no prontuário do aluno no **CNA Box** e notifica o professor humano.
+## 🛡️ Alavancas de Transbordo Humano Crítico para o Coordenador (Lucas)
+O enxame pedagógico interrompe qualquer automação e passa o controle imediatamente para o Lucas nas seguintes situações:
+ * **Insatisfação com a Metodologia ou Professor:** Se o pai ou aluno responder com críticas diretas à postura de um professor, à qualidade da aula ou à estrutura pedagógica da escola.
+ * **Casos Comportamentais Extremos:** Se o registro no diário de classe indicar problemas de indisciplina em sala de aula, bullying ou incidentes que exijam uma reunião presencial com a coordenação.
+ * **Recusa de Apoio Pedagógico:** Se, mesmo após a oferta de aulas de recuperação e suporte, o responsável manifestar a intenção firme de cancelar as aulas por desinteresse do aluno. O caso vai para o Lucas com o histórico completo de tentativas de ajuda gerado pelo enxame.

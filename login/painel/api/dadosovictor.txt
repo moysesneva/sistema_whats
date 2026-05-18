@@ -1,0 +1,9 @@
+{"telefone":"5511999999999","texto":"oi","usuario":"admin","de":"5511999999999","timestamp":1700000000}
+{"telefone":"5511987654321","texto":"oi, quero informações","usuario":"admin","de":"5511987654321","timestamp":1700000001}
+{"telefone":"5511987654321","texto":"quero agendar um horário","usuario":"admin","de":"5511987654321","timestamp":1700000002}
+{"telefone":"5511987654321","texto":"quero agendar um horário","usuario":"admin","de":"5511987654321","timestamp":1700000003}
+{"telefone":"5511987654321","texto":"oi","usuario":"admin","de":"5511987654321","timestamp":1700000010}
+{"telefone":"5511987654321","texto":"quero agendar um corte","usuario":"admin","de":"5511987654321","timestamp":1700000011}
+{"telefone":"5567900000201","texto":"Oi sou Maria, mae da Luiza 8 anos, quero ingles sabado","usuario":"admin"}
+{"telefone":"5567900000202","texto":"Olá! Me chamo João, tenho 46 anos e gostaria de informações sobre o curso de alemão","usuario":"admin"}
+{"telefone":"5567900000203","texto":"Boa noite! Me chamo Clara e quero informações sobre o curso de informática","usuario":"admin"}

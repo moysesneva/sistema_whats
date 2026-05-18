@@ -1,0 +1,52 @@
+Com a separação clara da **Coordenação Pedagógica**, o departamento de **Administração Geral** fica muito mais enxuto, focando exclusivamente em conformidade contratual, infraestrutura física (facilities), suprimentos e suporte de secretaria.
+O suporte pedagógico (gestão de faltas, retenção de alunos, treinamento de professores e nivelamentos) passa a responder diretamente ao coordenador humano (Lucas).
+Aqui está a estrutura redesenhada do **Departamento de Administração Geral**, sem as funções pedagógicas, e operando de forma autônoma entre a central **moysesnet.com**, o CRM **cnabox.com.br** e suas **Planilhas Excel**:
+# 🏢 Estrutura Completa: Departamento de Administração Geral
+Este núcleo agora foca 100% na eficiência operacional de back-office, garantindo que as duas unidades físicas (Vivendas e Itanhangá) funcionem perfeitamente. Ele é composto por **2 Agentes Especialistas** coordenados por **1 Supervisor**.
+```
+                        [ Chamados de Infraestrutura ]
+                        [ Contratos / Documentos     ]
+                                       │
+                                       ▼
+                             ┌───────────────────┐
+                             │SUPERVISOR ADMINIST│ (Orquestrador)
+                             └─────────┬─────────┘
+                                       │
+                   ┌───────────────────┴───────────────────┐
+                   ▼                                       ▼
+         ┌───────────────────┐                   ┌───────────────────┐
+         │ AGENTE DE CONTRATOS│                  │ AGENTE DE FACILITY│
+         │   e CONFORMIDADE  │                   │    e COMPRAS      │
+         └───────────────────┘                   └───────────────────┘
+                   │                                       │
+                   └───────────────────┬───────────────────┘
+                                       ▼
+                             ┌───────────────────┐
+                             │  AGENTE AUDITOR   │ (Alocação de Salas)
+                             └───────────────────┘
+
+```
+## 🤖 Definição e Papéis dos Agentes Administrativos
+### 1. Supervisor Administrativo (O Orquestrador)
+ * **Função:** Analisar os inputs operacionais das escolas (alertas de manutenção, contratos assinados vindos do comercial, mensagens de fornecedores) e delegar para o agente correto.
+ * **Diretriz de Transbordo:** Se o input recebido no WhatsApp for de cunho **pedagógico** (ex: reclamação de nota, dúvida sobre conteúdo de aula, mudança de nível ou mensagem de professor), este agente remove a tag administrativa da central moysesnet.com e direciona a conversa diretamente para a fila humana da **Coordenação Pedagógica**.
+### 2. Agente de Contratos e Conformidade (Secretaria e Legal)
+ * **Função:** Validar a integridade documental e jurídica das novas matrículas e campanhas de rematrícula.
+ * **Comportamento com o CNA Box:** Monitora o funil comercial. Quando uma venda é fechada, ele faz o pente-fino: checa se o CPF do responsável financeiro é válido, se o endereço está completo e se o contrato digital foi assinado corretamente.
+ * **Comportamento com o Excel:** Lança os dados validados na planilha "Master de Alunos Ativos", gerando o código de matrícula definitivo da secretaria e vinculando o aluno à sua respectiva unidade.
+ * **Ação no moysesnet.com:** Se houver pendência de documento (ex: foto do RG borrada), o agente envia uma mensagem objetiva para o responsável no WhatsApp cobrando o arquivo.
+### 3. Agente de Facility e Compras (Manutenção, Patrimônio e Estoque)
+ * **Função:** Controlar a infraestrutura das escolas, o estoque de materiais didáticos (CNA Box / apostilas) e insumos de papelaria/brindes.
+ * **Comportamento com o Excel:**
+   * **Estoque:** Controla a entrada e saída de materiais didáticos e brindes de campanhas. Quando o comercial entrega um prêmio de rematrícula, este agente dá a baixa na planilha correspondente e avisa quando o estoque atinge o nível mínimo de segurança.
+   * **Manutenção:** Monitora os prazos de manutenções preventivas obrigatórias (ex: recarga de extintores, limpeza de caixas d'água e revisão de ar-condicionado).
+ * **Ação no moysesnet.com:** Centraliza chamados internos de manutenção (ex: lâmpada queimada, problema no portão ou na cerca elétrica). Ele consulta no Excel a lista de técnicos parceiros cadastrados e envia uma mensagem automatizada acionando o profissional para um orçamento.
+### 4. Agente Auditor Administrativo (Back-office)
+ * **Função:** Otimização de espaço físico.
+ * **Comportamento com o Excel e CNA Box:** Cruza a capacidade física das salas de aula de cada unidade (cadastrada no Excel) com a quantidade de alunos matriculados nas turmas do CRM CNA Box.
+ * **Ação:** Emite alertas semanais de ociosidade de espaço (ex: salas grandes com turmas de apenas 3 alunos) para ajudar a direção a reorganizar a alocação de turmas de Idiomas ou Tecnologia.
+## 🛡️ Alavancas de Segurança e Transbordo Humano
+O departamento administrativo aciona o controle manual da gerência (Sra. Lucimar / Camila) imediatamente nos seguintes casos:
+ * **Emergências de Infraestrutura:** Falhas graves de segurança física (ex: pane no sistema de alarme das unidades, quebra da cerca elétrica perimetral ou problemas estruturais urgentes).
+ * **Bloqueio de Matrícula por Documentação:** Se um responsável legal se recusar repetidamente a fornecer os documentos obrigatórios para a validação do contrato de prestação de serviços.
+ * **Estouro de Teto de Gastos:** Se o orçamento enviado por um fornecedor de manutenção (via WhatsApp) ultrapassar o limite pré-estabelecido na planilha Excel para aquela categoria de despesa.

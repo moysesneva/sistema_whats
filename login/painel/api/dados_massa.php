@@ -13,7 +13,7 @@ $sql_config = "SELECT * FROM config LIMIT 1";
 $query_config = mysqli_query($conn, $sql_config);
 $config = mysqli_fetch_assoc($query_config);
 
-$servidor = $config['ip_vps'];
+$servidor = preg_replace('#^https?://#i', '', trim($config['ip_vps']));
 $porta = $config['porta'];
 $token = $config['chave'];
 

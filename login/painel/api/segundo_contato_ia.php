@@ -33,6 +33,8 @@ $stmt_upd_cl->close();
 
 
 
+}////if($query){
+
 }////if($situacao == 2){
 
 
@@ -250,28 +252,25 @@ if($usuario_msg){
 if($api_response){
 ##########################
 #ARMAZENA O ENVIO  
-#header('Content-Type: text/html; charset=utf-8');
-#$api_response = mb_convert_encoding($api_response, 'UTF-8', 'auto');
-#$api_response = print_r($api_response);
 $api_response = preg_replace('/^[\x00-\x1F\x7F\xA0]/u', '', $api_response);
 $api_response = trim($api_response);
 
+if (!function_exists('limparInterrogacoes')) {
 function limparInterrogacoes($texto) {
-    // Remover '?' se estiver no início da frase
     $texto = preg_replace('/^\?/', '', $texto);
-
-    // Remover '??' de qualquer lugar na frase
     $texto = str_replace('??', '', $texto);
-
-    // Remover '?' que esteja logo após qualquer pontuação (como '.', ',', '!', etc.) e possivelmente espaços
     $texto = preg_replace('/([.,!;:])\s*\?/', '$1', $texto);
-
     return $texto;
 }
-
+}
 $api_response = limparInterrogacoes($api_response);
 
-
+// ── Detecta marcador de transferência SPIN (fora do horário) ─────────────────
+$spin_transferir = false;
+if (strpos($api_response, '[##TRANSFERIR##]') !== false) {
+    $spin_transferir = true;
+    $api_response = trim(str_replace('[##TRANSFERIR##]', '', $api_response));
+}
 
 $stmt_ins_ev = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
 $stmt_ins_ev->bind_param("sss", $telefone, $api_response, $usuario_api);
@@ -292,11 +291,50 @@ $stmt_upd_cl2 = $conn->prepare("UPDATE clientes SET time_atendimento = ? WHERE t
 $stmt_upd_cl2->bind_param("sss", $dataHoraCompleta, $telefone, $usuario_api);
 $query = $stmt_upd_cl2->execute();
 $stmt_upd_cl2->close();
-if($query){
-mysqli_close($conn);
 }
 }
+
+// ── Transferência silenciosa SPIN ao final da conversa fora do horário ────────
+if ($spin_transferir && !empty($depto_pendente) && $depto_pendente > 0) {
+    $hora_trans_spin = date('Y-m-d H:i:s');
+    // Muda cliente para fila no departamento que havia sido solicitado
+    $stmt_tr_spin = $conn->prepare(
+        "UPDATE clientes SET modo_atendimento='fila', depto_atual=?, depto_pendente=NULL, atendente_atual=NULL, time_atendimento=? WHERE telefone=? AND usuario_api=?"
+    );
+    $stmt_tr_spin->bind_param("isss", $depto_pendente, $hora_trans_spin, $telefone, $usuario_api);
+    $stmt_tr_spin->execute();
+    $stmt_tr_spin->close();
+
+    // Round-robin: pré-atribui ao próximo atendente do departamento
+    $stmt_rr_spin = $conn->prepare("SELECT proximo_atendente FROM departamentos WHERE id=? AND usuario_api=?");
+    $stmt_rr_spin->bind_param("is", $depto_pendente, $usuario_api);
+    $stmt_rr_spin->execute();
+    $res_rr_spin = $stmt_rr_spin->get_result();
+    $stmt_rr_spin->close();
+    if ($res_rr_spin && $res_rr_spin->num_rows > 0) {
+        $rr_spin_row = $res_rr_spin->fetch_assoc();
+        $rr_atual_spin = $rr_spin_row['proximo_atendente'];
+        if (!empty($rr_atual_spin)) {
+            // Pré-atribui
+            $conn->query("UPDATE clientes SET atendente_atual='" . $conn->real_escape_string($rr_atual_spin) . "' WHERE telefone='" . $conn->real_escape_string($telefone) . "' AND usuario_api='" . $conn->real_escape_string($usuario_api) . "'");
+            // Avança ponteiro round-robin
+            $stmt_prox_spin = $conn->prepare("SELECT login_atendente FROM atendentes_depto WHERE depto_id=? AND usuario_api=? AND login_atendente != ? ORDER BY id ASC LIMIT 1");
+            if ($stmt_prox_spin) {
+                $stmt_prox_spin->bind_param("iss", $depto_pendente, $usuario_api, $rr_atual_spin);
+                $stmt_prox_spin->execute();
+                $res_prox_spin = $stmt_prox_spin->get_result();
+                $stmt_prox_spin->close();
+                $prox_spin = ($res_prox_spin && $res_prox_spin->num_rows > 0) ? $res_prox_spin->fetch_assoc()['login_atendente'] : $rr_atual_spin;
+                $conn->query("UPDATE departamentos SET proximo_atendente='" . $conn->real_escape_string($prox_spin) . "' WHERE id=" . (int)$depto_pendente . " AND proximo_atendente='" . $conn->real_escape_string($rr_atual_spin) . "'");
+            }
+        }
+    }
+    // Sem notificação WhatsApp — atendente verá na fila ao abrir o painel
+    mysqli_close($conn);
+} else {
+    if (isset($query) && $query) mysqli_close($conn);
 }
+
 }#if($api_response){
 ######################################################
 ###### se NÂO for bem sucedido responda
@@ -476,21 +514,14 @@ if ($api_response) {
     #ARMAZENA O ENVIO
     $api_response = preg_replace('/^[\x00-\x1F\x7F\xA0]/u', '', $api_response);
     $api_response = trim($api_response);
-
-    function limparInterrogacoes($texto) {
-        // Remover '?' se estiver no início da frase
-        $texto = preg_replace('/^\?/', '', $texto);
-
-        // Remover '??' de qualquer lugar na frase
-        $texto = str_replace('??', '', $texto);
-
-        // Remover '?' que esteja logo após qualquer pontuação (como '.', ',', '!', etc.) e possivelmente espaços
-        $texto = preg_replace('/([.,!;:])\s*\?/', '$1', $texto);
-
-        return $texto;
-    }
-
     $api_response = limparInterrogacoes($api_response);
+
+    // ── Detecta marcador de transferência SPIN (fora do horário) ─────────────
+    $spin_transferir_g = false;
+    if (strpos($api_response, '[##TRANSFERIR##]') !== false) {
+        $spin_transferir_g = true;
+        $api_response = trim(str_replace('[##TRANSFERIR##]', '', $api_response));
+    }
 
     $stmt_ins_eg = $conn->prepare("INSERT INTO envio (comando, telefone, msg, status, usuario_api) VALUES ('MsgTexto', ?, ?, '2', ?)");
     $stmt_ins_eg->bind_param("sss", $telefone, $api_response, $usuario_api);
@@ -510,9 +541,41 @@ include 'creditos.php';
             $stmt_upd_clg->bind_param("sss", $dataHoraCompleta, $telefone, $usuario_api);
             $query = $stmt_upd_clg->execute();
             $stmt_upd_clg->close();
-            if ($query) {
-                mysqli_close($conn);
+        }
+    }
+
+    // ── Transferência silenciosa SPIN (Gemini) ────────────────────────────────
+    if ($spin_transferir_g && !empty($depto_pendente) && $depto_pendente > 0) {
+        $hora_tg = date('Y-m-d H:i:s');
+        $stmt_tr_g = $conn->prepare("UPDATE clientes SET modo_atendimento='fila', depto_atual=?, depto_pendente=NULL, atendente_atual=NULL, time_atendimento=? WHERE telefone=? AND usuario_api=?");
+        $stmt_tr_g->bind_param("isss", $depto_pendente, $hora_tg, $telefone, $usuario_api);
+        $stmt_tr_g->execute();
+        $stmt_tr_g->close();
+        // Round-robin
+        $stmt_rr_g = $conn->prepare("SELECT proximo_atendente FROM departamentos WHERE id=? AND usuario_api=?");
+        $stmt_rr_g->bind_param("is", $depto_pendente, $usuario_api);
+        $stmt_rr_g->execute();
+        $res_rr_g = $stmt_rr_g->get_result();
+        $stmt_rr_g->close();
+        if ($res_rr_g && $res_rr_g->num_rows > 0) {
+            $rr_g = $res_rr_g->fetch_assoc()['proximo_atendente'];
+            if (!empty($rr_g)) {
+                $conn->query("UPDATE clientes SET atendente_atual='" . $conn->real_escape_string($rr_g) . "' WHERE telefone='" . $conn->real_escape_string($telefone) . "' AND usuario_api='" . $conn->real_escape_string($usuario_api) . "'");
+                $stmt_px_g = $conn->prepare("SELECT login_atendente FROM atendentes_depto WHERE depto_id=? AND usuario_api=? AND login_atendente != ? ORDER BY id ASC LIMIT 1");
+                if ($stmt_px_g) {
+                    $stmt_px_g->bind_param("iss", $depto_pendente, $usuario_api, $rr_g);
+                    $stmt_px_g->execute();
+                    $res_px_g = $stmt_px_g->get_result();
+                    $stmt_px_g->close();
+                    $prox_g = ($res_px_g && $res_px_g->num_rows > 0) ? $res_px_g->fetch_assoc()['login_atendente'] : $rr_g;
+                    $conn->query("UPDATE departamentos SET proximo_atendente='" . $conn->real_escape_string($prox_g) . "' WHERE id=" . (int)$depto_pendente . " AND proximo_atendente='" . $conn->real_escape_string($rr_g) . "'");
+                }
             }
+        }
+        // Sem notificação — atendente verá na fila ao abrir o painel
+        mysqli_close($conn);
+    } else {
+        if (isset($query) && $query) {
         }
     }
 } #if($api_response){

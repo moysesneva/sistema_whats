@@ -2,10 +2,6 @@
 require_once __DIR__ . '/auth_guard.php';
 include 'funcoes.php';
 
-if (!isset($_SESSION['login'])) {
-    VaiPara('login.php');
-}
-
 $login = $_SESSION['login'];
 
 include 'conn.php';
@@ -24,8 +20,8 @@ if (!$r || $r['autorizado'] != 2) {
 
 $tipo = $r['tipo'];
 
-if (!in_array($tipo, [1, 4])) {
-    VaiPara('index.php');
+if ($tipo != 1) {
+    VaiPara('login_adm.php');
 }
 
 include 'menu.php';

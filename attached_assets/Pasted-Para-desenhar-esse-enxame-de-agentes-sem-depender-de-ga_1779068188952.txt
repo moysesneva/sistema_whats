@@ -1,0 +1,36 @@
+Para desenhar esse enxame de agentes sem depender de gatilhos do n8n e focando estritamente nos sistemas que você utiliza no seu dia a dia (CRM CNA Box, planilhas Excel e a central de comunicação moysesnet.com via WhatsApp), a arquitetura precisa operar de forma integrada diretamente nessas interfaces.
+Neste cenário, os agentes funcionam através de APIs conectadas a essas três ferramentas. O moysesnet.com funciona como o "sistema nervoso" e de interface visual (onde as mensagens trafegam e os agentes respondem), o CNA Box como o validador de status acadêmico/comercial, e o Excel como o repositório de regras de negócio, metas e tabelas de preços.
+Abaixo está o mapeamento de acessos e o escopo de atuação do enxame de acordo com a sua infraestrutura:
+### 🗺️ Matriz de Acesso dos Agentes
+Cada agente terá permissões específicas de leitura e escrita nas suas três bases de dados para evitar conflitos de automação:
+| Agente IA | Acesso ao moysesnet.com | Acesso ao CRM CNA Box | Acesso ao Excel (Tabelas/Metas) |
+|---|---|---|---|
+| **1. Agente Triagem (SDR)** | Leitura de novas mensagens / Escrita (Chatbot) | Consulta de CPF/Nome (Verificar se já existe) | Leitura (Consultar cursos disponíveis, idades e horários) |
+| **2. Agente Consultor (Closer)** | Escrita (Interação direta em conversas ativas) | Criação de propostas e alteração de status do funil | Leitura (Tabela de preços, cupons e condições de pagamento) |
+| **3. Agente Reversor** | Disparo de mensagens ativas e acompanhamento | Leitura (Alunos evadidos, trancados ou leads antigos) | Leitura (Regras de descontos e níveis de prêmios de campanhas) |
+| **4. Agente Auditor (Analista)** | Leitura de histórico de conversas concluídas | Escrita (Atualização de notas e histórico do lead) | Escrita (Atualização de planilhas de desempenho e conversão diária) |
+### 🤖 Engenharia de Prompt e Atuação de Cada Agente
+#### 1. Agente Triagem (SDR)
+ * **Foco de Atuação:** Fica monitorando as conversas que entram na central moysesnet.com sem operador humano atribuído.
+ * **Comportamento com o Excel:** Consulta as abas de "Idade vs. Curso" para saber se o lead (ou o filho do lead) deve ir para uma turma de inglês/espanhol ou para os cursos de tecnologia.
+ * **Comportamento com o CNA Box:** Faz uma busca rápida no CRM pelo telefone/CPF. Se o lead já constar lá, ele não inicia um atendimento do zero; ele chama o Agente Consultor ou avisa o consultor humano responsável registrado no CRM.
+ * **Ação:** Qualifica o interesse, descobre a disponibilidade de horários do cliente e faz o pré-cadastro no CNA Box.
+#### 2. Agente Consultor (Closer)
+ * **Foco de Atuação:** Assume a conversa no moysesnet.com assim que o lead é classificado como "Pronto para Matrícula".
+ * **Comportamento com o Excel:** Lê a tabela de precificação vigente para o período letivo atual, incluindo as regras de descontos corporativos ou convênios.
+ * **Comportamento com o CNA Box:** Altera a etapa do funil do cliente para "Em Negociação", anexa os detalhes da conversa e formata a proposta comercial com base nos dados do CRM.
+ * **Ação:** Conduz a negociação de valores via WhatsApp, quebra as objeções financeiras e envia as instruções para a assinatura do contrato e pagamento.
+#### 3. Agente Reversor (Recuperação e Campanhas)
+ * **Foco de Atuação:** Roda em lotes (*batches*) ou varreduras periódicas focadas em listas específicas de reativação de clientes.
+ * **Comportamento com o CNA Box:** Filtra listas de alunos que não renovaram a matrícula ou leads que ficaram parados na etapa de "Visita Agendada" há mais de 15 dias.
+ * **Comportamento com o Excel:** Consulta as diretrizes da campanha vigente — como as regras estruturadas de premiação escalonada para rematrícula — para saber exatamente quais benefícios ou brindes pode oferecer como argumento de urgência.
+ * **Ação:** Inicia conversas ativas de acompanhamento (*follow-up*) personalizadas no moysesnet.com, relembrando o interesse anterior do cliente ou oferecendo vantagens exclusivas para o retorno dele ou do filho às aulas.
+#### 4. Agente Auditor e Analista (Qualidade e CRM)
+ * **Foco de Atuação:** Agente de *back-office* (não fala com o cliente final). Ele analisa as conversas fechadas no moysesnet.com.
+ * **Comportamento com o CRM CNA Box:** Lê os desfechos das negociações e preenche o campo de "Observações" ou "Histórico do Cliente" no CRM com um resumo preciso da conversa comercial, economizando tempo dos funcionários humanos (como a Camila ou a Lucimar).
+ * **Comportamento com o Excel:** Alimenta uma planilha de controle comercial atualizando métricas como: motivos mais frequentes de perda de vendas (ex: preço, localização, horário), tempo médio de resposta e quantidade de leads convertidos por campanha.
+### 🛡️ Protocolo de Transbordo Humano no moysesnet.com
+Como as interações acontecem dentro da sua central de comunicação (moysesnet.com), o enxame deve seguir critérios estritos para transferir o atendimento a um operador humano:
+ 1. **Detecção de Alerta de Churn/Insatisfação:** Se o Agente Reversor identificar irritação ou mensagens complexas sobre contratos antigos, ele pausa a automação imediatamente.
+ 2. **Atribuição Manual de Operador:** A IA altera a tag ou o status da conversa dentro do moysesnet.com para "Atendimento Humano" e envia uma notificação interna para a equipe da escola.
+ 3. **Resumo de Passagem de Bastão:** Antes de sair de cena, o Agente Analista gera um resumo interno de 3 linhas para o consultor humano ler (ex: *"Lead interessado em Inglês para o filho de 10 anos. Objeção: achou o valor da parcela alto. Oferta de desconto de convênio não foi aceita."*).

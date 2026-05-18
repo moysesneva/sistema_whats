@@ -713,6 +713,28 @@ while($rows_config = mysqli_fetch_array($query_busca_config)) {
         html {
             scroll-behavior: smooth;
         }
+
+        /* ── Neutraliza sobrescritas do painel admin (enam-panel.css) ── */
+        h1, h2, h3, h4, h5, h6 { color: var(--dark-color) !important; }
+        .section-title { color: var(--primary-color) !important; }
+        .header-top h1 { color: #ffffff !important; }
+        p, .welcome-text, .help-text { color: #555 !important; }
+        label { color: var(--dark-color) !important; font-weight: 500; }
+        a { color: var(--primary-color) !important; text-decoration: none !important; }
+        .btn-primary, .btn-primary:hover { color: #ffffff !important; text-decoration: none !important; }
+        .booking-card p { color: #666 !important; }
+        input.form-control, select.form-control, textarea.form-control {
+            background-color: #f9f9f9 !important;
+            color: #333 !important;
+            border: 2px solid #e8e8e8 !important;
+            border-radius: 12px !important;
+        }
+        input.form-control::placeholder { color: #aaa !important; }
+        input.form-control:focus, select.form-control:focus {
+            background-color: #ffffff !important;
+            border-color: var(--secondary-color) !important;
+            outline: none !important;
+        }
     </style>
 </head>
 

@@ -1,0 +1,13 @@
+2026-05-17 10:39:02 | Tel: 5511987654321 | Msg: oi, quero informações | total config: 1 | busca usuario: 1| busca cliente: 0|  Usuario: admin
+2026-05-17 10:39:04 | Tel: ✅ Enviada 
+2026-05-17 10:39:21 | Tel: 5511987654321 | Msg: quero agendar um horário | total config: 1 | busca usuario: 1| busca cliente: 1|  Usuario: admin
+2026-05-17 10:41:23 | Tel: 5511987654321 | Msg: quero agendar um horário | total config: 1 | busca usuario: 1| busca cliente: 1|  Usuario: admin
+2026-05-17 10:42:29 | Tel: 5511987654321 | Msg: oi | total config: 1 | busca usuario: 1| busca cliente: 0|  Usuario: admin
+2026-05-17 10:42:30 | Tel: ✅ Enviada 
+2026-05-17 10:42:35 | Tel: 5511987654321 | Msg: quero agendar um corte | total config: 1 | busca usuario: 1| busca cliente: 1|  Usuario: admin
+2026-05-17 16:09:20 | Tel: 5567900000201 | Msg: Oi sou Maria, mae da Luiza 8 anos, quero ingles sabado | total config: 1 | busca usuario: 1| busca cliente: 0|  Usuario: admin
+2026-05-17 16:09:21 | Tel: ✅ Enviada 
+2026-05-17 16:10:01 | Tel: 5567900000202 | Msg: Olá! Me chamo João, tenho 46 anos e gostaria de informações sobre o curso de alemão | total config: 1 | busca usuario: 1| busca cliente: 0|  Usuario: admin
+2026-05-17 16:10:03 | Tel: ✅ Enviada 
+2026-05-17 16:10:08 | Tel: 5567900000203 | Msg: Boa noite! Me chamo Clara e quero informações sobre o curso de informática | total config: 1 | busca usuario: 1| busca cliente: 0|  Usuario: admin
+2026-05-17 16:10:09 | Tel: ✅ Enviada 
