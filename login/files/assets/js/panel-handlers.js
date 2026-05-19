@@ -24,5 +24,24 @@
                 toggleFullScreen();
             });
         }
+
+        // Sidebar toggle — troca vertical-nav-type entre expanded e collapsed (desktop)
+        // ou entre offcanvas e expanded (tablet/phone). Independente do pcoded plugin.
+        var sidebarBtn = document.getElementById('enam-sidebar-btn');
+        var pcodedEl   = document.getElementById('pcoded');
+        if (sidebarBtn && pcodedEl) {
+            sidebarBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var dt      = pcodedEl.getAttribute('pcoded-device-type') || 'desktop';
+                var current = pcodedEl.getAttribute('vertical-nav-type')  || 'expanded';
+                var next;
+                if (dt === 'desktop') {
+                    next = (current === 'expanded') ? 'collapsed' : 'expanded';
+                } else {
+                    next = (current === 'offcanvas') ? 'expanded' : 'offcanvas';
+                }
+                pcodedEl.setAttribute('vertical-nav-type', next);
+            });
+        }
     });
 })();

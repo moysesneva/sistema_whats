@@ -46,7 +46,7 @@
     </div>
     <!-- Pre-loader end -->
 
-    <div id="pcoded" class="pcoded">
+    <div id="pcoded" class="pcoded" theme-layout="vertical" vertical-nav-type="expanded" vertical-effect="shrink" vertical-placement="left" pcoded-device-type="desktop" nav-type="st2" fream-type="theme1" layout-type="light">
         <div class="pcoded-overlay-box"></div>
         <div class="pcoded-container navbar-wrapper">
 
@@ -54,7 +54,7 @@
                 <div class="navbar-wrapper">
 
                     <div class="navbar-logo">
-                        <a class="mobile-menu sidebar_toggle" id="mobile-collapse" href="#!">
+                        <a class="mobile-menu" id="enam-sidebar-btn" href="#!">
                             <i class="feather icon-menu"></i>
                         </a>
                         <a href="index.php">
