@@ -34,6 +34,9 @@
     <!-- Banner scripts (disk warning, API token warning) -->
     <script src="../files/assets/js/disk-warning-banner.js"></script>
     <?php if (isset($js_extra)) echo $js_extra; ?>
+    <?php foreach ($js_files ?? [] as $_jf): ?>
+    <script src="<?= htmlspecialchars($_jf, ENT_QUOTES, 'UTF-8') ?>"></script>
+    <?php endforeach; ?>
 
     <!-- Configuração do aviso de expiração de sessão -->
     <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">

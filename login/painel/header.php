@@ -243,7 +243,7 @@ $_pagina_atual_badge = basename($_SERVER['PHP_SELF'] ?? '');
 // Só injeta se for atendente e NÃO estiver em atendentes.php (que tem seu próprio polling)
 if ($_is_atendente_badge && $_pagina_atual_badge !== 'atendentes.php'):
 ?>
-<script>
+<script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 (function() {
     'use strict';
     var _filaGlobal = <?= (int)$_fila_badge ?>;  // valor inicial do servidor
