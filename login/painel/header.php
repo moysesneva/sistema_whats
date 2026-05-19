@@ -9,11 +9,20 @@
     <meta name="keywords" content="Admin , Responsive, Landing, Bootstrap, App, Template, Mobile, iOS, Android, apple, creative app">
     <meta name="author" content="#">
     <link rel="icon" href="<?=$icon;?>" type="image/x-icon">
+    <!-- Tema Enam Dark Navy + Orange — MoysesNet -->
+    <link href="../files/assets/vendor/fonts/montserrat/montserrat.css" rel="stylesheet">
+    <link rel="stylesheet" href="/login/painel/enam-panel.css">
+    <!-- Icon sets -->
+    <link rel="stylesheet" type="text/css" href="../files/assets/icon/themify-icons/themify-icons.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/icon/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/icon/icofont/css/icofont.css">
+    <!-- Core styles -->
     <link href="../files/assets/vendor/fonts/open-sans/open-sans.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../files/bower_components/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../files/assets/icon/feather/css/feather.css">
     <link rel="stylesheet" type="text/css" href="../files/assets/css/style.css">
     <link rel="stylesheet" type="text/css" href="../files/assets/css/jquery.mCustomScrollbar.css">
+    <style>body { background: #000d1a !important; }</style>
     <?php if (isset($css_extra)) echo $css_extra; ?>
 </head>
 

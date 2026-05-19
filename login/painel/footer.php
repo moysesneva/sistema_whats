@@ -26,7 +26,9 @@
     <script type="text/javascript" src="../files/assets/js/SmoothScroll.js"></script>
     <!-- custom js -->
     <script src="../files/assets/js/vartical-layout.min.js"></script>
+    <?php if (basename($_SERVER['PHP_SELF'] ?? '') === 'index.php'): ?>
     <script type="text/javascript" src="../files/assets/pages/dashboard/custom-dashboard.js"></script>
+    <?php endif; ?>
     <script type="text/javascript" src="../files/assets/js/script.min.js"></script>
     <!-- Panel-wide event handlers and safe CSP event dispatcher -->
     <script src="../files/assets/js/panel-handlers.js"></script>
