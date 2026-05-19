@@ -1,6 +1,16 @@
 <?php
 $uri = $_SERVER['REQUEST_URI'];
 
+// Health check probe do Replit Autoscale (Google Cloud Run — GoogleHC/1.0)
+// Deve responder 200 imediatamente, antes de qualquer conexão ao banco.
+$ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
+if ($ua === 'GoogleHC/1.0') {
+    http_response_code(200);
+    header('Content-Type: text/plain');
+    echo 'ok';
+    exit;
+}
+
 if (strpos($uri, '/__mockup/') === 0) {
     $target = 'http://127.0.0.1:23636' . $uri;
     $method = $_SERVER['REQUEST_METHOD'];
