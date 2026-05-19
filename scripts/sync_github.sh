@@ -58,7 +58,7 @@ echo "============================================"
 # -- 1. Limpar locks residuais -----------------------------------------------
 echo ""
 echo "--- Limpando estado anterior ---"
-rm -f .git/config.lock .git/index.lock .git/ORIG_HEAD \
+rm -f .git/config.lock .git/index.lock \
       .git/MERGE_HEAD.lock .git/packed-refs.lock .git/HEAD.lock 2>/dev/null || true
 if [ -f ".git/MERGE_HEAD" ]; then
     git merge --abort 2>/dev/null || true
@@ -138,11 +138,13 @@ git -c "credential.helper=store --file=$CRED_FILE" \
     fetch "$REMOTE" "$BRANCH"
 
 REMAINING_AHEAD=$(git rev-list --count "$REMOTE/$BRANCH"..HEAD 2>/dev/null || echo "?")
+REMAINING_BEHIND=$(git rev-list --count HEAD.."$REMOTE/$BRANCH" 2>/dev/null || echo "?")
 echo "  local/main == origin/main: $(git log --oneline -1)"
-echo "  Commits a frente do remote: $REMAINING_AHEAD (deve ser 0)"
+echo "  Commits a frente do remote : $REMAINING_AHEAD (deve ser 0)"
+echo "  Commits atras do remote    : $REMAINING_BEHIND (deve ser 0)"
 
-if [ "$REMAINING_AHEAD" != "0" ]; then
-    echo "AVISO: ainda ha $REMAINING_AHEAD commit(s) a frente do remote."
+if [ "$REMAINING_AHEAD" != "0" ] || [ "$REMAINING_BEHIND" != "0" ]; then
+    echo "AVISO: sincronizacao incompleta (ahead=$REMAINING_AHEAD, behind=$REMAINING_BEHIND)."
     exit 1
 fi
 
