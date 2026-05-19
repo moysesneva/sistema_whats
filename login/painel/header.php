@@ -54,7 +54,7 @@
                 <div class="navbar-wrapper">
 
                     <div class="navbar-logo">
-                        <a class="mobile-menu" id="mobile-collapse" href="#!">
+                        <a class="mobile-menu sidebar_toggle" id="mobile-collapse" href="#!">
                             <i class="feather icon-menu"></i>
                         </a>
                         <a href="index.php">
