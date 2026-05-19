@@ -404,8 +404,14 @@ function gerarQrcode($servidor, $porta, $user_id, $token) {
 
     $data = json_decode($response, true);
 
-    if (isset($data['qrcode'])) {
+    if (isset($data['qrcode']) && $data['qrcode'] !== null) {
         return $data['qrcode'];
+    } elseif (isset($data['status'])) {
+        $st = strtolower((string)$data['status']);
+        if (in_array($st, ['conectado', 'connected', 'open'])) {
+            return 'Já conectado';
+        }
+        return $data['status'];
     } elseif (isset($data['error'])) {
         return "Erro API: " . $data['error'];
     } else {
