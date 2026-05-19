@@ -92,26 +92,54 @@ AHEAD=$(git rev-list --count "$REMOTE/$BRANCH"..HEAD 2>/dev/null || echo "?")
 BEHIND=$(git rev-list --count HEAD.."$REMOTE/$BRANCH" 2>/dev/null || echo "?")
 echo "Local: $AHEAD commit(s) a frente | $BEHIND commit(s) atras do GitHub"
 
-# -- 4. Merge origin/main preferindo versao do GitHub em conflitos -----------
+# -- 4. Salvar arquivos exclusivos do Replit (nao existem no GitHub) ---------
+# O merge com -X theirs apagaria esses arquivos pois o GitHub nao os tem.
+# Salvamos antes e restauramos depois para preserva-los e envia-los ao GitHub.
+REPLIT_PROTECT=("router.php" "replit.md" "salvajson.php")
+PROTECT_TMP="/tmp/replit-protect-$$"
+mkdir -p "$PROTECT_TMP"
+for f in "${REPLIT_PROTECT[@]}"; do
+    if [ -f "$f" ]; then
+        cp "$f" "$PROTECT_TMP/$(basename "$f")"
+        echo "  Protegido antes do merge: $f"
+    fi
+done
+
+# -- 5. Merge origin/main preferindo versao do GitHub em conflitos -----------
 echo ""
 echo "--- Incorporando commit remoto (GitHub vence em conflitos) ---"
 if [ "$BEHIND" = "0" ]; then
     echo "  Ja atualizado com o GitHub. Nenhum merge necessario."
 else
-    git -c "credential.helper=store --file=$CRED_FILE" \
-        merge "$REMOTE/$BRANCH" -X theirs --no-edit \
+    git merge "$REMOTE/$BRANCH" -X theirs --no-edit \
         -m "merge: incorporando commit remoto do GitHub (theirs)"
     echo "  Merge concluido."
 fi
 
-# -- 5. Commit de arquivos pendentes (se houver) ------------------------------
+# -- 6. Restaurar arquivos exclusivos do Replit apos o merge -----------------
+RESTORED=0
+for f in "${REPLIT_PROTECT[@]}"; do
+    tmpf="$PROTECT_TMP/$(basename "$f")"
+    if [ -f "$tmpf" ]; then
+        cp "$tmpf" "$f"
+        git add "$f"
+        echo "  Restaurado apos merge: $f"
+        RESTORED=$((RESTORED + 1))
+    fi
+done
+rm -rf "$PROTECT_TMP"
+if [ "$RESTORED" -gt 0 ] && ! git diff --cached --quiet 2>/dev/null; then
+    git commit --no-verify -m "chore: preservar arquivos exclusivos do Replit apos merge"
+fi
+
+# -- 7. Commit de arquivos pendentes (se houver) ------------------------------
 if ! git diff --cached --quiet 2>/dev/null; then
     echo ""
     echo "--- Commitando resolucao de conflitos ---"
     git commit --no-verify -m "fix: resolvendo conflitos de merge pre-sync"
 fi
 
-# -- 6. Propagar versao do disco do proprio script (idempotente) --------------
+# -- 8. Propagar versao do disco do proprio script (idempotente) --------------
 git add "$SELF"
 if ! git diff --cached --quiet 2>/dev/null; then
     git commit --no-verify -m "chore: atualizar $SELF com versao do disco"
