@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 MYSQL_SOCKET=/home/runner/mysql.sock
 MYSQL_DATADIR=/home/runner/mysql_data
 MYSQL_PID=/home/runner/mysql.pid
@@ -41,12 +43,12 @@ else
     LOGIN_EXISTS=$(mysql -u root --socket=$MYSQL_SOCKET $LOCAL_DB_NAME -e "SHOW TABLES LIKE 'login';" 2>/dev/null | wc -l)
     if [ "$LOGIN_EXISTS" -lt "2" ]; then
         echo "Importando schema SQL principal..."
-        mysql --force -u root --socket=$MYSQL_SOCKET $LOCAL_DB_NAME < /home/runner/workspace/login/painel/banco.sql 2>&1 | grep -v "^$" || true
+        mysql --force -u root --socket=$MYSQL_SOCKET $LOCAL_DB_NAME < "$SCRIPT_DIR/login/painel/banco.sql" 2>&1 | grep -v "^$" || true
         echo "Schema principal importado!"
     fi
 
     echo "Aplicando tabelas complementares..."
-    mysql --force -u root --socket=$MYSQL_SOCKET $LOCAL_DB_NAME < /home/runner/workspace/login/painel/banco_fix.sql 2>&1 | grep -v "^$" || true
+    mysql --force -u root --socket=$MYSQL_SOCKET $LOCAL_DB_NAME < "$SCRIPT_DIR/login/painel/banco_fix.sql" 2>&1 | grep -v "^$" || true
     echo "Banco de dados local pronto ($(mysql -u root --socket=$MYSQL_SOCKET $LOCAL_DB_NAME -e 'SHOW TABLES;' 2>/dev/null | wc -l) tabelas)."
 fi
 
@@ -54,14 +56,14 @@ echo "=== Configurando hooks de Git ==="
 git config core.hooksPath scripts 2>/dev/null && echo "core.hooksPath=scripts configurado." || echo "Aviso: não foi possível configurar core.hooksPath (fora de um repositório git?)."
 
 echo "=== Criando links simbólicos de assets ==="
-ln -sf /home/runner/workspace/login/files /home/runner/workspace/files 2>/dev/null || true
+ln -sf "$SCRIPT_DIR/login/files" "$SCRIPT_DIR/files" 2>/dev/null || true
 
 echo "=== Iniciando varredura periódica de uploads antigos ==="
-bash /home/runner/workspace/scripts/limpar_uploads.sh &
+bash "$SCRIPT_DIR/scripts/limpar_uploads.sh" &
 
 echo "=== Iniciando varredura periódica de logs antigos ==="
-bash /home/runner/workspace/scripts/limpar_logs.sh &
+bash "$SCRIPT_DIR/scripts/limpar_logs.sh" &
 
 echo "=== Iniciando PHP na porta 5000 ==="
-cd /home/runner/workspace
-php -S 0.0.0.0:5000 -t /home/runner/workspace router.php
+cd "$SCRIPT_DIR"
+php -S 0.0.0.0:5000 -t "$SCRIPT_DIR" router.php

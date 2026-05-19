@@ -62,7 +62,7 @@ path = "scripts/post-merge.sh"
 timeoutMs = 60000
 
 [deployment]
-deploymentTarget = "vm"
+deploymentTarget = "autoscale"
 run = ["bash", "start.sh"]
 build = ["composer", "install", "--no-dev", "--optimize-autoloader", "--no-scripts"]
 
