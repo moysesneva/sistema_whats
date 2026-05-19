@@ -386,22 +386,29 @@ if($situacao != 'ativado'){
 ob_start();
 ?>
 <script nonce="<?= htmlspecialchars($GLOBALS['csp_nonce'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+console.log('[QR] script carregado. nonce=<?= substr($GLOBALS['csp_nonce'] ?? 'NULO', 0, 6) ?>...');
 (function () {
-    var usuarioApi  = <?= json_encode($usuario_api ?? '') ?>;
-    var endpointQr  = 'qr/gerar_qrcode.php?usuario=' + encodeURIComponent(usuarioApi);
-    var painelInline = document.getElementById('qrCodeInline');
-    var container    = document.getElementById('qrCodeContainer');
+    var usuarioApi   = <?= json_encode($usuario_api ?? '') ?>;
+    var endpointQr   = 'qr/gerar_qrcode.php?usuario=' + encodeURIComponent(usuarioApi);
+
+    function getPainel()    { return document.getElementById('qrCodeInline'); }
+    function getContainer() { return document.getElementById('qrCodeContainer'); }
 
     function mostrarPainel() {
-        if (painelInline) painelInline.style.display = 'block';
+        var p = getPainel();
+        if (p) { p.style.display = 'block'; console.log('[QR] painel aberto'); }
+        else console.warn('[QR] qrCodeInline não encontrado no DOM');
     }
     function ocultarPainel() {
-        if (painelInline) painelInline.style.display = 'none';
+        var p = getPainel();
+        if (p) p.style.display = 'none';
     }
 
     function carregarQr() {
-        if (!container) return;
+        console.log('[QR] carregarQr() chamado');
         mostrarPainel();
+        var container = getContainer();
+        if (!container) { console.warn('[QR] qrCodeContainer não encontrado'); return; }
         container.innerHTML =
             '<div class="text-center p-3">' +
             '<div class="spinner-border text-primary" role="status"><span class="sr-only">Carregando...</span></div>' +
@@ -409,20 +416,33 @@ ob_start();
 
         fetch(endpointQr, { credentials: 'same-origin' })
             .then(function (r) { return r.text(); })
-            .then(function (html) { container.innerHTML = html; })
-            .catch(function () {
-                container.innerHTML =
-                    '<p class="text-danger text-center mt-3"><i class="feather icon-alert-triangle"></i> Erro ao conectar com o servidor. Verifique se o VPS está online.</p>';
+            .then(function (html) {
+                var c = getContainer();
+                if (c) c.innerHTML = html;
+            })
+            .catch(function (err) {
+                var c = getContainer();
+                if (c) c.innerHTML =
+                    '<p class="text-danger text-center mt-3"><i class="feather icon-alert-triangle"></i> Erro ao conectar com o servidor.</p>';
+                console.error('[QR] fetch erro:', err);
             });
     }
 
-    var btnGerar   = document.getElementById('btnGerarQRCode');
-    var btnRefresh = document.getElementById('btnRefreshQR');
-    var btnFechar  = document.getElementById('btnFecharQR');
+    function registrarHandlers() {
+        var btnGerar   = document.getElementById('btnGerarQRCode');
+        var btnRefresh = document.getElementById('btnRefreshQR');
+        var btnFechar  = document.getElementById('btnFecharQR');
+        console.log('[QR] btnGerar=', btnGerar, 'btnFechar=', btnFechar);
+        if (btnGerar)   btnGerar.addEventListener('click', carregarQr);
+        if (btnRefresh) btnRefresh.addEventListener('click', carregarQr);
+        if (btnFechar)  btnFechar.addEventListener('click', ocultarPainel);
+    }
 
-    if (btnGerar)   btnGerar.addEventListener('click', carregarQr);
-    if (btnRefresh) btnRefresh.addEventListener('click', carregarQr);
-    if (btnFechar)  btnFechar.addEventListener('click', ocultarPainel);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', registrarHandlers);
+    } else {
+        registrarHandlers();
+    }
 }());
 </script>
 <?php
