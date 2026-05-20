@@ -30,7 +30,7 @@ include 'menu.php';
 if ($q_u->num_rows < 1) VaiPara('login.php');
 if ($autorizado != 2)   VaiPara('desbloquar.php');
 
-include 'bloqueio.php';
+if (!in_array($tipo, ['1', '2', '4'])) VaiPara('login.php');
 
 // --- Ação AJAX: mover cliente de coluna (etiqueta) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mover_cliente'])) {
